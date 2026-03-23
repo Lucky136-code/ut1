@@ -1,0 +1,23 @@
+{
+    "cleanUrls": true,
+    "rewrites": [
+        { "source": "/visualizer", "destination": "/visualizer.html" },
+        { "source": "/collection-detail", "destination": "/collection-detail.html" }
+    ]
+}
+``
+`
+
+---
+
+## Step 3 — Create `.gitignore `
+
+Create a new file called `.gitignore ` in root:
+`
+``
+__pycache__ /
+    *
+    .pyc
+main.py
+    .env
+    .DS_Store
