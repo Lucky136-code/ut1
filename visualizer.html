@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Uma Traders | Elite Space Visualizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="visualizer.css">
+</head>
+
+<body>
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+    <div class="liquid-metal-bg"></div>
+
+    <!-- Particle canvas (full-screen, pointer-events:none) -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Hidden utility canvases -->
+    <canvas id="capture-canvas" style="display:none;"></canvas>
+    <canvas id="secure-canvas" style="display:none;"></canvas>
+    <canvas id="watermark-pattern-canvas" style="display:none;"></canvas>
+
+    <!-- Toast notification -->
+    <div id="render-toast"></div>
+
+    <!-- Global back button -->
+    <button id="global-back" class="hover-target" onclick="navigateBack()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        <span>Back</span>
+    </button>
+
+    <!-- ══════════════════════════════════════════
+         SCREEN 1 — SELECT ENVIRONMENT
+    ══════════════════════════════════════════ -->
+    <div id="screen-category" class="view-screen active">
+        <h1>Select Environment</h1>
+        <p class="screen-subtitle">Choose your space to begin visualizing</p>
+        <div class="category-grid">
+            <div class="category-card hover-target" onclick="selectCategory('hall')">
+                <div class="cat-card-icon">
+                    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="6" y="18" width="36" height="24" rx="2"/>
+                        <path d="M16 42V28h16v14M2 18l22-12 22 12"/>
+                        <rect x="20" y="28" width="8" height="14"/>
+                    </svg>
+                </div>
+                <h3>Living / Hall</h3>
+                <p>Customize floors and walls with our premium stone collection.</p>
+                <span class="cat-card-badge">Floors · Walls</span>
+            </div>
+            <div class="category-card hover-target" onclick="selectCategory('kitchen')">
+                <div class="cat-card-icon">
+                    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="6" y="8" width="36" height="32" rx="2"/>
+                        <rect x="6" y="28" width="36" height="4"/>
+                        <rect x="10" y="12" width="12" height="12" rx="1"/>
+                        <rect x="26" y="12" width="12" height="12" rx="1"/>
+                        <circle cx="17" cy="18" r="3"/>
+                        <circle cx="32" cy="18" r="3"/>
+                    </svg>
+                </div>
+                <h3>Kitchen</h3>
+                <p>Multi-surface customization for countertops, islands, and cabinets.</p>
+                <span class="cat-card-badge">Countertops · Cabinets</span>
+            </div>
+            <div class="category-card hover-target" onclick="selectCategory('bathroom')">
+                <div class="cat-card-icon">
+                    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M8 28h32l-3 10H11L8 28z"/>
+                        <path d="M8 28v-6a4 4 0 0 1 4-4h2"/>
+                        <rect x="6" y="6" width="10" height="14" rx="2"/>
+                        <path d="M24 14h16v6H24z"/>
+                        <circle cx="29" cy="17" r="2"/>
+                        <circle cx="35" cy="17" r="2"/>
+                    </svg>
+                </div>
+                <h3>Bathroom</h3>
+                <p>Total customization for walls, floors, vanity, and shower.</p>
+                <span class="cat-card-badge">Walls · Floor · Vanity · Shower</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SCREEN 2 — INPUT / UPLOAD
+    ══════════════════════════════════════════ -->
+    <div id="screen-input" class="view-screen">
+        <h2 id="input-title">Capture Space</h2>
+        <p id="capture-tip" class="capture-tip-text"></p>
+        <div class="upload-tip-card">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--sky-main)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <p>For best results: good lighting, face the room straight-on, and avoid reflections on surfaces.</p>
+        </div>
+        <div class="btn-group">
+            <button class="elite-btn hover-target" onclick="document.getElementById('file-upload').click()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:relative;z-index:2;flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                <span>Upload Photo</span>
+            </button>
+            <input type="file" id="file-upload" accept="image/*" style="display:none;">
+            <button class="elite-btn hover-target" onclick="openCamera()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:relative;z-index:2;flex-shrink:0;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <span>Open Camera</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SCREEN 3 — CAMERA
+    ══════════════════════════════════════════ -->
+    <div id="screen-camera" class="view-screen">
+        <h2>Align Optics</h2>
+        <div id="camera-wrapper">
+            <video id="camera-feed" autoplay playsinline></video>
+            <div class="reticle tl"></div>
+            <div class="reticle tr"></div>
+            <div class="reticle bl"></div>
+            <div class="reticle br"></div>
+            <div class="camera-guide">Hold steady — ensure full room visibility</div>
+        </div>
+        <div class="btn-group" style="margin-top:0;width:100%;max-width:700px;">
+            <button class="elite-btn hover-target" style="width:100%;border-radius:16px;" onclick="capturePhoto()">
+                <span>Capture Room</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SCREEN 4 — WORKSPACE
+    ══════════════════════════════════════════ -->
+    <div id="screen-workspace" class="view-screen">
+        <div class="workspace-scroll-container">
+            <div class="workspace-layout">
+
+                <!-- RIGHT PANEL: Studio Viewer -->
+                <div class="panel panel-right">
+                    <div class="viewer-header">
+                        <h2>Studio Viewer</h2>
+                        <div class="action-links">
+                            <button class="text-btn hover-target" onclick="toggleFullScreen()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                                <span>Full Screen</span>
+                            </button>
+                            <button class="text-btn hover-target" onclick="downloadHQRender()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                <span>Download HQ</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- BEFORE / AFTER COMPARISON SLIDER -->
+                    <div class="comparison-viewer" id="comparison-viewer">
+                        <button id="exit-fullscreen-btn" class="hover-target" onclick="toggleFullScreen()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                        </button>
+
+                        <!-- Base: original image -->
+                        <img class="bas-img bas-img-original" id="img-original" src="" alt="Original Space">
+
+                        <!-- Labels -->
+                        <div class="bas-label bas-label-before"><span>◀ Original</span></div>
+                        <div class="bas-label bas-label-after" id="ba-label-after" style="opacity:0;"><span>Uma Traders Stone ▶</span></div>
+
+                        <!-- Clip: rendered image -->
+                        <div class="bas-clip" id="bas-clip">
+                            <img class="bas-img bas-img-rendered" id="img-rendered" src="" alt="Rendered Space">
+                            <canvas class="visual-branding" id="visual-watermark-canvas"></canvas>
+                            <div id="fallback-badge">⚡ Live Preview</div>
+                        </div>
+
+                        <!-- Drag handle -->
+                        <div class="bas-handle" id="bas-handle" style="opacity:0;pointer-events:none;">
+                            <div class="bas-handle-line"></div>
+                            <div class="bas-handle-btn hover-target">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l-6-6 6-6M15 6l6 6-6 6"/></svg>
+                            </div>
+                            <div class="bas-handle-line"></div>
+                        </div>
+
+                        <!-- First-render drag hint -->
+                        <div class="bas-drag-hint" id="bas-drag-hint">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l-6-6 6-6M15 6l6 6-6 6"/></svg> Drag to compare
+                        </div>
+
+                        <!-- Loading overlay -->
+                        <div class="loading-overlay" id="render-loader">
+                            <div class="loader-ring"></div>
+                            <p id="loader-msg">Sculpting Reality...</p>
+                            <div class="loader-progress">
+                                <div class="loader-progress-bar" id="loader-progress-bar"></div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile action buttons -->
+                        <div class="mobile-viewer-actions">
+                            <button class="mobile-icon-btn hover-target" onclick="toggleFullScreen()" title="Full Screen">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                            </button>
+                            <button class="mobile-icon-btn hover-target" onclick="downloadHQRender()" title="Download HQ">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Empty state -->
+                        <div class="viewer-empty-state" id="viewer-empty-state">
+                            <div class="viewer-empty-icon">◈</div>
+                            <p>Select a material to visualize it in your space</p>
+                            <span>← Use the Material Vault on the left</span>
+                        </div>
+                    </div>
+
+                    <!-- Keyboard hint (desktop only) -->
+                    <div class="viewer-kbd-hint">
+                        <kbd>←</kbd><kbd>→</kbd> Navigate textures &nbsp;·&nbsp; <kbd>C</kbd> Clear &nbsp;·&nbsp; <kbd>F</kbd> Fullscreen
+                    </div>
+                </div>
+                <!-- /panel-right -->
+
+                <!-- LEFT PANEL: Material Vault -->
+                <div class="panel panel-left">
+                    <div class="vault-top-controls">
+
+                        <div class="watcher-container">
+                            <div class="watcher-head" id="watcher-head">
+                                <div class="watcher-eye">
+                                    <div class="watcher-pupil pupil"></div>
+                                </div>
+                                <div class="watcher-eye">
+                                    <div class="watcher-pupil pupil"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2>Material Vault</h2>
+                        <p class="vault-sub">Select surface · pick texture</p>
+
+                        <div id="surface-selector" class="surface-selector"></div>
+
+                        <!-- PATTERN SELECTOR — Plain is default -->
+                        <div id="pattern-selector" class="pattern-selector" style="display:none;">
+                            <div class="pattern-pill active hover-target" onclick="selectPattern('plain',this)">Plain</div>
+                            <div class="pattern-pill hover-target" onclick="selectPattern('grid',this)">Grid</div>
+                            <div class="pattern-pill hover-target" onclick="selectPattern('staggered',this)">Brick</div>
+                            <div class="pattern-pill hover-target" onclick="selectPattern('diagonal',this)">Diagonal</div>
+                            <div class="pattern-pill pattern-pill-special hover-target" onclick="selectPattern('bookmatch',this)">★ Bookmatch</div>
+                        </div>
+
+                        <div id="wall-slider-container" class="slider-container" style="display:none;">
+                            <div class="slider-label">
+                                <span>Wall Coverage</span>
+                                <span id="wall-coverage-val" style="color:var(--sky-deep);">100%</span>
+                            </div>
+                            <input type="range" id="wall-coverage-slider" class="hover-target" min="10" max="100" value="100">
+                        </div>
+
+                        <button id="clear-surface-btn" class="clear-btn hover-target" onclick="clearActiveSurface()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                <path d="M3 3v5h5"/>
+                            </svg>
+                            <span id="clear-btn-text">Revert Area</span>
+                        </button>
+                    </div>
+
+                    <!-- TEXTURE VAULT -->
+                    <div id="texture-vault-wrap" class="texture-vault-wrap">
+                        <div class="vault-header">
+                            <span class="vault-title">Texture Library</span>
+                            <button class="vault-add-btn hover-target" onclick="document.getElementById('texture-upload-input').click()" title="Add your textures">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Add Textures
+                            </button>
+                            <input type="file" id="texture-upload-input" accept="image/*" multiple style="display:none;">
+                        </div>
+
+                        <div class="vault-cat-strip" id="vault-cat-strip"></div>
+
+                        <div class="vault-selected-banner" id="vault-selected-banner">
+                            <span id="vault-selected-name">— Select a material —</span>
+                        </div>
+
+                        <div class="vault-slide-viewport" id="vault-slide-viewport">
+                            <div class="vault-slide-track" id="vault-slide-track"></div>
+                        </div>
+
+                        <div id="vault-empty-state" class="vault-empty-state" style="display:none;">
+                            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="8" y="8" width="48" height="48" rx="6"/>
+                                <path d="M8 24h48M24 56V24"/>
+                                <circle cx="44" cy="16" r="4" fill="currentColor" opacity="0.3"/>
+                            </svg>
+                            <p>No textures here</p>
+                            <span>Click <strong>Add Textures</strong> to upload real stone photos.</span>
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp CTA -->
+                    <div class="whatsapp-cta">
+                        <button class="elite-btn hover-target" style="width:100%;border-radius:20px;padding:18px;font-size:0.85rem;" onclick="sendQuoteWhatsApp()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="position:relative;z-index:2;flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                            <span>Request Custom Quote</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- /panel-left -->
+            </div>
+
+            <!-- CREATIONS GALLERY -->
+            <div class="creations-section">
+                <h2 class="creations-title">Your Creations</h2>
+                <p class="creations-count" id="creations-count">No designs yet — start visualizing!</p>
+                <div class="creations-grid" id="creations-grid"></div>
+            </div>
+
+        </div>
+    </div>
+    <!-- /screen-workspace -->
+
+    <script src="visualizer.js"></script>
+</body>
+
+</html>

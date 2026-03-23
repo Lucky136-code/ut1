@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Uma Traders | Vanshika Premium Marble & Natural Stone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+
+    <!-- ══ INTRO SCREEN ══ -->
+    <div id="intro-screen" role="presentation" aria-hidden="true">
+        <div class="intro-panel intro-panel-top"></div>
+        <div class="intro-panel intro-panel-bottom"></div>
+        <div id="intro-grain"></div>
+        <div id="intro-bloom"></div>
+        <div id="intro-content">
+            <div id="intro-wordmark">
+                <span class="intro-word intro-word-uma">UMA</span>
+                <span class="intro-word intro-word-traders">TRADERS</span>
+            </div>
+            <div id="intro-divider">
+                <div class="intro-divider-line"></div>
+                <span class="intro-divider-gem">◈</span>
+                <div class="intro-divider-line"></div>
+            </div>
+            <p id="intro-subtitle">Vanshika Premium Marble &amp; Natural Stone</p>
+            <p id="intro-copy">© 2026 Uma Traders &middot; All Rights Reserved</p>
+        </div>
+        <div id="intro-progress"></div>
+        <div id="intro-skip-hint">Tap anywhere to skip</div>
+    </div>
+
+    <!-- ══ MAIN SITE ══ -->
+    <div class="liquid-metal-bg"></div>
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <div id="lightbox">
+        <button class="close-lightbox hover-target"><span>Close [Esc]</span></button>
+        <img id="lightbox-img" src="" alt="Full Screen Work">
+    </div>
+
+    <div id="search-modal">
+        <button id="search-close" class="hover-target">✕ Close</button>
+        <div id="search-input-wrap">
+            <input type="text" id="search-input" placeholder="Search collections, marble types…" autocomplete="off">
+            <button id="search-submit-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+        </div>
+        <div id="search-results"></div>
+    </div>
+
+    <div id="stone-detail-modal">
+        <button class="stone-detail-close hover-target">✕ Close</button>
+        <div class="stone-detail-container">
+            <div class="stone-detail-photos">
+                <div class="stone-photo-carousel">
+                    <div class="stone-photo-main" id="stone-photo-main"></div>
+                    <div class="stone-photo-thumbs" id="stone-photo-thumbs"></div>
+                </div>
+                <div class="stone-carousel-nav">
+                    <button class="stone-carousel-prev hover-target">←</button>
+                    <span class="stone-carousel-counter"><span id="stone-photo-current">1</span>/<span id="stone-photo-total">3</span></span>
+                    <button class="stone-carousel-next hover-target">→</button>
+                </div>
+            </div>
+            <div class="stone-detail-info">
+                <h2 id="stone-detail-name" class="stone-detail-name"></h2>
+                <p id="stone-detail-desc" class="stone-detail-description"></p>
+                <div class="stone-detail-meta">
+                    <div class="stone-detail-rating">
+                        <span class="stars-inline">★★★★★</span>
+                        <span class="rating-inline">4.8</span>
+                    </div>
+                </div>
+                <button id="stone-detail-whatsapp" class="btn-elite stone-detail-whatsapp hover-target">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2H2.5C1.12 2 0 3.12 0 4.5v15C0 20.88 1.12 22 2.5 22h19C22.88 22 24 20.88 24 19.5v-15C24 3.12 22.88 2 21.5 2zm0 4.5v11h-19v-11h19z"/></svg>
+                    Request via WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <header id="main-header">
+        <div class="logo">
+            <h1>Uma Traders</h1>
+        </div>
+        <div class="nav-container">
+            <nav>
+                <ul>
+                    <li><a href="#collections-id" class="hover-target">Collections</a></li>
+                    <li><a href="#process-id" class="hover-target">Process</a></li>
+                    <li><a href="#areas-id" class="hover-target">Areas</a></li>
+                    <li><a href="#blog-id" class="hover-target">Blog</a></li>
+                    <li><a href="#reviews-id" class="hover-target">Reviews</a></li>
+                    <li><a href="#contact-id" class="hover-target">Contact</a></li>
+                </ul>
+            </nav>
+            <div id="search-icon-btn" class="hover-target">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+        </div>
+    </header>
+
+    <div class="btn-dock" id="bottom-dock">
+        <a href="tel:+919304277935" class="btn-elite visit-btn hover-target">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="position:relative;z-index:2;flex-shrink:0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
+            <span>Call Us</span>
+        </a>
+        <a href="visualizer.html" class="btn-elite visual-btn hover-target">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="position:relative;z-index:2;flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 11l3 3L22 4"/></svg>
+            <span>Room Visualizer</span>
+        </a>
+    </div>
+
+    <main>
+        <div id="video-scroll-container">
+            <section class="hero" id="hero-section">
+                <div class="hero-video-container">
+                    <canvas id="parallax-canvas"></canvas>
+                    <div class="bg-overlay"></div>
+                </div>
+                <div class="hero-content">
+                    <span class="hero-badge">✦ Premium Marble &amp; Natural Stone ✦</span>
+                    <h2 class="slogan wave-text">Stone &amp; Craft</h2>
+                    <div class="hero-divider"><span class="hero-divider-gem">◈</span></div>
+                    <p class="hero-subtitle">Timeless Marble for Spaces<br>That Define Excellence</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- ══ ABOUT BOXES ══ -->
+        <section class="boxes-section" id="trigger-dock">
+            <div class="pop-box hover-target">
+                <h3 class="wave-text">01. About Our Work</h3>
+                <p>Meticulously sourced Makrana marble — hand-picked from Rajasthan's finest quarries and shaped by decades of craftsmanship into timeless stone masterpieces.</p>
+            </div>
+            <div class="pop-box hover-target">
+                <h3 class="wave-text">02. Our Partners</h3>
+                <p>Trusted by leading architects, interior designers, and builders across India and Nepal for delivering stone that meets the highest standards of beauty and durability.</p>
+            </div>
+            <div class="pop-box hover-target">
+                <h3 class="wave-text">03. Approach</h3>
+                <p>We blend traditional Rajasthani stone-cutting heritage with modern precision polishing technology — ensuring every slab is a work of art.</p>
+            </div>
+            <div class="pop-box hover-target">
+                <h3 class="wave-text">04. Purity</h3>
+                <p>Every piece carries certified authenticity — high calcium carbonate content, natural veining, and zero artificial coating. Purity you can see and feel.</p>
+            </div>
+        </section>
+
+        <!-- ══ STATS BAR ══ -->
+        <div class="stats-bar">
+            <div class="stats-item">
+                <div class="stats-number">50<span class="stats-plus">+</span></div>
+                <div class="stats-label">Premium Partners</div>
+            </div>
+            <div class="stats-divider"></div>
+            <div class="stats-item">
+                <div class="stats-number">28</div>
+                <div class="stats-label">States Served</div>
+            </div>
+            <div class="stats-divider"></div>
+            <div class="stats-item">
+                <div class="stats-number">15</div>
+                <div class="stats-label">Years of Excellence</div>
+            </div>
+            <div class="stats-divider"></div>
+            <div class="stats-item">
+                <div class="stats-number">500<span class="stats-plus">+</span></div>
+                <div class="stats-label">Projects Completed</div>
+            </div>
+            <div class="stats-divider"></div>
+            <div class="stats-item">
+                <div class="stats-number">4</div>
+                <div class="stats-label">Collections</div>
+            </div>
+        </div>
+
+        <!-- ══ HOW WE WORK ══ -->
+        <section class="process-section" id="process-id">
+            <div class="process-eyebrow">How We Work</div>
+            <h2 class="section-title wave-text" style="margin-bottom:1rem;">From <em class="process-em">Quarry</em> to Your Doorstep</h2>
+            <p class="process-desc">A meticulous journey from the heart of Indian quarries to your space — quality inspected at every single step.</p>
+            <div class="process-grid">
+                <div class="process-card hover-target pop-box">
+                    <div class="process-num">01</div>
+                    <div class="process-name">Inquiry &amp; Quotation</div>
+                    <p class="process-text">Submit an RFQ with dimensions, quantity and destination. We respond within 48 hours with a detailed quote and high-resolution slab photographs tailored to your specifications.</p>
+                    <div class="process-connector"></div>
+                </div>
+                <div class="process-card hover-target pop-box">
+                    <div class="process-num">02</div>
+                    <div class="process-name">Sample Approval</div>
+                    <p class="process-text">We ship physical samples (10×10 cm) directly to your door. Once you approve the stone, texture and finish, we confirm your order and commence production.</p>
+                    <div class="process-connector"></div>
+                </div>
+                <div class="process-card hover-target pop-box">
+                    <div class="process-num">03</div>
+                    <div class="process-name">Production &amp; QC</div>
+                    <p class="process-text">Slabs are precision-cut, polished and inspected to your exact specifications. 100% quality check with photographs sent at every production milestone.</p>
+                    <div class="process-connector"></div>
+                </div>
+                <div class="process-card hover-target pop-box">
+                    <div class="process-num">04</div>
+                    <div class="process-name">Packing &amp; Freight</div>
+                    <p class="process-text">Each slab is wooden-crated, foam-cushioned and loaded in sea-worthy containers. Complete export documentation and insurance provided.</p>
+                    <div class="process-connector"></div>
+                </div>
+                <div class="process-card hover-target pop-box">
+                    <div class="process-num">05</div>
+                    <div class="process-name">Delivery</div>
+                    <p class="process-text">FOB, CIF or door-to-door delivery options. Real-time shipment tracking shared with you. Dedicated post-delivery support from our team.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ COLLECTIONS ══ -->
+        <section class="collections-section" id="collections-id">
+            <h2 class="section-title wave-text">The Collection</h2>
+            <div class="collections-viewport">
+                <div class="collections-slide-track" id="collections-track">
+
+                    <div class="collections-panel" id="panel-categories">
+                        <div class="category-cards-grid">
+
+                            <div class="category-card hover-target" data-cat="marble" data-img="marble.jpeg">
+                                <div class="cat-bg cat-bg-marble"></div>
+                                <div class="cat-photo-layer"></div>
+                                <div class="cat-overlay">
+                                    <div class="cat-accent-line"></div>
+                                    <div class="cat-label">Marble</div>
+                                    <div class="cat-sub">12 Varieties</div>
+                                    <div class="cat-cta">Explore <span class="cat-arrow">→</span></div>
+                                </div>
+                            </div>
+
+                            <div class="category-card hover-target" data-cat="granite" data-img="granite.jpeg">
+                                <div class="cat-bg cat-bg-granite"></div>
+                                <div class="cat-photo-layer"></div>
+                                <div class="cat-overlay">
+                                    <div class="cat-accent-line"></div>
+                                    <div class="cat-label">Granite</div>
+                                    <div class="cat-sub">10 Varieties</div>
+                                    <div class="cat-cta">Explore <span class="cat-arrow">→</span></div>
+                                </div>
+                            </div>
+
+                            <div class="category-card hover-target" data-cat="tiles" data-img="tiles.jpeg">
+                                <div class="cat-bg cat-bg-tiles"></div>
+                                <div class="cat-photo-layer"></div>
+                                <div class="cat-overlay">
+                                    <div class="cat-accent-line"></div>
+                                    <div class="cat-label">Tiles</div>
+                                    <div class="cat-sub">4 Collections</div>
+                                    <div class="cat-cta">Explore <span class="cat-arrow">→</span></div>
+                                </div>
+                            </div>
+
+                            <div class="category-card hover-target" data-cat="handicraft" data-img="handicraft.jpeg">
+                                <div class="cat-bg cat-bg-handicraft"></div>
+                                <div class="cat-photo-layer"></div>
+                                <div class="cat-overlay">
+                                    <div class="cat-accent-line"></div>
+                                    <div class="cat-label">Handicraft</div>
+                                    <div class="cat-sub">5 Collections</div>
+                                    <div class="cat-cta">Explore <span class="cat-arrow">→</span></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="collections-panel detail-panel" id="panel-detail">
+                        <div class="detail-inner">
+                            <div class="detail-header">
+                                <div class="detail-header-bg" id="detail-header-bg"></div>
+                                <button class="back-btn hover-target" id="collections-back">← Back</button>
+                                <div class="detail-title-wrap">
+                                    <div class="detail-category-label" id="detail-cat-label">Category</div>
+                                    <div class="detail-title" id="detail-title">Stone Collection</div>
+                                    <div class="detail-count" id="detail-count"></div>
+                                    <div class="cat-nav-pills">
+                                        <span class="cat-nav-pill active" data-nav-cat="marble">Marble</span>
+                                        <span class="cat-nav-pill" data-nav-cat="granite">Granite</span>
+                                        <span class="cat-nav-pill" data-nav-cat="tiles">Tiles</span>
+                                        <span class="cat-nav-pill" data-nav-cat="handicraft">Handicraft</span>
+                                    </div>
+                                </div>
+                                <div class="cat-nav-arrows">
+                                    <button class="cat-nav-btn hover-target" id="cat-prev-btn">&#8592;</button>
+                                    <button class="cat-nav-btn hover-target" id="cat-next-btn">&#8594;</button>
+                                </div>
+                            </div>
+                            <div class="stone-list-wrap" data-lenis-prevent>
+                                <div class="stone-list" id="stone-list"></div>
+                            </div>
+                            <div class="detail-footer">
+                                <p class="detail-footer-note">Prices vary by size, finish &amp; quantity.<br>Contact us for bulk &amp; custom quotes.</p>
+                                <a href="#contact-id" class="quote-btn hover-target" id="detail-quote-btn">Request Quote ↗</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ AREAS ══ -->
+        <section class="areas-section" id="areas-id">
+            <h2 class="section-title wave-text">Global Footprint</h2>
+            <div class="areas-layout">
+                <div class="mastery-content">
+                    <h3 class="wave-text">Our Reach Across India &amp; Beyond</h3>
+                    <p>From our flagship showroom in Kishangarh, Rajasthan, Uma Traders supplies premium marble and natural stone to clients across India, with exports reaching Nepal and other international markets. We manage the complete journey — quarry
+                        selection, cutting, polishing, and delivery — so every slab arrives flawless.</p>
+                    <ul class="mastery-list">
+                        <li>Residential Flooring &amp; Wall Cladding</li>
+                        <li>Commercial Lobbies &amp; Office Spaces</li>
+                        <li>Hotel &amp; Hospitality Interiors</li>
+                        <li>Temple &amp; Heritage Restoration Projects</li>
+                        <li>Export Supply to Nepal &amp; International Markets</li>
+                        <li>Custom Cut-to-Size &amp; Bespoke Orders</li>
+                    </ul>
+                    <a href="https://maps.app.goo.gl/jcqN3JrZY9aqX62E6" target="_blank" class="locate-shop-btn hover-target">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Locate Our Shop
+                    </a>
+                </div>
+                <div class="map-wrapper">
+                    <div class="india-map">
+                        <div class="map-pin hover-target" style="top:36%;left:19%;" data-loc="jodhpur"></div>
+                        <div class="map-pin hover-target" style="top:39%;left:56%;" data-loc="gorakhpur"></div>
+                        <div class="map-pin hover-target" style="top:32%;left:62%;" data-loc="nepal"></div>
+                        <div class="location-card" id="location-card">
+                            <h4 class="loc-title" id="loc-title">Select Location</h4>
+                            <p class="loc-desc" id="loc-desc">Click a pin to see details.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ BLOG ══ -->
+        <section class="blog-section" id="blog-id">
+            <div class="blog-header">
+                <h2 class="section-title wave-text" style="margin:0;text-align:left;">Project Journal</h2>
+                <a href="https://www.instagram.com/makrana_marble_and_tiles?igsh=NThlODBwZjllaHpk" target="_blank" class="insta-link hover-target">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke-width="3"/>
+                    </svg> Follow our craft
+                </a>
+            </div>
+            <div class="blog-grid">
+                <div class="blog-item hover-target blog-obs" data-project="jaipur">
+                    <div class="blog-img" style="background-image:url('work1.jpg');"></div>
+                    <div class="blog-info">
+                        <h4>Project Name</h4>
+                        <p>Subproject description</p>
+                    </div>
+                </div>
+                <div class="blog-item hover-target blog-obs" data-project="corporate">
+                    <div class="blog-img" style="background-image:url('work2.jpg');"></div>
+                    <div class="blog-info">
+                        <h4>Project Name</h4>
+                        <p>Its description</p>
+                    </div>
+                </div>
+                <div class="blog-item hover-target blog-obs" data-project="residential">
+                    <div class="blog-img" style="background-image:url('work3.jpg');"></div>
+                    <div class="blog-info">
+                        <h4>Project Name</h4>
+                        <p>Its description</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ REVIEWS ══ -->
+        <section class="reviews-section" id="reviews-id">
+            <h2 class="section-title wave-text">Client Testimonials</h2>
+            <div class="review-cta-bar">
+                <p class="review-invite">Had a great experience? Share it with others.</p>
+                <button class="review-write-btn hover-target" id="write-review-btn"><span>✦ Write a Review</span></button>
+            </div>
+            <div class="review-form-wrap" id="review-form-wrap">
+                <div class="review-form-inner">
+                    <div class="review-form-head">
+                        <span class="review-form-title">Your Review</span>
+                        <div class="star-picker" id="star-picker">
+                            <span data-val="1">★</span><span data-val="2">★</span>
+                            <span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+                        </div>
+                    </div>
+                    <div class="review-form-fields">
+                        <input type="text" id="rv-name" placeholder="Your Name *" maxlength="60">
+                        <input type="text" id="rv-role" placeholder="Role / City (e.g. Interior Designer, Delhi)">
+                        <textarea id="rv-text" rows="4" placeholder="Tell others about your experience…"></textarea>
+                    </div>
+                    <button class="review-post-btn hover-target" id="review-post-btn"><span>Post Review</span></button>
+                </div>
+            </div>
+            <div class="reviews-track-wrapper" id="reviews-wrapper" style="display:none;">
+                <div class="reviews-track" id="reviews-track"></div>
+            </div>
+            <div class="reviews-empty" id="reviews-empty">
+                <div class="reviews-empty-icon">◈</div>
+                <p>No reviews yet — be the first to share your experience!</p>
+            </div>
+        </section>
+
+        <!-- ══ CONTACT ══ -->
+        <section class="contact-section" id="contact-id">
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h3 class="wave-text">Get in Touch</h3>
+                    <p>Ready to bring natural stone elegance to your space? Reach out for a personal consultation, custom quotes, or to visit our showroom. We respond within 24 hours.</p>
+                    <div class="contact-details">
+                        <div class="contact-detail-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sky-main)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <span>Kishangarh Marble Market, Ajmer, Rajasthan – 305801</span>
+                        </div>
+                        <div class="contact-detail-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sky-main)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
+                            <span>+91 9336366388 (WhatsApp &amp; Call)</span>
+                        </div>
+                        <div class="contact-detail-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sky-main)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            <span>info@umatraders.in</span>
+                        </div>
+                        <div class="contact-detail-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sky-main)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span>Mon – Sat: 9:00 AM – 7:00 PM IST</span>
+                        </div>
+                    </div>
+                    <div class="locate-shop-card">
+                        <div class="locate-shop-card-text">
+                            <h4>📍 Locate Our Shop</h4>
+                            <p>Kishangarh, Ajmer<br>Rajasthan – 305801, India</p>
+                        </div>
+                        <a href="https://maps.app.goo.gl/jcqN3JrZY9aqX62E6" target="_blank" class="locate-shop-btn hover-target" style="padding:12px 22px;font-size:0.7rem;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Open in Maps
+                        </a>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="ajax-contact">
+                        <div class="input-group"><input type="text" id="name" required><label for="name">Name</label></div>
+                        <div class="input-group"><input type="email" id="email" required><label for="email">Email</label></div>
+                        <div class="input-group"><input type="text" id="subject" required><label for="subject">Subject</label></div>
+                        <div class="input-group"><textarea id="message" rows="5" required></textarea><label for="message">Your Message</label></div>
+                        <div class="input-group"><button type="submit" class="submit-btn hover-target"><span>Request Consultation</span></button></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2>Uma Traders</h2>
+                <span class="tagline">Vanshika Premium Marble &amp; Natural Stone</span>
+                <p>Supplying the finest Makrana and Italian marble from Rajasthan to homes, hotels, and landmark spaces across India and beyond.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#collections-id">Collections</a></li>
+                    <li><a href="#process-id">How We Work</a></li>
+                    <li><a href="#areas-id">Our Reach</a></li>
+                    <li><a href="#blog-id">Project Journal</a></li>
+                    <li><a href="#reviews-id">Testimonials</a></li>
+                    <li><a href="#contact-id">Contact Us</a></li>
+                    <li><a href="visualizer.html">Visualizer</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <ul>
+                    <li><span>Kishangarh, Ajmer<br>Rajasthan – 305801</span></li>
+                    <li><span>+91 9336366388 — Pukhraj</span></li>
+                    <li><span>+91 8081672939 — Ratan</span></li>
+                    <li><span>+91 9887562001 — Kishan Prajapat</span></li>
+                    <li><span>info@umatraders.in</span></li>
+                    <li><a href="https://www.instagram.com/makrana_marble_and_tiles?igsh=NThlODBwZjllaHpk" target="_blank">Instagram ↗</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 Uma Traders. All Rights Reserved.</span>
+            <span>Crafted with care in <a href="#areas-id">Rajasthan, India</a></span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+    <script>
+        document.querySelectorAll('.category-card[data-img]').forEach(card => {
+            const img = card.getAttribute('data-img');
+            const pl = card.querySelector('.cat-photo-layer');
+            if (img && img.trim() && pl) {
+                pl.style.backgroundImage = `url('${img}')`;
+                pl.style.opacity = '0.85';
+            }
+        });
+    </script>
+    <script src="index.js"></script>
+</body>
+
+</html>
