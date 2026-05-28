@@ -2784,11 +2784,10 @@ body::before {
     letter-spacing: 0.15em !important;
 }
 .col-tab.active {
-    color: var(--text-color) !important;
-    border-bottom: 2px solid var(--border-dark) !important;
+    color: #ffffff !important;
 }
 .col-tab-indicator {
-    background: var(--border-dark) !important;
+    background: #000000 !important;
 }
 .col-card {
     border: 1px solid var(--border-color) !important;

@@ -6,28 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // Expanded Geology Monolith Telemetry Registry
         const MATERIALS = [
             { 
-                id: 'makrana-crystalline',   
-                cat: 'marble',     
-                name: 'Makrana Crystalline',   
-                img: '/assets/statuario_pure.png?v=15',
-                texture: '/assets/statuario_pure.png?v=15',
-                taxonomy: 'Pure Crystalline Calcite',
-                origin: 'Makrana, Rajasthan, India',
-                hardness: '4.0 Mohs',
-                desc: 'Prsitne pure white crystalline marble, the peak of Indian heritage, used in historic monuments like the Taj Mahal.'
-            },
-            { 
-                id: 'italian-calacatta',   
-                cat: 'marble',     
-                name: 'Italian Calacatta',   
-                img: '/assets/marble_gold.png?v=15',
-                texture: '/assets/marble_gold.png?v=15',
-                taxonomy: 'Brecciated Calcite',
-                origin: 'Apuan Alps, Carrara, Italy',
-                hardness: '3.5 Mohs',
-                desc: 'Timeless Carrara luxury with sweeping bold golden and warm grey veining patterns.'
-            },
-            { 
                 id: 'obsidian-noir',   
                 cat: 'marble',     
                 name: 'Obsidian Noir',   
