@@ -106,15 +106,24 @@ print("AI Engine ready.")
 # 4.  DATA MODELS
 # ---------------------------------------------------------------------------
 class RenderRequest(BaseModel):
-    room_image:       str
-    room_type:        str                  = "hall"
-    surface_textures: Dict[str, str]       = {}
-    wall_coverage:    float                = 1.0
-    floor_pattern:    str                  = "grid"
-    marble_id:        Optional[str]        = None
-    space_type:       Optional[str]        = None
-    texture_data:     Optional[Dict[str, str]] = None
-    scan_token:       Optional[str]        = None
+    room_image:          str
+    room_type:           str                  = "hall"
+    surface_textures:    Dict[str, str]       = {}
+    wall_coverage:       float                = 1.0
+    floor_pattern:       str                  = "grid"
+    marble_id:           Optional[str]        = None
+    space_type:          Optional[str]        = None
+    texture_data:        Optional[Dict[str, str]] = None
+    scan_token:          Optional[str]        = None
+    brightness_exposure: Optional[float]      = 1.0
+    shadow_intensity:    Optional[float]      = 1.0
+    blur_softness:       Optional[float]      = 1.0
+    tile_scale:          Optional[float]      = 1.0
+    tile_rotation:       Optional[float]      = 0.0
+
+class ScanRequest(BaseModel):
+    room_image:          str
+    room_type:           str                  = "hall"
 
 # ---------------------------------------------------------------------------
 # 5.  UTILITIES
@@ -180,11 +189,30 @@ def load_marble_texture(marble_id: str, texture_b64: Optional[str] = None) -> np
 # 6.  PATTERN GENERATOR  (leaner canvas allocation)
 # ---------------------------------------------------------------------------
 def generate_pattern(texture: np.ndarray, pattern_type: str,
-                     target_w: int, target_h: int, tile_size: int) -> np.ndarray:
+                     target_w: int, target_h: int, tile_size: int,
+                     tile_rotation: float = 0.0) -> np.ndarray:
     """
     Build a tiled/patterned canvas exactly target_w × target_h.
     Allocates only what is needed — no over-sized intermediate arrays.
     """
+    # If custom rotation is requested (and it's not diagonal which has built-in 45)
+    if tile_rotation != 0.0:
+        # Build larger canvas to avoid black corners after rotation
+        diag = int(math.ceil(math.sqrt(target_w**2 + target_h**2))) + tile_size
+        # Generate base pattern at diagonal size recursively with 0 rotation
+        large = generate_pattern(texture, pattern_type, diag, diag, tile_size, 0.0)
+        cx, cy = diag // 2, diag // 2
+        M = cv2.getRotationMatrix2D((cx, cy), tile_rotation, 1.0)
+        rot = cv2.warpAffine(large, M, (diag, diag))
+        sy = max(0, cy - target_h // 2)
+        sx = max(0, cx - target_w // 2)
+        crop = rot[sy:sy + target_h, sx:sx + target_w]
+        if crop.shape[0] < target_h or crop.shape[1] < target_w:
+            t = cv2.resize(texture, (tile_size, tile_size), interpolation=cv2.INTER_LINEAR)
+            reps2 = math.ceil(target_h / tile_size) + 2
+            return np.tile(t, (reps2, reps2, 1))[:target_h, :target_w]
+        return crop
+
     t = cv2.resize(texture, (tile_size, tile_size),
                    interpolation=cv2.INTER_LINEAR)
 
@@ -309,7 +337,12 @@ def _do_render(request: RenderRequest) -> dict:
 
     # ── Segmentation (cached) ──────────────────────────────────────────────
     img_hash = fast_image_hash(request.room_image)
-    pred_map = run_segmentation(small_img, img_hash)   # (small_h, small_w)
+    
+    use_cached_scan = request.scan_token and request.scan_token in _seg_cache
+    if not use_cached_scan:
+        pred_map = run_segmentation(small_img, img_hash)   # (small_h, small_w)
+    else:
+        pred_map = None
 
     # ── Setup: work at *original* resolution for visual quality ───────────
     h, w = orig_h, orig_w
@@ -338,16 +371,24 @@ def _do_render(request: RenderRequest) -> dict:
         },
     }
 
-    # Pre-compute lighting once
+    # Pre-compute lighting once with custom exposure and shadow settings
     room_gray = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
-    room_shadows   = np.power(room_gray, 0.85)
+    
+    shadows_mix = request.shadow_intensity if request.shadow_intensity is not None else 1.0
+    shadows_power = 0.85 * (2.0 - shadows_mix)
+    shadows_power = max(0.1, min(3.0, shadows_power))
+    room_shadows   = np.power(room_gray, shadows_power)
     room_gray_3d   = np.stack([room_shadows] * 3, axis=-1)
-    light_mult     = 1.9 if active_type == "kitchen" else 1.75
+    
+    brightness = request.brightness_exposure if request.brightness_exposure is not None else 1.0
+    light_mult     = (1.9 if active_type == "kitchen" else 1.75) * brightness
+    
     final_image    = original_img.copy().astype(np.float32)
     overall_mask   = np.zeros((h, w), dtype=np.float32)
 
-    # Adaptive blur kernel (proportional to image size)
-    blur_k = max(3, int(min(w, h) * 0.009) | 1)   # always odd, min 3
+    # Adaptive blur kernel (proportional to image size and softness slider)
+    blur_scale = request.blur_softness if request.blur_softness is not None else 1.0
+    blur_k = max(1, int(min(w, h) * 0.009 * blur_scale) | 1)   # always odd
 
     tex_data_map: Dict[str, str] = request.texture_data or {}
 
@@ -355,55 +396,67 @@ def _do_render(request: RenderRequest) -> dict:
         if not marble_id:
             continue
 
-        keywords   = surface_defs.get(active_type, {}).get(surface_name, [])
-        target_ids = [
-            idx for idx, label in model.config.id2label.items()
-            if any(k in label.lower() for k in keywords)
-        ]
-        if not target_ids:
-            continue
-
-        # Build mask at *small* resolution then scale up → saves morphology cost
-        raw_mask_small = np.isin(pred_map, target_ids).astype(np.uint8) * 255
-        if np.count_nonzero(raw_mask_small) < (small_w * small_h * 0.005):
-            continue
-
-        k9 = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
-        k5 = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-        clean_small = cv2.morphologyEx(raw_mask_small, cv2.MORPH_CLOSE, k9)
-        clean_small = cv2.morphologyEx(clean_small,   cv2.MORPH_OPEN,  k5)
-
-        # Scale mask up to original resolution
-        raw_mask = cv2.resize(clean_small, (w, h), interpolation=cv2.INTER_NEAREST)
-
-        num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(raw_mask, connectivity=8)
-        solid_mask = np.zeros_like(raw_mask)
-
-        for i in range(1, num_labels):
-            if stats[i, cv2.CC_STAT_AREA] < (w * h * 0.005):
+        solid_mask = None
+        if use_cached_scan:
+            solid_mask = _seg_cache[request.scan_token]
+        else:
+            if pred_map is None:
                 continue
-            if surface_name == "wall" and request.wall_coverage < 1.0:
-                y_min    = stats[i, cv2.CC_STAT_TOP]
-                h_obj    = stats[i, cv2.CC_STAT_HEIGHT]
-                cutoff_y = int(y_min + h_obj * (1.0 - request.wall_coverage))
-                temp     = (labels == i).astype(np.uint8) * 255
-                temp[:cutoff_y] = 0
-                solid_mask[temp == 255] = 255
-            else:
-                solid_mask[labels == i] = 255
+            keywords   = surface_defs.get(active_type, {}).get(surface_name, [])
+            target_ids = [
+                idx for idx, label in model.config.id2label.items()
+                if any(k in label.lower() for k in keywords)
+            ]
+            if not target_ids:
+                continue
+
+            # Build mask at *small* resolution then scale up → saves morphology cost
+            raw_mask_small = np.isin(pred_map, target_ids).astype(np.uint8) * 255
+            if np.count_nonzero(raw_mask_small) < (small_w * small_h * 0.005):
+                continue
+
+            k9 = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
+            k5 = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+            clean_small = cv2.morphologyEx(raw_mask_small, cv2.MORPH_CLOSE, k9)
+            clean_small = cv2.morphologyEx(clean_small,   cv2.MORPH_OPEN,  k5)
+
+            # Scale mask up to original resolution
+            raw_mask = cv2.resize(clean_small, (w, h), interpolation=cv2.INTER_NEAREST)
+
+            num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(raw_mask, connectivity=8)
+            solid_mask = np.zeros_like(raw_mask)
+
+            for i in range(1, num_labels):
+                if stats[i, cv2.CC_STAT_AREA] < (w * h * 0.005):
+                    continue
+                if surface_name == "wall" and request.wall_coverage < 1.0:
+                    y_min    = stats[i, cv2.CC_STAT_TOP]
+                    h_obj    = stats[i, cv2.CC_STAT_HEIGHT]
+                    cutoff_y = int(y_min + h_obj * (1.0 - request.wall_coverage))
+                    temp     = (labels == i).astype(np.uint8) * 255
+                    temp[:cutoff_y] = 0
+                    solid_mask[temp == 255] = 255
+                else:
+                    solid_mask[labels == i] = 255
+
+        if solid_mask is None or np.sum(solid_mask) == 0:
+            continue
 
         mask_f  = cv2.GaussianBlur(solid_mask, (blur_k, blur_k), 0).astype(np.float32) / 255.0
         mask_3d = np.stack([mask_f] * 3, axis=-1)
 
         # Load texture
         texture        = load_marble_texture(marble_id, tex_data_map.get(marble_id))
-        tile_size_base = int(max(w, h) * 0.35) if surface_name == "floor" else int(max(w, h) * 0.8)
+        
+        scale_mult = request.tile_scale if request.tile_scale is not None else 1.0
+        tile_size_base = int((max(w, h) * 0.35 if surface_name == "floor" else max(w, h) * 0.8) * scale_mult)
+        rot_angle = request.tile_rotation if request.tile_rotation is not None else 0.0
 
         if surface_name == "floor" or (active_type == "hall" and surface_name != "wall"):
-            # Generate pattern at output size — NOT 2× (was the main waste)
+            # Generate pattern at output size
             tiled_marble = generate_pattern(
                 texture, request.floor_pattern if surface_name == "floor" else "grid",
-                w, h, tile_size_base
+                w, h, tile_size_base, tile_rotation=rot_angle
             )
             horizon_y = h * 0.45
             src_pts   = np.float32([[0, 0],    [w, 0],    [0, h],    [w, h]])
@@ -415,7 +468,7 @@ def _do_render(request: RenderRequest) -> dict:
                 tiled_marble, cv2.getPerspectiveTransform(src_pts, dst_pts), (w, h)
             )
         else:
-            warped_marble = generate_pattern(texture, "grid", w, h, tile_size_base)
+            warped_marble = generate_pattern(texture, "grid", w, h, tile_size_base, tile_rotation=rot_angle)
 
         marble_f  = warped_marble.astype(np.float32) / 255.0
         blended_f = np.clip(marble_f * room_gray_3d * light_mult, 0, 1) * 255.0
@@ -438,8 +491,120 @@ def _do_render(request: RenderRequest) -> dict:
     }
 
 # ---------------------------------------------------------------------------
-# 9.  ASYNC ENDPOINT  (offloads CPU work to thread pool)
+# 8.5 CORE SCAN FUNCTION
 # ---------------------------------------------------------------------------
+def _do_scan(request: ScanRequest) -> dict:
+    original_img = base64_to_cv2(request.room_image)
+    if original_img is None:
+        raise ValueError("Image decode failed.")
+
+    orig_h, orig_w = original_img.shape[:2]
+
+    # Resize to model-friendly size
+    small_img = resize_for_model(original_img)
+    small_h, small_w = small_img.shape[:2]
+
+    # Segmentation (cached)
+    img_hash = fast_image_hash(request.room_image)
+    pred_map = run_segmentation(small_img, img_hash)   # (small_h, small_w)
+
+    h, w = orig_h, orig_w
+    active_type = request.room_type
+
+    surface_defs = {
+        "kitchen": {
+            "countertop": ["countertop", "table", "island"],
+            "cabinet":    ["cabinet", "cupboard", "drawer", "shelf"],
+        },
+        "bathroom": {
+            "wall":   ["wall"],
+            "floor":  ["floor", "carpet", "rug"],
+            "vanity": ["countertop", "sink", "bathtub"],
+            "shower": ["shower", "glass"],
+        },
+        "hall": {
+            "floor": ["floor", "carpet", "rug"],
+            "wall":  ["wall"],
+        },
+    }
+
+    # Decide target surface name based on room type
+    surface_name = "floor"
+    if active_type == "kitchen":
+        surface_name = "countertop"
+    elif active_type == "bathroom":
+        surface_name = "wall"
+
+    keywords = surface_defs.get(active_type, {}).get(surface_name, [])
+    target_ids = [
+        idx for idx, label in model.config.id2label.items()
+        if any(k in label.lower() for k in keywords)
+    ]
+
+    if not target_ids:
+        # Fallback to general floor
+        target_ids = [
+            idx for idx, label in model.config.id2label.items()
+            if "floor" in label.lower() or "rug" in label.lower() or "carpet" in label.lower()
+        ]
+
+    # Build mask
+    raw_mask_small = np.isin(pred_map, target_ids).astype(np.uint8) * 255
+    k9 = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
+    k5 = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    clean_small = cv2.morphologyEx(raw_mask_small, cv2.MORPH_CLOSE, k9)
+    clean_small = cv2.morphologyEx(clean_small,   cv2.MORPH_OPEN,  k5)
+
+    # Scale mask up to original resolution
+    raw_mask = cv2.resize(clean_small, (w, h), interpolation=cv2.INTER_NEAREST)
+
+    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(raw_mask, connectivity=8)
+    solid_mask = np.zeros_like(raw_mask)
+
+    for i in range(1, num_labels):
+        if stats[i, cv2.CC_STAT_AREA] < (w * h * 0.005):
+            continue
+        solid_mask[labels == i] = 255
+
+    coverage_pct = round((np.count_nonzero(solid_mask) / (w * h)) * 100, 1)
+
+    # Generate a unique scan token and cache the solid mask
+    scan_token = f"scan_{img_hash}_{active_type}_{surface_name}"
+    _seg_cache[scan_token] = solid_mask
+
+    # Create scan overlay image: highlight detected floor with semi-transparent teal color (BGR: 220, 220, 0 for cyan/teal)
+    overlay_img = original_img.copy()
+    overlay_color = np.array([220, 220, 0], dtype=np.uint8) # Cyan/Teal in BGR
+    mask_3d = np.stack([solid_mask == 255] * 3, axis=-1)
+    
+    # Blend: overlay 45% cyan color where mask is active
+    overlay_img[mask_3d] = cv2.addWeighted(original_img, 0.55, np.full_like(original_img, overlay_color), 0.45, 0)[mask_3d]
+
+    return {
+        "scan_token": scan_token,
+        "floor_mask_url": mask_to_base64_png(solid_mask),
+        "scan_image_url": cv2_to_base64(overlay_img),
+        "coverage_pct": coverage_pct,
+    }
+
+# ---------------------------------------------------------------------------
+# 9.  ASYNC ENDPOINTS  (offloads CPU work to thread pool)
+# ---------------------------------------------------------------------------
+@app.post("/api/scan")
+async def scan_scene(request: ScanRequest):
+    loop = asyncio.get_running_loop()
+    try:
+        result = await loop.run_in_executor(_thread_pool, _do_scan, request)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        print(f"SCAN ERROR: {e}")
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=500,
+            detail="AI scan error — check server logs."
+        )
 @app.post("/api/render")
 async def render_scene(request: RenderRequest):
     loop = asyncio.get_running_loop()
@@ -489,3 +654,4 @@ if os.path.isdir("static"):
 
 if __name__ == "__main__":
     import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

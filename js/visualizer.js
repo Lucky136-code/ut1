@@ -1,82 +1,209 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // === ROOM VISUALIZER (AI-Powered — Two-Stage Scan+Apply) ===
+    // === ROOM VISUALIZER (AI-Powered Luxury Workstation Client) ===
     (function() {
         const API_BASE = 'http://localhost:8000';
 
+        // Expanded Geology Monolith Telemetry Registry
         const MATERIALS = [
-            { id: 'obsidian-noir',   cat: 'marble',     name: 'Obsidian Noir',   img: '/assets/marble_dark_texture.png' },
-            { id: 'calacatta-oro',   cat: 'marble',     name: 'Calacatta Oro',   img: '/assets/marble_gold.png' },
-            { id: 'statuario-pure',  cat: 'marble',     name: 'Statuario Pure',  img: '/assets/statuario_pure.png' },
-            { id: 'emperador-dark',  cat: 'marble',     name: 'Emperador Dark',  img: '/assets/emperador_dark.png' },
-            { id: 'cosmic-black',    cat: 'granite',    name: 'Cosmic Black',    img: '/assets/cosmic_black.png' },
-            { id: 'blue-pearl',      cat: 'granite',    name: 'Blue Pearl',      img: 'https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&q=80&w=400' },
-            { id: 'kashmir-white',   cat: 'granite',    name: 'Kashmir White',   img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=400' },
-            { id: 'sculpted-vases',  cat: 'handicraft', name: 'Sculpted Vases',  img: 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?auto=format&fit=crop&q=80&w=400' },
-            { id: 'inlay-tabletops', cat: 'handicraft', name: 'Inlay Tabletops', img: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&fit=crop&q=80&w=400' },
-            { id: 'figurines',       cat: 'handicraft', name: 'Marble Figurines',img: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=400' },
+            { 
+                id: 'obsidian-noir',   
+                cat: 'marble',     
+                name: 'Obsidian Noir',   
+                img: '/assets/marble_dark_texture.png',
+                taxonomy: 'Volcanic Glass Silicate',
+                origin: 'Jalisco, Mexico',
+                hardness: '5.5 Mohs',
+                desc: 'Highly polished volcanic silicate with smoky dark waves. Deep glassy luster that reflects modern structural sophistication.'
+            },
+            { 
+                id: 'calacatta-oro',   
+                cat: 'marble',     
+                name: 'Calacatta Oro',   
+                img: '/assets/marble_gold.png',
+                taxonomy: 'Brecciated Calcite',
+                origin: 'Apuan Alps, Carrara, Italy',
+                hardness: '3.5 Mohs',
+                desc: 'Extremely rare bold golden and charcoal veining suspended on a creamy white calcite background. The absolute peak of luxury.'
+            },
+            { 
+                id: 'statuario-pure',  
+                cat: 'marble',     
+                name: 'Statuario Pure',  
+                img: '/assets/statuario_pure.png',
+                taxonomy: 'Pure Calcium Carbonate',
+                origin: 'Makrana, Rajasthan, India',
+                hardness: '4.0 Mohs',
+                desc: 'Pristine, ultra-dense snow white marble with subtle crystalline structure. Historical marble used in monuments like Taj Mahal.'
+            },
+            { 
+                id: 'emperador-dark',  
+                cat: 'marble',     
+                name: 'Emperador Dark',  
+                img: '/assets/emperador_dark.png',
+                taxonomy: 'Breccias Dolomite',
+                origin: 'Novelda, Alicante, Spain',
+                hardness: '3.0 Mohs',
+                desc: 'Exquisite deep chocolate brown tones highlighted by irregular, webbed light-cream calcite lines and crystal deposits.'
+            },
+            { 
+                id: 'cosmic-black',    
+                cat: 'granite',    
+                name: 'Cosmic Black',    
+                img: '/assets/cosmic_black.png',
+                taxonomy: 'Migmatitic Gneiss',
+                origin: 'Bahia, Brazil',
+                hardness: '6.5 Mohs',
+                desc: 'Dramatic golden waves and silver quartz crystals swirling in a solid black feldspar ocean. Near diamond-grade durability.'
+            },
+            { 
+                id: 'blue-pearl',      
+                cat: 'granite',    
+                name: 'Blue Pearl',      
+                img: 'https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&q=80&w=400',
+                taxonomy: 'Larvikite Syenite',
+                origin: 'Larvik, Vestfold, Norway',
+                hardness: '6.0 Mohs',
+                desc: 'Uniform medium-grained rock with large, iridescent feldspar crystals flashing intense steel blue and silver reflections.'
+            },
+            { 
+                id: 'kashmir-white',   
+                cat: 'granite',    
+                name: 'Kashmir White',   
+                img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=400',
+                taxonomy: 'Metamorphic Granulite',
+                origin: 'Tamil Nadu, India',
+                hardness: '6.5 Mohs',
+                desc: 'Soft white and light grey base sprinkled with tiny blackberry-colored garnets. Provides a spacious, airy visual footprint.'
+            },
+            { 
+                id: 'sculpted-vases',  
+                cat: 'handicraft', 
+                name: 'Sculpted Vases',  
+                img: 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?auto=format&fit=crop&q=80&w=400',
+                taxonomy: 'Decorative Monolith Art',
+                origin: 'Jaipur, Rajasthan, India',
+                hardness: '4.0 Mohs',
+                desc: 'Hand-carved premium marble home accents, carefully turned and finished by hereditary masters of Jaipur school.'
+            },
+            { 
+                id: 'inlay-tabletops', 
+                cat: 'handicraft', 
+                name: 'Inlay Tabletops', 
+                img: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&fit=crop&q=80&w=400',
+                taxonomy: 'Pietra Dura Inlay Mosaic',
+                origin: 'Agra, Uttar Pradesh, India',
+                hardness: '4.5 Mohs',
+                desc: 'Precision gemstone mosaic inlaid into flawless white Makrana marble base, displaying timeless Mughal geometry.'
+            },
+            { 
+                id: 'figurines',       
+                cat: 'handicraft', 
+                name: 'Marble Figurines',
+                img: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=400',
+                taxonomy: 'Fine Statuary Carving',
+                origin: 'Makrana, India',
+                hardness: '4.0 Mohs',
+                desc: 'Polished spiritual figurines sculpted from high-grade crystalline white marble. Beautiful satin touch texture.'
+            },
         ];
 
-        const LOADING_MSGS = [
-            'Segmenting your room…',
-            'Detecting surfaces…',
-            'Applying material texture…',
-            'Lighting & blending…',
-            'Almost done…'
-        ];
+        // Core UI DOM elements
+        const modal          = document.getElementById('viz-modal');
+        const grid           = document.getElementById('viz-mat-grid');
+        const searchInput    = document.getElementById('search-input');
+        const trigger        = document.getElementById('viz-trigger');
+        const closeBtn       = document.getElementById('viz-close');
+        
+        // Slab Meta Viewport Elements
+        const slabThumb      = document.getElementById('viz-slab');
+        const selName        = document.getElementById('viz-sel-name');
+        const monolithCat    = document.getElementById('monolith-cat');
+        const monolithDesc   = document.getElementById('monolith-desc');
+        
+        // Upload / Preset Elements
+        const uploadZoneWrap = document.getElementById('upload-zone-wrapper');
+        const fileInput      = document.getElementById('viz-file-input');
+        const resultImg      = document.getElementById('viz-result-img');
+        const activeMetaPill = document.getElementById('active-metadata-pill');
+        
+        // Viewport Loading elements
+        const loadingOverlay = document.getElementById('viz-loading');
+        const loadingText    = document.getElementById('viz-loading-text');
+        
+        // Viewport Actions
+        const btnScan        = document.getElementById('btn-scan');
+        const btnCompare     = document.getElementById('btn-compare');
+        const btnReset       = document.getElementById('btn-reset');
+        const btnDownload    = document.getElementById('btn-download');
+        const laserScan      = document.getElementById('scan-laser');
+        
+        // Compare View Elements
+        const compareWrap    = document.getElementById('compare-viewport-wrap');
+        const compareImgOrig = document.getElementById('compare-img-original');
+        const compareImgRend = document.getElementById('compare-img-rendered');
+        const compareSlider  = document.getElementById('compare-range-slider');
 
-        // DOM refs
-        const modal        = document.getElementById('viz-modal');
-        const trigger      = document.getElementById('viz-trigger');
-        const closeBtn     = document.getElementById('viz-close');
-        const grid         = document.getElementById('viz-mat-grid');
-        const slab         = document.getElementById('viz-slab');
-        const selName      = document.getElementById('viz-sel-name');
-        const uploadZone   = document.getElementById('viz-upload-zone');
-        const fileInput    = document.getElementById('viz-file-input');
-        const uploadBtn    = document.getElementById('viz-upload-btn');
-        const resultImg    = document.getElementById('viz-result-img');
-        const loading      = document.getElementById('viz-loading');
-        const loadingText  = document.getElementById('viz-loading-text');
-        const resultBar    = document.getElementById('viz-result-bar');
-        const resultLabel  = document.getElementById('viz-result-label');
-        const reuploadBtn  = document.getElementById('viz-reupload-btn');
-        const apiDot       = document.getElementById('viz-api-dot');
-        const apiLabel     = document.getElementById('viz-api-label');
+        // Pipeline Nodes
+        const nodeIngest     = document.getElementById('node-ingest');
+        const nodeSegment    = document.getElementById('node-segment');
+        const nodeWarp       = document.getElementById('node-warp');
+        const nodeBlend      = document.getElementById('node-blend');
+
+        // History Container
+        const historyContainer = document.getElementById('history-container');
+
+        // Header Telemetry API Label
+        const apiDot         = document.getElementById('viz-api-dot');
+        const apiLabel       = document.getElementById('viz-api-label');
+        const telDevice      = document.getElementById('tel-device');
+        const telLatency     = document.getElementById('tel-latency');
+        const telCache       = document.getElementById('tel-cache');
+
+        // HUD SVG Gauge Elements
+        const hudArc         = document.getElementById('hud-arc');
+        const hudPct         = document.getElementById('hud-pct');
+        const hudDetected    = document.getElementById('hud-detected');
+        const hudVram        = document.getElementById('hud-vram');
+        const hudStatus      = document.getElementById('hud-status');
+
+        // Sliders & Labels
+        const sliderRotation = document.getElementById('slider-rotation');
+        const lblRotation    = document.getElementById('lbl-rotation');
+        const sliderScale    = document.getElementById('slider-scale');
+        const lblScale       = document.getElementById('lbl-scale');
+        const sliderExposure = document.getElementById('slider-exposure');
+        const lblExposure    = document.getElementById('lbl-exposure');
+        const sliderShadow   = document.getElementById('slider-shadow');
+        const lblShadow      = document.getElementById('lbl-shadow');
+        const sliderBlur     = document.getElementById('slider-blur');
+        const lblBlur        = document.getElementById('lbl-blur');
+        const sliderWall     = document.getElementById('slider-wall');
+        const lblWall        = document.getElementById('lbl-wall');
+        const groupWallGroup = document.getElementById('group-wall-coverage');
+
         if (!modal) return;
 
+        // --- Workstation Memory State ---
         let roomImageB64   = null;
-        let scannedMaskB64 = null;   // result of /api/scan
+        let scannedMaskB64 = null;
         let scanDone       = false;
         let selectedMat    = null;
         let currentRoomType= 'hall';
         let currentPattern = 'grid';
         let apiOnline      = false;
-        let loadMsgTimer   = null;
+        let isComparing    = false;
+        let isRendering    = false;
+        let isScanning     = false;
+        let renderHistory  = []; // Array of render state snapshots
+        let sliderTimer    = null; // Throttled sliders render loop timer
 
-        // Inject scan button + scan overlay elements into the DOM
-        (function injectScanUI() {
-            // Scan button next to upload
-            const scanBtn = document.createElement('button');
-            scanBtn.id = 'viz-scan-btn';
-            scanBtn.className = 'viz-scan-btn';
-            scanBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg> Scan Floor';
-            scanBtn.style.cssText = 'display:none;margin-top:10px;padding:10px 22px;border-radius:50px;border:none;background:linear-gradient(135deg,#00c6ff,#0072ff);color:#fff;font-weight:600;cursor:pointer;font-size:13px;letter-spacing:.5px;transition:opacity .2s;';
-            const resultBar = document.getElementById('viz-result-bar');
-            if (resultBar) resultBar.parentNode.insertBefore(scanBtn, resultBar);
+        // SVG circle gauge circumference
+        const HUD_CIRCUMFERENCE = 213.6;
 
-            // Scan status badge
-            const badge = document.createElement('div');
-            badge.id = 'viz-scan-badge';
-            badge.style.cssText = 'display:none;padding:6px 14px;border-radius:50px;background:rgba(0,198,255,.15);border:1px solid rgba(0,198,255,.4);color:#00c6ff;font-size:12px;font-weight:600;margin-top:8px;text-align:center;';
-            badge.textContent = '✓ Floor scanned — select a texture to apply';
-            if (resultBar) resultBar.parentNode.insertBefore(badge, resultBar);
-        })();
-
-        const scanBtn   = document.getElementById('viz-scan-btn');
-        const scanBadge = document.getElementById('viz-scan-badge');
-
-        // ── Build material cards ──────────────────
-        if (grid) {
+        // Initialize materials cards
+        function initMaterialGrid() {
+            if (!grid) return;
+            grid.innerHTML = '';
             MATERIALS.forEach(mat => {
                 const card = document.createElement('div');
                 card.className = 'viz-mat-card';
@@ -93,7 +220,32 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // ── Utilities ─────────────────────────────
+        // --- Viewport State Tracers ---
+        function updatePipelineProgress(step) {
+            const nodes = [nodeIngest, nodeSegment, nodeWarp, nodeBlend];
+            nodes.forEach((node, idx) => {
+                if (!node) return;
+                node.classList.remove('active', 'completed');
+                if (idx < step) {
+                    node.classList.add('completed');
+                } else if (idx === step) {
+                    node.classList.add('active');
+                }
+            });
+        }
+
+        function updateHudGauge(percent, statusText, detectedText) {
+            if (hudArc) {
+                // Calculate dash offset: 213.6 represents full circle
+                const offset = HUD_CIRCUMFERENCE - (HUD_CIRCUMFERENCE * percent / 100);
+                hudArc.style.strokeDashoffset = offset;
+            }
+            if (hudPct) hudPct.textContent = percent.toFixed(1) + '%';
+            if (hudStatus) hudStatus.textContent = statusText;
+            if (hudDetected) hudDetected.textContent = detectedText;
+        }
+
+        // --- Helper: Conversion & File Operations ---
         async function urlToBase64(url) {
             const resp = await fetch(url);
             const blob = await resp.blob();
@@ -112,238 +264,575 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        function showLoading(show) {
-            if (!loading || !loadingText) return;
-            loading.style.display = show ? 'flex' : 'none';
-            if (show) {
-                let i = 0;
-                loadingText.textContent = LOADING_MSGS[0];
-                loadMsgTimer = setInterval(() => {
-                    i = (i + 1) % LOADING_MSGS.length;
-                    loadingText.textContent = LOADING_MSGS[i];
-                }, 2200);
-            } else {
-                clearInterval(loadMsgTimer);
+        // --- Main Operations: SCAN ---
+        async function triggerScan() {
+            if (!roomImageB64 || !apiOnline || isScanning) return;
+            
+            isScanning = true;
+            btnScan.disabled = true;
+            btnScan.classList.add('viz-btn-scan-active');
+            btnScan.innerHTML = '<span class="viz-viewport-spinner" style="width:10px;height:10px;display:inline-block;margin-right:6px;"></span> SCANNING...';
+            
+            if (loadingOverlay && loadingText) {
+                loadingOverlay.style.display = 'flex';
+                loadingText.textContent = 'Analysing Room Architecture...';
             }
-        }
+            if (laserScan) laserScan.classList.add('active');
+            updatePipelineProgress(1); // at Segmenting stage
+            updateHudGauge(45.0, 'AI_INFERENCE', 'Analyzing...');
 
-        function showResult(src, matName, roomType) {
-            if (resultImg) {
-                resultImg.src = src;
-                resultImg.style.display = 'block';
-            }
-            if (uploadZone) uploadZone.style.display = 'none';
-            if (resultBar) resultBar.style.display  = 'flex';
-            if (resultLabel) resultLabel.textContent  = matName + ' • ' + roomType;
-        }
+            const startTime = performance.now();
 
-        function resetToUpload() {
-            roomImageB64 = null;
-            selectedMat  = null;
-            if (resultImg) resultImg.style.display  = 'none';
-            if (resultBar) resultBar.style.display  = 'none';
-            if (uploadZone) uploadZone.style.display = '';
-            if (slab) { slab.style.backgroundImage = ''; slab.classList.remove('loaded'); }
-            if (selName) selName.textContent = '— select a material —';
-            document.querySelectorAll('.viz-mat-card').forEach(c => c.classList.remove('selected'));
-        }
-
-        // ── SCAN floor — runs ONCE per image, stores scan_token ────────────────
-        async function runScan() {
-            if (!roomImageB64 || !apiOnline) return;
-            // If already scanned for this image, skip re-scan
-            if (scanDone && scannedMaskB64) {
-                if (selectedMat) runRender(selectedMat);
-                return;
-            }
-            if (scanBtn) {
-                scanBtn.disabled = true;
-                scanBtn.textContent = '⏳ Scanning…';
-            }
-            showLoading(true);
             try {
                 const resp = await fetch(`${API_BASE}/api/scan`, {
                     method: 'POST',
-                    headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify({room_image: roomImageB64, room_type: currentRoomType})
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        room_image: roomImageB64,
+                        room_type: currentRoomType
+                    })
                 });
+
                 if (!resp.ok) throw new Error(await resp.text());
                 const data = await resp.json();
-                showLoading(false);
-                scannedMaskB64   = data.floor_mask_url;
-                window._scanToken= data.scan_token;   // store for render calls
+
+                const endTime = performance.now();
+                if (telLatency) telLatency.textContent = Math.round(endTime - startTime) + ' ms';
+
+                scannedMaskB64 = data.floor_mask_url;
+                window._scanToken = data.scan_token;
                 scanDone = true;
-                // Show the scan preview (teal overlay)
+
+                // Show scan overlay image
                 if (resultImg) {
                     resultImg.src = data.scan_image_url;
                     resultImg.style.display = 'block';
                 }
-                if (uploadZone) uploadZone.style.display = 'none';
-                if (resultBar) resultBar.style.display = 'flex';
-                if (resultLabel) resultLabel.textContent = `Floor detected — ${data.coverage_pct}% coverage · Now select a texture →`;
-                if (scanBadge) scanBadge.style.display = 'block';
-                if (scanBtn) scanBtn.style.display = 'none';
-            } catch(err) {
-                showLoading(false);
-                if (scanBtn) {
-                    scanBtn.disabled = false;
-                    scanBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Retry Scan';
+                if (compareImgOrig) compareImgOrig.src = roomImageB64;
+                if (compareImgRend) compareImgRend.src = data.scan_image_url;
+                
+                if (uploadZoneWrap) uploadZoneWrap.style.display = 'none';
+
+                // Unlock compare, reset, download
+                btnCompare.disabled = false;
+                btnReset.disabled = false;
+                btnDownload.disabled = false;
+
+                // Update HUD metrics
+                updateHudGauge(98.4, 'SUCCESS', data.coverage_pct + '%');
+                updatePipelineProgress(2); // Ingest -> Segment done
+
+                if (activeMetaPill) {
+                    activeMetaPill.textContent = `Surface Detected: ${data.coverage_pct}% coverage. Select material →`;
+                    activeMetaPill.style.display = 'block';
                 }
-                console.error('Scan error:', err);
+
+                // If user pre-selected a material, execute the render pipeline immediately
+                if (selectedMat) {
+                    executeRenderPipeline(selectedMat);
+                }
+
+            } catch (err) {
+                console.error('Scan failed:', err);
+                updateHudGauge(12.0, 'ERROR', 'FAILED');
+                if (activeMetaPill) {
+                    activeMetaPill.textContent = 'Neural scanning failed. Check server status.';
+                }
+            } finally {
+                isScanning = false;
+                if (laserScan) laserScan.classList.remove('active');
+                if (loadingOverlay) loadingOverlay.style.display = 'none';
+                btnScan.disabled = false;
+                btnScan.classList.remove('viz-btn-scan-active');
+                btnScan.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Scan Surface';
             }
         }
 
-        if (scanBtn) scanBtn.addEventListener('click', runScan);
+        // --- Main Operations: RENDER ---
+        async function executeRenderPipeline(mat) {
+            if (!roomImageB64 || isRendering) return;
 
-        // ── RENDER with texture — uses scan_token so NO re-scan ────────────────
-        async function runRender(mat) {
-            if (!roomImageB64) return;
-            // Gate: must scan first
-            if (!scanDone && apiOnline) { runScan(); selectedMat = mat; return; }
-            showLoading(true);
-            try {
-                const texB64     = await urlToBase64(mat.img);
-                const surfaceMap = {hall:'floor',kitchen:'countertop',bathroom:'wall'};
-                const surface    = surfaceMap[currentRoomType] || 'floor';
-                const body       = {
-                    room_image:       roomImageB64,
-                    room_type:        currentRoomType,
-                    surface_textures: {[surface]: mat.id},
-                    floor_pattern:    currentPattern,
-                    texture_data:     {[mat.id]: texB64},
-                };
-                // Key fix: pass scan_token so server uses cached floor mask
-                if (window._scanToken) body.scan_token = window._scanToken;
-                const resp = await fetch(`${API_BASE}/api/render`, {
-                    method:'POST', headers:{'Content-Type':'application/json'},
-                    body: JSON.stringify(body)
-                });
-                if (!resp.ok) throw new Error(await resp.text());
-                const data = await resp.json();
-                showLoading(false);
-                showResult(data.final_image_url, mat.name, surface);
-            } catch(err) {
-                showLoading(false);
-                if (loadingText && loading) {
-                    loadingText.textContent = 'Render failed — '+(err.message||'check server');
-                    loading.style.display = 'flex';
-                    setTimeout(()=>{loading.style.display='none';}, 3500);
-                }
-                console.error('Render error:', err);
-            }
-        }
-
-        // ── Material selection (instant after scan — no re-scan) ───────────────
-        function selectMaterial(mat, cardEl) {
-            selectedMat = mat;
-            document.querySelectorAll('.viz-mat-card').forEach(c => c.classList.remove('selected'));
-            cardEl.classList.add('selected');
-            if (slab)    { slab.style.backgroundImage=`url('${mat.img}')`;slab.classList.add('loaded'); }
-            if (selName) selName.textContent = mat.name;
-
-            if (!roomImageB64) {
-                if (uploadZone) {
-                    uploadZone.classList.add('drag-over');
-                    setTimeout(()=>uploadZone.classList.remove('drag-over'),800);
-                }
+            // Enforce scanning phase first
+            if (!scanDone && apiOnline) {
+                selectedMat = mat;
+                triggerScan();
                 return;
             }
-            if (!apiOnline) {
-                showResult(roomImageB64, mat.name+' (AI offline)', currentRoomType); return;
+
+            isRendering = true;
+            if (loadingOverlay && loadingText) {
+                loadingOverlay.style.display = 'flex';
+                loadingText.textContent = `Applying ${mat.name} Monolith...`;
             }
-            // Floor already scanned → render immediately (no re-scan)
-            if (scanDone) { runRender(mat); }
-            else          { runScan();      }   // will auto-render after scan
+            updatePipelineProgress(2); // Warp/Perspective stage active
+            updateHudGauge(80.0, 'PERSPECTIVE', 'Warping...');
+
+            // Gather all precision slider multipliers
+            const rotationDeg = parseFloat(sliderRotation.value);
+            const scaleMult   = parseFloat(sliderScale.value) / 100;
+            const exposureMult = parseFloat(sliderExposure.value) / 100;
+            const shadowMult   = parseFloat(sliderShadow.value) / 100;
+            const blurMult     = parseFloat(sliderBlur.value) / 100;
+            const wallCoverage = parseFloat(sliderWall.value) / 100;
+
+            const startTime = performance.now();
+
+            try {
+                const texB64 = await urlToBase64(mat.img);
+                const surfaceMap = { hall: 'floor', kitchen: 'countertop', bathroom: 'wall' };
+                const surface = surfaceMap[currentRoomType] || 'floor';
+
+                const body = {
+                    room_image:          roomImageB64,
+                    room_type:           currentRoomType,
+                    surface_textures:    { [surface]: mat.id },
+                    floor_pattern:       currentPattern,
+                    texture_data:        { [mat.id]: texB64 },
+                    tile_rotation:       rotationDeg,
+                    tile_scale:          scaleMult,
+                    brightness_exposure: exposureMult,
+                    shadow_intensity:    shadowMult,
+                    blur_softness:       blurMult,
+                    wall_coverage:       wallCoverage
+                };
+
+                if (window._scanToken) body.scan_token = window._scanToken;
+
+                const resp = await fetch(`${API_BASE}/api/render`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+
+                if (!resp.ok) throw new Error(await resp.text());
+                const data = await resp.json();
+
+                const endTime = performance.now();
+                if (telLatency) telLatency.textContent = Math.round(endTime - startTime) + ' ms';
+
+                // Display final image
+                if (resultImg) {
+                    resultImg.src = data.final_image_url;
+                    resultImg.style.display = 'block';
+                }
+                
+                // Set layers for split slider comparison
+                if (compareImgOrig) compareImgOrig.src = roomImageB64;
+                if (compareImgRend) compareImgRend.src = data.final_image_url;
+
+                if (activeMetaPill) {
+                    activeMetaPill.textContent = `Slab: ${mat.name} • Scale: ${scaleMult}x • Angle: ${rotationDeg}°`;
+                    activeMetaPill.style.display = 'block';
+                }
+
+                updatePipelineProgress(4); // Fully completed
+                updateHudGauge(99.1, 'RENDERED', 'READY');
+
+                // Save snapshot to history
+                addSnapshotToHistory(data.final_image_url, mat);
+
+            } catch (err) {
+                console.error('Rendering failed:', err);
+                updateHudGauge(15.0, 'ERROR', 'FAILED');
+            } finally {
+                isRendering = false;
+                if (loadingOverlay) loadingOverlay.style.display = 'none';
+            }
         }
 
-        // ── Room photo upload ─────────────────────
-        async function handleImageFile(file) {
-            if (!file || !file.type.startsWith('image/')) return;
-            roomImageB64 = await fileToBase64(file);
-            scanDone = false; scannedMaskB64 = null;
-            if (scanBadge) scanBadge.style.display = 'none';
-            if (uploadZone) uploadZone.style.display = 'none';
+        // --- Slider Throttling / Debouncing Engine (sub-100ms real time updates) ---
+        function queueThrottledRender() {
+            if (!roomImageB64 || !scanDone || !selectedMat || !apiOnline) return;
+            
+            // Clear any active timers to debounce sliding movements
+            if (sliderTimer) clearTimeout(sliderTimer);
+            
+            sliderTimer = setTimeout(() => {
+                executeRenderPipeline(selectedMat);
+            }, 100); // 100ms debounce window
+        }
+
+        // --- Material Selection & Active Monolith ---
+        function selectMaterial(mat, cardEl) {
+            selectedMat = mat;
+            
+            // Highlight selected card
+            document.querySelectorAll('.viz-mat-card').forEach(c => c.classList.remove('selected'));
+            if (cardEl) cardEl.classList.add('selected');
+
+            // Render monolith detailed description metadata panel
+            if (slabThumb) {
+                slabThumb.style.backgroundImage = `url('${mat.img}')`;
+                slabThumb.classList.add('loaded');
+            }
+            if (selName) selName.textContent = mat.name;
+            if (monolithCat) monolithCat.textContent = mat.cat.toUpperCase();
+            if (monolithDesc) {
+                monolithDesc.innerHTML = `<strong>Taxonomy:</strong> ${mat.taxonomy}<br>
+                                          <strong>Origin:</strong> ${mat.origin}<br>
+                                          <strong>Hardness:</strong> ${mat.hardness}<br><br>
+                                          ${mat.desc}`;
+            }
+
+            // Execute render immediately if image exists
+            if (roomImageB64) {
+                if (apiOnline) {
+                    executeRenderPipeline(mat);
+                } else {
+                    // Fallback to pure original room if API offline
+                    if (resultImg) resultImg.src = roomImageB64;
+                }
+            }
+        }
+
+        // --- Room presets & Image Loading ---
+        async function loadRoomImage(b64) {
+            roomImageB64 = b64;
+            scanDone = false;
+            scannedMaskB64 = null;
+            window._scanToken = null;
+
+            if (uploadZoneWrap) uploadZoneWrap.style.display = 'none';
             if (resultImg) {
                 resultImg.src = roomImageB64;
                 resultImg.style.display = 'block';
             }
-            if (resultBar) resultBar.style.display = 'flex';
-            if (resultLabel) resultLabel.textContent = 'Room loaded — click Scan Floor to detect the floor area';
-            // Show scan button
-            if (scanBtn) {
-                scanBtn.style.display = 'inline-flex';
-                scanBtn.disabled = false;
-                scanBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg> Scan Floor';
+
+            // Reset comparison view
+            deactivateCompareMode();
+            btnCompare.disabled = true;
+            btnReset.disabled = false;
+            btnDownload.disabled = true;
+
+            // Reset Sliders
+            resetSliders();
+
+            updatePipelineProgress(0); // at Ingest stage
+            updateHudGauge(0.0, 'INGESTED', '0%');
+
+            if (activeMetaPill) {
+                activeMetaPill.textContent = 'Scene loaded. Trigger "Scan Floor" to initialize neural segmentation.';
+                activeMetaPill.style.display = 'block';
+            }
+
+            btnScan.disabled = false;
+        }
+
+        // --- History Snapshots (Undo / Redo Configuration) ---
+        function addSnapshotToHistory(finalImageB64, mat) {
+            // Avoid duplicate contiguous captures
+            if (renderHistory.length > 0 && renderHistory[renderHistory.length - 1].finalImage === finalImageB64) {
+                return;
+            }
+
+            const snapshot = {
+                roomImageB64: roomImageB64,
+                scannedMaskB64: scannedMaskB64,
+                scanToken: window._scanToken,
+                selectedMat: mat,
+                currentRoomType: currentRoomType,
+                currentPattern: currentPattern,
+                sliderVals: {
+                    rotation: sliderRotation.value,
+                    scale: sliderScale.value,
+                    exposure: sliderExposure.value,
+                    shadow: sliderShadow.value,
+                    blur: sliderBlur.value,
+                    wall: sliderWall.value
+                },
+                finalImage: finalImageB64
+            };
+
+            renderHistory.push(snapshot);
+            if (renderHistory.length > 8) renderHistory.shift(); // Max 8 history files
+
+            renderHistoryTrackUI();
+        }
+
+        function restoreSnapshot(snapshot, thumbIndex) {
+            roomImageB64 = snapshot.roomImageB64;
+            scannedMaskB64 = snapshot.scannedMaskB64;
+            window._scanToken = snapshot.scanToken;
+            scanDone = true;
+            selectedMat = snapshot.selectedMat;
+            currentRoomType = snapshot.currentRoomType;
+            currentPattern = snapshot.currentPattern;
+
+            // Restore sliders values
+            sliderRotation.value = snapshot.sliderVals.rotation;
+            sliderScale.value = snapshot.sliderVals.scale;
+            sliderExposure.value = snapshot.sliderVals.exposure;
+            sliderShadow.value = snapshot.sliderVals.shadow;
+            sliderBlur.value = snapshot.sliderVals.blur;
+            sliderWall.value = snapshot.sliderVals.wall;
+
+            updateSliderLabels();
+
+            // Highlight preset buttons
+            document.querySelectorAll('.viz-rt').forEach(b => b.classList.toggle('active', b.dataset.rt === currentRoomType));
+            document.querySelectorAll('.viz-pat').forEach(b => b.classList.toggle('active', b.dataset.pat === currentPattern));
+
+            // Select card visual
+            const card = document.querySelector(`.viz-mat-card[data-id="${selectedMat.id}"]`);
+            selectMaterial(selectedMat, card);
+
+            // Set main screen
+            if (resultImg) {
+                resultImg.src = snapshot.finalImage;
+                resultImg.style.display = 'block';
+            }
+            if (compareImgOrig) compareImgOrig.src = roomImageB64;
+            if (compareImgRend) compareImgRend.src = snapshot.finalImage;
+
+            if (uploadZoneWrap) uploadZoneWrap.style.display = 'none';
+            btnCompare.disabled = false;
+            btnReset.disabled = false;
+            btnDownload.disabled = false;
+
+            // Set active highlight on thumb
+            document.querySelectorAll('.viz-history-thumb').forEach((t, i) => {
+                t.classList.toggle('active', i === thumbIndex);
+            });
+
+            updatePipelineProgress(4);
+            updateHudGauge(99.1, 'RESTORED', 'READY');
+        }
+
+        function renderHistoryTrackUI() {
+            if (!historyContainer) return;
+            historyContainer.innerHTML = '';
+            
+            if (renderHistory.length === 0) {
+                historyContainer.innerHTML = '<div style="font-family: var(--font-mono); font-size: 0.6rem; color:#888;">-- Workspace Empty --</div>';
+                return;
+            }
+
+            renderHistory.forEach((snap, idx) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'viz-history-thumb';
+                thumb.style.backgroundImage = `url('${snap.finalImage}')`;
+                thumb.title = `Restore: ${snap.selectedMat.name} (${snap.currentRoomType})`;
+                
+                if (idx === renderHistory.length - 1) {
+                    thumb.classList.add('active');
+                }
+
+                thumb.addEventListener('click', () => {
+                    restoreSnapshot(snap, idx);
+                });
+
+                historyContainer.appendChild(thumb);
+            });
+        }
+
+        // --- Custom Slider Utilities ---
+        function updateSliderLabels() {
+            if (lblRotation) lblRotation.textContent = sliderRotation.value + '°';
+            if (lblScale) lblScale.textContent = (parseFloat(sliderScale.value)/100).toFixed(1) + 'x';
+            if (lblExposure) lblExposure.textContent = (parseFloat(sliderExposure.value)/100).toFixed(2) + 'x';
+            if (lblShadow) lblShadow.textContent = (parseFloat(sliderShadow.value)/100).toFixed(2);
+            if (lblBlur) lblBlur.textContent = (parseFloat(sliderBlur.value)/100).toFixed(1);
+            if (lblWall) lblWall.textContent = sliderWall.value + '%';
+
+            // Show/Hide wall cutoff slider dynamically based on room presets
+            if (groupWallGroup) {
+                if (currentRoomType === 'bathroom' || currentRoomType === 'kitchen') {
+                    groupWallGroup.style.display = 'block';
+                } else {
+                    groupWallGroup.style.display = 'none';
+                }
             }
         }
 
-        if (uploadBtn) uploadBtn.addEventListener('click', e => { e.stopPropagation(); if (fileInput) fileInput.click(); });
-        if (fileInput) fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleImageFile(fileInput.files[0]); });
-
-        // Drag-drop on upload zone
-        if (uploadZone) {
-            uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
-            uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-            uploadZone.addEventListener('drop', e => {
-                e.preventDefault(); uploadZone.classList.remove('drag-over');
-                if (e.dataTransfer.files[0]) handleImageFile(e.dataTransfer.files[0]);
-            });
-            uploadZone.addEventListener('click', () => { if (fileInput) fileInput.click(); });
+        function resetSliders() {
+            sliderRotation.value = 0;
+            sliderScale.value = 100;
+            sliderExposure.value = 100;
+            sliderShadow.value = 100;
+            sliderBlur.value = 100;
+            sliderWall.value = 100;
+            updateSliderLabels();
         }
 
-        // Preset buttons
+        // --- Workspace Clean ---
+        function triggerReset() {
+            roomImageB64 = null;
+            scannedMaskB64 = null;
+            window._scanToken = null;
+            scanDone = false;
+            selectedMat = null;
+            renderHistory = [];
+            
+            deactivateCompareMode();
+            resetSliders();
+
+            if (resultImg) {
+                resultImg.style.display = 'none';
+                resultImg.src = '';
+            }
+            if (uploadZoneWrap) uploadZoneWrap.style.display = 'flex';
+            if (activeMetaPill) activeMetaPill.style.display = 'none';
+
+            btnScan.disabled = true;
+            btnCompare.disabled = true;
+            btnReset.disabled = true;
+            btnDownload.disabled = true;
+
+            // Reset Monolith details widget
+            if (slabThumb) {
+                slabThumb.style.backgroundImage = '';
+                slabThumb.classList.remove('loaded');
+            }
+            if (selName) selName.textContent = '— Select a material —';
+            if (monolithCat) monolithCat.textContent = 'CLASSIFICATION';
+            if (monolithDesc) monolithDesc.textContent = 'Select a material card above to inspect physical stone attributes and query origin quarry telemetry.';
+
+            document.querySelectorAll('.viz-mat-card').forEach(c => c.classList.remove('selected'));
+            renderHistoryTrackUI();
+
+            updatePipelineProgress(0);
+            updateHudGauge(0.0, 'STANDBY', '0%');
+        }
+
+        // --- Split Screen Comparison Handling (60FPS native range slider) ---
+        function toggleCompareView() {
+            if (!roomImageB64) return;
+            if (isComparing) {
+                deactivateCompareMode();
+            } else {
+                activateCompareMode();
+            }
+        }
+
+        function activateCompareMode() {
+            isComparing = true;
+            if (btnCompare) btnCompare.classList.add('active');
+            if (compareWrap) compareWrap.style.display = 'block';
+            if (resultImg) resultImg.style.visibility = 'hidden'; // Hide main img, comparison handles it
+        }
+
+        function deactivateCompareMode() {
+            isComparing = false;
+            if (btnCompare) btnCompare.classList.remove('active');
+            if (compareWrap) compareWrap.style.display = 'none';
+            if (resultImg) resultImg.style.visibility = 'visible';
+        }
+
+        // Compare position slider listener
+        if (compareSlider && compareWrap) {
+            compareSlider.addEventListener('input', () => {
+                compareWrap.style.setProperty('--compare-pos', compareSlider.value);
+            });
+        }
+
+        // --- Download high-res export ---
+        function triggerDownload() {
+            const link = document.createElement('a');
+            const activeImg = isComparing ? compareImgRend.src : resultImg.src;
+            if (!activeImg) return;
+            link.href = activeImg;
+            link.download = `umaders_render_${currentRoomType}_${selectedMat ? selectedMat.id : 'design'}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- File Uploader Listeners ---
+        function handleFileSelection() {
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                if (file.type.startsWith('image/')) {
+                    fileToBase64(file).then(loadRoomImage);
+                }
+            }
+        }
+
+        if (uploadZoneWrap) {
+            // Prevent default drag over behavior
+            uploadZoneWrap.addEventListener('dragover', e => { 
+                e.preventDefault(); 
+                uploadZoneWrap.classList.add('drag-over'); 
+            });
+            uploadZoneWrap.addEventListener('dragleave', () => {
+                uploadZoneWrap.classList.remove('drag-over');
+            });
+            uploadZoneWrap.addEventListener('drop', e => {
+                e.preventDefault(); 
+                uploadZoneWrap.classList.remove('drag-over');
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    const file = e.dataTransfer.files[0];
+                    if (file.type.startsWith('image/')) {
+                        fileToBase64(file).then(loadRoomImage);
+                    }
+                }
+            });
+            uploadZoneWrap.addEventListener('click', () => {
+                if (fileInput) fileInput.click();
+            });
+        }
+
+        if (fileInput) fileInput.addEventListener('change', handleFileSelection);
+
+        // --- Preset Loader ---
         document.querySelectorAll('.viz-preset').forEach(btn => {
             btn.addEventListener('click', async e => {
                 e.stopPropagation();
                 const rt  = btn.dataset.presetRt;
                 const url = btn.dataset.presetImg;
                 currentRoomType = rt;
-                scanDone = false; scannedMaskB64 = null;
-                if (scanBadge) scanBadge.style.display = 'none';
+
+                // Set preset category active class
                 document.querySelectorAll('.viz-rt').forEach(b => b.classList.toggle('active', b.dataset.rt === rt));
-                roomImageB64 = await urlToBase64(url);
-                if (uploadZone) uploadZone.style.display = 'none';
-                if (resultImg) {
-                    resultImg.src = roomImageB64;
-                    resultImg.style.display = 'block';
+
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'flex';
+                    loadingText.textContent = 'Ingesting Room Preset...';
                 }
-                if (resultBar) resultBar.style.display = 'flex';
-                if (resultLabel) resultLabel.textContent = 'Room loaded — click Scan Floor to detect surfaces';
-                if (scanBtn) {
-                    scanBtn.style.display = 'inline-flex';
-                    scanBtn.disabled = false;
-                    scanBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg> Scan Floor';
+
+                try {
+                    const b64 = await urlToBase64(url);
+                    await loadRoomImage(b64);
+                } catch(err) {
+                    console.error('Preset loading failed:', err);
+                } finally {
+                    if (loadingOverlay) loadingOverlay.style.display = 'none';
                 }
             });
         });
 
-        // Re-upload button
-        if (reuploadBtn) reuploadBtn.addEventListener('click', () => {
-            scanDone = false; scannedMaskB64 = null; window._scanToken = null;
-            if (scanBadge) scanBadge.style.display = 'none';
-            if (scanBtn)   scanBtn.style.display = 'none';
-            resetToUpload();
-        });
+        // --- Workspace Trigger Bindings ---
+        if (btnScan) btnScan.addEventListener('click', triggerScan);
+        if (btnCompare) btnCompare.addEventListener('click', toggleCompareView);
+        if (btnReset) btnReset.addEventListener('click', triggerReset);
+        if (btnDownload) btnDownload.addEventListener('click', triggerDownload);
 
-        // ── Room type + Pattern selectors ─────────
+        // --- Room preset and Pattern Alignment switchers ---
         document.querySelectorAll('.viz-rt').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.viz-rt').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentRoomType = btn.dataset.rt;
-                if (selectedMat && roomImageB64 && apiOnline) runRender(selectedMat);
+                updateSliderLabels(); // update dynamically wall cutoff group
+                
+                if (selectedMat && roomImageB64 && apiOnline) {
+                    executeRenderPipeline(selectedMat);
+                }
             });
         });
+
         document.querySelectorAll('.viz-pat').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.viz-pat').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentPattern = btn.dataset.pat;
-                if (selectedMat && roomImageB64 && apiOnline) runRender(selectedMat);
+                
+                if (selectedMat && roomImageB64 && apiOnline) {
+                    executeRenderPipeline(selectedMat);
+                }
             });
         });
 
-        // ── Category tabs ─────────────────────────
+        // --- Stone Class category tabs filter ---
         document.querySelectorAll('.viz-cat').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.viz-cat').forEach(b => b.classList.remove('active'));
@@ -355,8 +844,36 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        // ── Backend health check ──────────────────
-        async function checkApi() {
+        // --- Real-time Search Index filter ---
+        if (searchInput) {
+            searchInput.addEventListener('keyup', () => {
+                const query = searchInput.value.toLowerCase().trim();
+                document.querySelectorAll('.viz-mat-card').forEach(card => {
+                    const cardId = card.dataset.id;
+                    const mat = MATERIALS.find(m => m.id === cardId);
+                    if (mat) {
+                        const matchesName = mat.name.toLowerCase().includes(query);
+                        const matchesCat  = mat.cat.toLowerCase().includes(query);
+                        const matchesTax  = mat.taxonomy.toLowerCase().includes(query);
+                        card.classList.toggle('viz-mat-hidden', !matchesName && !matchesCat && !matchesTax);
+                    }
+                });
+            });
+        }
+
+        // --- Precision Sliders Input bindings (throttled rendering loop) ---
+        const sliderList = [sliderRotation, sliderScale, sliderExposure, sliderShadow, sliderBlur, sliderWall];
+        sliderList.forEach(slider => {
+            if (slider) {
+                slider.addEventListener('input', () => {
+                    updateSliderLabels();
+                    queueThrottledRender();
+                });
+            }
+        });
+
+        // --- API Engine Connection Check ---
+        async function checkApiEngineHealth() {
             if (!apiDot) return;
             apiDot.className = 'viz-api-dot checking';
             apiLabel.textContent = 'Connecting to AI engine…';
@@ -364,68 +881,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 const r = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(3000) });
                 const d = await r.json();
                 apiOnline = true;
+                
                 apiDot.className = 'viz-api-dot online';
-                apiLabel.textContent = `AI Engine Online · ${d.device?.toUpperCase()} · ${d.seg_cache}/${d.cache_limit} cached`;
-            } catch {
+                apiLabel.textContent = `AI Engine Online`;
+                
+                if (telDevice) telDevice.textContent = d.device?.toUpperCase() + ' MODE';
+                if (telCache) telCache.textContent = `${d.seg_cache} / ${d.cache_limit} cached`;
+                if (hudVram) hudVram.textContent = `${d.seg_cache} / ${d.cache_limit}`;
+
+            } catch (err) {
                 apiOnline = false;
                 apiDot.className = 'viz-api-dot offline';
-                apiLabel.textContent = 'AI Engine Offline — start server.py to enable';
+                apiLabel.textContent = 'AI Engine Offline';
+                if (telDevice) telDevice.textContent = 'OFFLINE MODE';
+                if (hudVram) hudVram.textContent = '0 / 0';
+                console.warn('API is offline, running client fallbacks.');
             }
         }
 
-        // ── Open / Close ──────────────────────────
-        function openViz() {
-            modal.classList.add('active');
-            modal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-            checkApi();
-        }
-        function closeViz() {
-            modal.classList.remove('active');
-            modal.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
+        // --- Workstation modal entry check ---
+        function checkWorkstationAccess() {
+            checkApiEngineHealth();
         }
 
-        if (trigger) {
-            trigger.addEventListener('click', e => { e.preventDefault(); openViz(); });
-        }
-        if (closeBtn) {
-            closeBtn.addEventListener('click', e => {
-                // If on standalone page, go back to home page
-                if (window.location.pathname.includes('visualizer.html')) {
-                    e.preventDefault();
-                    window.location.href = '/';
-                } else {
-                    closeViz();
-                }
-            });
-        }
-        modal.addEventListener('click', e => { if (e.target === modal) { if (window.location.pathname.includes('visualizer.html')) { window.location.href = '/'; } else { closeViz(); } } });
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape' && modal.classList.contains('active')) {
-                if (window.location.pathname.includes('visualizer.html')) {
-                    window.location.href = '/';
-                } else {
-                    closeViz();
-                }
-            }
-        });
-
-        // Wire up any data-open-viz CTAs on the page
-        document.querySelectorAll('[data-open-viz]').forEach(el => {
-            el.addEventListener('click', e => {
-                e.preventDefault();
-                if (window.location.pathname.includes('visualizer.html')) {
-                    // Do nothing or open since it's already open
-                } else {
-                    openViz();
-                }
-            });
-        });
-
-        // Run checkApi immediately if the page starts with the visualizer modal active
         if (modal.classList.contains('active')) {
-            checkApi();
+            checkWorkstationAccess();
         }
+
+        // Initialize materials on load
+        initMaterialGrid();
+        updateSliderLabels();
+
     })();
 });

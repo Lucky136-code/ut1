@@ -4,97 +4,1084 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Room Visualizer | Uma Traders</title>
+    <title>AI Design Studio | Uma Traders</title>
     <meta name="description"
-        content="Visualize pristine Makrana marbles and premium granites in your own space instantly using our AI-powered room visualizer.">
+        content="Prisitne Makrana marble and premium stone visualizer dashboard using custom deep learning engine.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&family=Space+Mono:wght@400;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=4">
+    <link rel="stylesheet" href="css/styles.css?v=5">
+    
     <style>
-        /* Standalone Visualizer Page Styling Overrides */
+        /* ==========================================================================
+           ULTRA-PREMIUM LIGHT WORKSTATION THEME - DESIGN SYSTEM TOKENS
+           ========================================================================== */
+        :root {
+            --viz-bg-base: #f5f4f0;       /* warm soft alabaster */
+            --viz-bg-panel: #ffffff;      /* pure white satin */
+            --viz-bg-card: #faf9f6;       /* delicate warm ivory */
+            --viz-border: rgba(0, 0, 0, 0.075);
+            --viz-border-heavy: rgba(0, 0, 0, 0.15);
+            --viz-text-primary: #0f0e0c;  /* luxurious charcoal */
+            --viz-text-secondary: #5c5a56;/* slate warm gray */
+            --viz-accent-gold: #c5a880;   /* dynamic luxury gold */
+            --viz-accent-teal: #5b8e88;   /* surgical jade-teal status */
+            --viz-accent-teal-alpha: rgba(91, 142, 136, 0.15);
+            --font-heading: 'Syne', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+        }
+
         body {
-            background-color: #ffffff;
-            color: #000000;
+            background-color: var(--viz-bg-base);
+            color: var(--viz-text-primary);
             overflow: hidden;
             height: 100vh;
             width: 100vw;
             margin: 0;
             padding: 0;
+            font-family: var(--font-body);
         }
 
+        /* ── Fullscreen Workstation Grid ── */
         .viz-modal {
             position: fixed !important;
             inset: 0 !important;
             z-index: 10 !important;
-            display: flex !important;
-            opacity: 1 !important;
-            pointer-events: auto !important;
-            background: #ffffff !important;
+            display: grid !important;
+            grid-template-rows: 72px 1fr !important;
+            background: var(--viz-bg-base) !important;
             overflow: hidden !important;
+            pointer-events: auto !important;
+            opacity: 1 !important;
             transition: none !important;
         }
 
         .viz-modal::before {
-            display: none !important; /* Hide black radial gradient backdrop overlay */
+            display: none !important;
         }
 
-        .viz-close {
-            background: #ffffff !important;
-            border: 1px solid var(--border-dark) !important;
-            color: var(--text-color) !important;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-            display: flex !important;
+        /* ── Workstation Header Block ── */
+        .viz-header-bar {
+            background: var(--viz-bg-panel);
+            border-bottom: 1px solid var(--viz-border);
+            display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 100;
+        }
+
+        .viz-brand-block {
+            display: flex;
+            align-items: center;
+            gap: 14px;
             text-decoration: none;
         }
 
-        .viz-close:hover {
-            background: var(--border-dark) !important;
-            color: #ffffff !important;
-            transform: scale(1.08) !important;
-        }
-
-        .visualizer-header {
-            position: absolute;
-            top: 20px;
-            left: 40px;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .visualizer-logo-circle {
-            width: 32px;
-            height: 32px;
+        .viz-brand-logo {
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
-            background: var(--border-dark);
+            background: var(--viz-text-primary);
             color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: var(--font-heading);
             font-weight: 800;
-            font-size: 0.72rem;
-            text-decoration: none;
+            font-size: 0.75rem;
             letter-spacing: -0.05em;
         }
 
-        .visualizer-logo-text {
+        .viz-brand-title {
             font-family: var(--font-heading);
             font-weight: 800;
-            font-size: 0.95rem;
-            letter-spacing: 0.1em;
+            font-size: 1.05rem;
             text-transform: uppercase;
-            color: var(--text-color);
-            text-decoration: none;
+            letter-spacing: 0.08em;
+            color: var(--viz-text-primary);
         }
 
-        /* Cinematic Immersive Preloader Styling */
+        .viz-brand-subtitle {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            color: var(--viz-accent-gold);
+            letter-spacing: 0.2em;
+            margin-left: 6px;
+            font-weight: 700;
+        }
+
+        /* Server Telemetry Widget (Header Center) */
+        .viz-telemetry-widget {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            padding: 6px 20px;
+            border-radius: 40px;
+            background: var(--viz-bg-card);
+            border: 1px solid var(--viz-border);
+        }
+
+        .viz-tel-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .viz-tel-label {
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            color: var(--viz-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .viz-tel-value {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--viz-text-primary);
+            font-weight: 700;
+        }
+
+        /* exit workstation link */
+        .viz-exit-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 22px;
+            border: 1px solid var(--viz-text-primary);
+            border-radius: 40px;
+            background: transparent;
+            color: var(--viz-text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .viz-exit-btn:hover {
+            background: var(--viz-text-primary);
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        /* ── Workstation Dashboard Columns Grid ── */
+        .viz-dashboard-grid {
+            display: grid;
+            grid-template-columns: 370px 1fr 390px;
+            height: calc(100vh - 72px);
+            overflow: hidden;
+            background: var(--viz-bg-base);
+        }
+
+        .viz-sidebar {
+            background: var(--viz-bg-panel);
+            border-right: 1px solid var(--viz-border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            overflow-y: auto;
+            gap: 24px;
+        }
+
+        .viz-sidebar-right {
+            border-right: none;
+            border-left: 1px solid var(--viz-border);
+        }
+
+        .viz-section-title {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--viz-accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            margin-bottom: 4px;
+            border-bottom: 1px solid var(--viz-border);
+            padding-bottom: 8px;
+        }
+
+        .viz-panel-card {
+            background: var(--viz-bg-card);
+            border: 1px solid var(--viz-border);
+            padding: 18px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Controls: Selectors & Sliders */
+        .viz-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .viz-control-label-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .viz-control-label {
+            font-family: var(--font-body);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--viz-text-primary);
+        }
+
+        .viz-control-value-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--viz-accent-gold);
+            font-weight: 700;
+        }
+
+        /* Segmented buttons */
+        .viz-segment-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            background: #eae8e3;
+            padding: 4px;
+            border-radius: 4px;
+        }
+        
+        .viz-segment-row-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .viz-segment-btn {
+            background: transparent;
+            border: none;
+            padding: 8px 0;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--viz-text-secondary);
+            border-radius: 2px;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+            transition: all 0.25s ease;
+        }
+
+        .viz-segment-btn.active {
+            background: var(--viz-bg-panel);
+            color: var(--viz-text-primary);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        /* Precision Sliders */
+        .viz-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: #e8e6e1;
+            border-radius: 2px;
+            outline: none;
+            margin: 10px 0;
+        }
+
+        .viz-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--viz-text-primary);
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        .viz-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+            background: var(--viz-accent-gold);
+        }
+
+        /* Telemetry arc gauge widget */
+        .viz-telemetry-hud {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .viz-hud-gauge-wrap {
+            position: relative;
+            width: 76px;
+            height: 76px;
+        }
+
+        .viz-hud-svg {
+            transform: rotate(-90deg);
+        }
+
+        .viz-hud-bg {
+            fill: none;
+            stroke: #eae8e3;
+            stroke-width: 4;
+        }
+
+        .viz-hud-fill {
+            fill: none;
+            stroke: var(--viz-accent-teal);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 220;
+            stroke-dashoffset: 35; /* dynamic */
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .viz-hud-inner-text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--viz-text-primary);
+        }
+
+        .viz-hud-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .viz-hud-metric {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--viz-text-secondary);
+        }
+
+        .viz-hud-metric span {
+            color: var(--viz-text-primary);
+            font-weight: 700;
+        }
+
+        /* ── Center Viewport Workspace ── */
+        .viz-center-workspace {
+            display: grid;
+            grid-template-rows: 56px 1fr 120px;
+            padding: 24px;
+            gap: 20px;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        /* Central Control Tray */
+        .viz-workspace-tray {
+            background: var(--viz-bg-panel);
+            border: 1px solid var(--viz-border);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .viz-tray-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .viz-btn-primary {
+            background: var(--viz-text-primary);
+            color: #ffffff;
+            border: 1px solid var(--viz-text-primary);
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .viz-btn-primary:hover:not(:disabled) {
+            background: var(--viz-accent-gold);
+            border-color: var(--viz-accent-gold);
+            transform: translateY(-2px);
+        }
+
+        .viz-btn-primary:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        /* Active scanning pulse animation on scan btn */
+        .viz-btn-scan-active {
+            background: var(--viz-accent-teal) !important;
+            border-color: var(--viz-accent-teal) !important;
+            animation: vizScanPulse 1.6s infinite ease-in-out;
+        }
+
+        @keyframes vizScanPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(91, 142, 136, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(91, 142, 136, 0); }
+        }
+
+        .viz-btn-secondary {
+            background: transparent;
+            color: var(--viz-text-primary);
+            border: 1px solid var(--viz-border-heavy);
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .viz-btn-secondary:hover:not(:disabled) {
+            background: var(--viz-bg-card);
+            border-color: var(--viz-text-primary);
+            transform: translateY(-2px);
+        }
+        
+        .viz-btn-secondary.active {
+            background: var(--viz-text-primary);
+            color: #ffffff;
+            border-color: var(--viz-text-primary);
+        }
+
+        /* Viewport CAD Frame */
+        .viz-viewport-frame {
+            background: #eae8e3;
+            border: 1px solid var(--viz-border-heavy);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 4px;
+            box-shadow: inset 0 3px 12px rgba(0,0,0,0.03);
+        }
+
+        /* Coordinate HUD ticks */
+        .viz-cad-tick {
+            position: absolute;
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            color: rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            z-index: 5;
+        }
+        .tick-tl { top: 12px; left: 16px; }
+        .tick-tr { top: 12px; right: 16px; }
+        .tick-bl { bottom: 12px; left: 16px; }
+        .tick-br { bottom: 12px; right: 16px; }
+
+        /* Scanning Laser Line Effect */
+        .viz-scan-laser {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--viz-accent-teal), transparent);
+            box-shadow: 0 0 10px var(--viz-accent-teal), 0 0 20px var(--viz-accent-teal);
+            z-index: 10;
+            top: 0;
+            pointer-events: none;
+            display: none;
+        }
+
+        .viz-scan-laser.active {
+            display: block;
+            animation: vizScanLaserRun 2.6s linear infinite;
+        }
+
+        @keyframes vizScanLaserRun {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        /* Image viewport assets */
+        .viz-viewport-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* Before / After Image Split Compare View CSS */
+        .compare-viewport {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 4;
+        }
+
+        .compare-img-wrap {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .compare-canvas-img {
+            position: absolute;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .compare-rendered-layer {
+            clip-path: inset(0 0 0 calc(var(--compare-pos, 50) * 1%));
+            z-index: 2;
+        }
+
+        .compare-divider-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: calc(var(--compare-pos, 50) * 1%);
+            width: 2px;
+            background: #ffffff;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .compare-slider-thumb-handle {
+            position: absolute;
+            top: 50%;
+            left: calc(var(--compare-pos, 50) * 1%);
+            transform: translate(-50%, -50%);
+            width: 38px;
+            height: 38px;
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 4;
+            pointer-events: none;
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            color: var(--viz-text-primary);
+            font-weight: 700;
+        }
+
+        .compare-range-input {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: ew-resize;
+            z-index: 5;
+            margin: 0;
+        }
+
+        /* Drag Upload Overlay UI */
+        .viz-viewport-upload-zone {
+            position: absolute;
+            inset: 20px;
+            border: 1px dashed var(--viz-text-secondary);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            z-index: 8;
+            padding: 30px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .viz-viewport-upload-zone:hover, .viz-viewport-upload-zone.drag-over {
+            border-color: var(--viz-accent-gold);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .viz-drag-icon {
+            color: var(--viz-accent-gold);
+            margin-bottom: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .viz-viewport-upload-zone:hover .viz-drag-icon {
+            transform: translateY(-4px);
+        }
+
+        .viz-drag-title {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: -0.01em;
+        }
+
+        .viz-drag-sub {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--viz-text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .viz-preset-tray {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .viz-preset-pill {
+            background: #ffffff;
+            border: 1px solid var(--viz-border);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--viz-text-primary);
+            transition: all 0.2s;
+        }
+
+        .viz-preset-pill:hover {
+            background: var(--viz-text-primary);
+            color: #ffffff;
+            border-color: var(--viz-text-primary);
+        }
+
+        /* Viewport active top details pill */
+        .viz-active-details-pill {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--viz-border);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--viz-text-primary);
+            font-weight: 700;
+            z-index: 6;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            display: none;
+        }
+
+        /* ── Bottom Trace Timeline & History ── */
+        .viz-bottom-bar {
+            background: var(--viz-bg-panel);
+            border: 1px solid var(--viz-border);
+            border-radius: 4px;
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            padding: 16px 20px;
+            gap: 30px;
+            align-items: center;
+        }
+
+        /* Pipeline trace */
+        .viz-pipeline-trace {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            padding: 0 10px;
+        }
+
+        .viz-pipeline-line {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            right: 10px;
+            height: 1px;
+            background: #eae8e3;
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .viz-pipeline-node {
+            position: relative;
+            z-index: 2;
+            background: var(--viz-bg-panel);
+            padding: 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .viz-node-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #eae8e3;
+            border: 2px solid var(--viz-bg-panel);
+            box-shadow: 0 0 0 1px #eae8e3;
+            transition: all 0.3s;
+        }
+
+        .viz-pipeline-node.active .viz-node-dot {
+            background: var(--viz-text-primary);
+            box-shadow: 0 0 0 1px var(--viz-text-primary);
+        }
+
+        .viz-pipeline-node.completed .viz-node-dot {
+            background: var(--viz-accent-teal);
+            box-shadow: 0 0 0 1px var(--viz-accent-teal);
+        }
+
+        .viz-node-label {
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            font-weight: 700;
+            color: var(--viz-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .viz-pipeline-node.active .viz-node-label {
+            color: var(--viz-text-primary);
+        }
+
+        /* Design configurations history track */
+        .viz-history-track {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            overflow-x: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .viz-history-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .viz-history-label {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            color: var(--viz-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+
+        .viz-history-thumb {
+            width: 46px;
+            height: 34px;
+            border-radius: 3px;
+            border: 1px solid var(--viz-border-heavy);
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .viz-history-thumb:hover, .viz-history-thumb.active {
+            transform: scale(1.15) translateY(-2px);
+            border-color: var(--viz-accent-gold);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .viz-history-thumb.active::after {
+            content: '✓';
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            width: 12px;
+            height: 12px;
+            background: var(--viz-accent-teal);
+            color: #ffffff;
+            font-size: 7px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* ── Right Panel: Sample Library ── */
+        .viz-search-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .viz-search-input {
+            width: 100%;
+            background: var(--viz-bg-card);
+            border: 1px solid var(--viz-border);
+            padding: 12px 16px 12px 38px;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            outline: none;
+            color: var(--viz-text-primary);
+            transition: all 0.3s;
+        }
+
+        .viz-search-input:focus {
+            border-color: var(--viz-text-primary);
+            background: #ffffff;
+        }
+
+        .viz-search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--viz-text-secondary);
+            pointer-events: none;
+        }
+
+        .viz-category-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--viz-border);
+            gap: 16px;
+        }
+
+        .viz-cat-btn {
+            background: transparent;
+            border: none;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--viz-text-secondary);
+            padding: 8px 0;
+            cursor: pointer;
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .viz-cat-btn.active {
+            color: var(--viz-text-primary);
+        }
+
+        .viz-cat-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--viz-accent-gold);
+        }
+
+        /* Material scrollable cards grid */
+        .viz-material-scroll-grid {
+            flex: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding-right: 4px;
+            -ms-overflow-style: none;
+            scrollbar-width: thin;
+        }
+
+        .viz-material-scroll-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .viz-material-scroll-grid::-webkit-scrollbar-thumb {
+            background: var(--viz-border);
+            border-radius: 2px;
+        }
+
+        .viz-mat-card {
+            background: var(--viz-bg-card) !important;
+            border: 1px solid var(--viz-border) !important;
+            border-radius: 4px !important;
+            overflow: hidden !important;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .viz-mat-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--viz-text-primary) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .viz-mat-card.selected {
+            border-color: var(--viz-accent-gold) !important;
+            outline: 1px solid var(--viz-accent-gold) !important;
+            box-shadow: 0 4px 14px rgba(197, 168, 128, 0.12);
+        }
+
+        .viz-mat-thumb {
+            width: 100%;
+            aspect-ratio: 16/10;
+            background-size: cover;
+            background-position: center;
+            border-bottom: 1px solid var(--viz-border);
+        }
+
+        .viz-mat-info {
+            background: #ffffff !important;
+            padding: 10px 12px !important;
+            border-top: none !important;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .viz-mat-tag {
+            font-family: var(--font-mono) !important;
+            font-size: 0.58rem !important;
+            color: var(--viz-accent-gold) !important;
+            font-weight: 700 !important;
+            text-transform: uppercase;
+        }
+
+        .viz-mat-info h4 {
+            font-family: var(--font-heading) !important;
+            font-size: 0.78rem !important;
+            font-weight: 700 !important;
+            margin: 0 !important;
+            color: var(--viz-text-primary);
+        }
+
+        .viz-mat-hidden {
+            display: none !important;
+        }
+
+        /* Active Monolith details widget */
+        .viz-monolith-widget {
+            background: var(--viz-bg-card);
+            border: 1px solid var(--viz-border);
+            padding: 16px;
+            border-radius: 4px;
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .viz-monolith-slab {
+            width: 80px;
+            height: 90px;
+            border-radius: 3px;
+            border: 1px solid var(--viz-border);
+            background-size: cover;
+            background-position: center;
+            background-color: #eaeaea;
+            transition: background-image 0.3s;
+        }
+
+        .viz-monolith-slab.loaded {
+            box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+        }
+
+        .viz-monolith-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .viz-monolith-title {
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--viz-text-primary);
+        }
+
+        .viz-monolith-taxonomy {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            color: var(--viz-accent-gold);
+            font-weight: 700;
+        }
+
+        .viz-monolith-desc {
+            font-family: var(--font-body);
+            font-size: 0.68rem;
+            color: var(--viz-text-secondary);
+            line-height: 1.4;
+            margin-top: 2px;
+        }
+
+        /* ── API Status Beacon ── */
+        .viz-api-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 30px;
+            background: var(--viz-bg-card);
+            border: 1px solid var(--viz-border);
+        }
+
+        .viz-api-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .viz-api-dot::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: vizBeaconPulse 1.8s infinite;
+        }
+
+        .viz-api-dot.checking { background: #e2a03f; }
+        .viz-api-dot.checking::after { background: #e2a03f; }
+        .viz-api-dot.online { background: var(--viz-accent-teal); }
+        .viz-api-dot.online::after { background: var(--viz-accent-teal); }
+        .viz-api-dot.offline { background: #d9534f; }
+        .viz-api-dot.offline::after { background: #d9534f; }
+
+        @keyframes vizBeaconPulse {
+            0% { transform: scale(1); opacity: 0.4; }
+            100% { transform: scale(2.6); opacity: 0; }
+        }
+
+        .viz-api-label {
+            font-family: var(--font-mono) !important;
+            font-size: 0.6rem !important;
+            color: var(--viz-text-secondary) !important;
+            font-weight: 700 !important;
+            border: none !important;
+            padding: 0 !important;
+            background: transparent !important;
+        }
+
+        /* ── Workstation Preloader ── */
         .visualizer-preloader {
             position: fixed;
             inset: 0;
@@ -102,7 +1089,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #000000;
+            background: #ffffff;
             overflow: hidden;
             transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
         }
@@ -122,14 +1109,14 @@
             height: auto;
             transform: translate(-50%, -50%);
             object-fit: cover;
-            opacity: 0.55;
-            filter: brightness(0.4) contrast(1.15) saturate(0.85);
+            opacity: 0.12;
+            filter: brightness(1.1) contrast(1.05) grayscale(0.5);
         }
 
         .preloader-overlay {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at center, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.92) 80%);
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.25) 0%, #ffffff 85%);
             z-index: 1;
         }
 
@@ -145,22 +1132,21 @@
 
         .preloader-logo {
             font-family: var(--font-heading);
-            font-size: 2.8rem;
+            font-size: 3.2rem;
             font-weight: 800;
-            color: #ffffff;
-            letter-spacing: 0.18em;
+            color: var(--viz-text-primary);
+            letter-spacing: 0.16em;
             text-transform: uppercase;
             margin-bottom: 8px;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.55);
             animation: preloaderFadeDown 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .preloader-tagline {
             font-family: var(--font-mono);
-            font-size: 0.72rem;
+            font-size: 0.75rem;
             font-weight: 700;
-            color: var(--accent-gold);
-            letter-spacing: 0.4em;
+            color: var(--viz-accent-gold);
+            letter-spacing: 0.45em;
             text-transform: uppercase;
             margin-bottom: 40px;
             opacity: 0;
@@ -168,9 +1154,9 @@
         }
 
         .preloader-loader-bar {
-            width: 180px;
+            width: 200px;
             height: 1px;
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.08);
             position: relative;
             margin-bottom: 16px;
             overflow: hidden;
@@ -184,141 +1170,64 @@
             left: 0;
             height: 100%;
             width: 0;
-            background: var(--accent-gold);
+            background: var(--viz-accent-gold);
             animation: preloaderProgress 2.6s cubic-bezier(0.65, 0.05, 0.36, 1) forwards;
         }
 
         .preloader-status {
             font-family: var(--font-mono);
-            font-size: 0.58rem;
-            color: rgba(255, 255, 255, 0.45);
+            font-size: 0.6rem;
+            color: var(--viz-text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.15em;
             opacity: 0;
             animation: preloaderFadeIn 1s ease 0.8s forwards, preloaderPulse 1.5s ease-in-out infinite;
         }
 
-        /* Loading Screen Overrides (AI Processing) */
-        .viz-loading {
+        /* Viewport Loading Cover */
+        .viz-viewport-loading-overlay {
             position: absolute;
             inset: 0;
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000000 !important;
-            overflow: hidden;
-        }
-
-        .viz-loading-video {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
-            opacity: 0.55;
-            filter: blur(5px) brightness(0.4) contrast(1.1);
-        }
-
-        .viz-loading-overlay {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.85) 100%);
-            z-index: 1;
-        }
-
-        .viz-loading-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            color: #ffffff;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(8px);
+            z-index: 15;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 16px;
         }
 
-        .viz-loading-text {
-            font-family: var(--font-mono) !important;
-            font-size: 0.85rem !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.1em !important;
-            text-transform: uppercase !important;
-            color: #ffffff !important;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.6);
-            margin: 0 !important;
-        }
-
-        .viz-loading-sub {
-            font-family: var(--font-mono);
-            font-size: 0.6rem;
-            color: var(--accent-gold);
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            opacity: 0.85;
-        }
-
-        .viz-spinner {
-            width: 48px;
-            height: 48px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-top: 2px solid var(--accent-gold);
+        .viz-viewport-spinner {
+            width: 42px;
+            height: 42px;
+            border: 2px solid rgba(0,0,0,0.05);
+            border-top: 2px solid var(--viz-accent-gold);
             border-radius: 50%;
-            animation: vizSpinnerSpin 1s linear infinite;
-            box-shadow: 0 0 15px rgba(197, 168, 128, 0.25);
+            animation: vizSpinnerSpin 0.9s linear infinite;
         }
 
-        /* Animations */
-        @keyframes preloaderProgress {
-            0% { width: 0%; }
-            45% { width: 40%; }
-            75% { width: 85%; }
-            100% { width: 100%; }
+        .viz-viewport-loading-text {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--viz-text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin: 0;
         }
 
-        @keyframes preloaderPulse {
-            0%, 100% { opacity: 0.45; }
-            50% { opacity: 0.9; }
+        .viz-viewport-loading-sub {
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            color: var(--viz-accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
         }
 
-        @keyframes preloaderFadeDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes preloaderFadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes preloaderFadeIn {
-            to { opacity: 1; }
-        }
-
-        @keyframes vizSpinnerSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Responsive spacing for standalone layout */
-        @media (max-width: 768px) {
-            .visualizer-header {
-                left: 20px;
-                top: 15px;
-            }
-            .viz-left {
-                padding-top: 75px !important;
-            }
-            .preloader-logo {
-                font-size: 2.0rem;
-            }
-            .preloader-tagline {
-                font-size: 0.65rem;
-            }
+        /* Custom file selector input */
+        #viz-file-input {
+            display: none;
         }
     </style>
 </head>
@@ -331,7 +1240,7 @@
         <div class="preloader-overlay"></div>
         <div class="preloader-content">
             <div class="preloader-logo">UMA TRADERS</div>
-            <div class="preloader-tagline">AI Design Studio</div>
+            <div class="preloader-tagline">✦ AI Design Studio ✦</div>
             <div class="preloader-loader-bar">
                 <div class="preloader-progress-fill"></div>
             </div>
@@ -339,131 +1248,360 @@
         </div>
     </div>
 
-    <!-- Header for Standalone Brand Experience -->
-    <div class="visualizer-header">
-        <a href="/" class="visualizer-logo-circle">UT</a>
-        <a href="/" class="visualizer-logo-text">Uma Traders</a>
-    </div>
+    <!-- ===== MAIN STUDIO WORKSTATION CONSOLE ===== -->
+    <div id="viz-modal" class="viz-modal active" role="main" aria-label="AI Design Studio">
+        
+        <!-- Header Bar -->
+        <div class="viz-header-bar">
+            <a href="/" class="viz-brand-block">
+                <div class="viz-brand-logo">UT</div>
+                <div class="viz-brand-title">Uma Traders<span class="viz-brand-subtitle">✦ AI DESIGN STUDIO</span></div>
+            </a>
+            
+            <!-- Neural status indicators -->
+            <div class="viz-telemetry-widget">
+                <div class="viz-tel-item">
+                    <span class="viz-tel-label">Neural Engine</span>
+                    <span class="viz-tel-value" id="tel-device">CPU / INFERENCE</span>
+                </div>
+                <div class="viz-tel-item">
+                    <span class="viz-tel-label">Latency</span>
+                    <span class="viz-tel-value" id="tel-latency">-- ms</span>
+                </div>
+                <div class="viz-tel-item">
+                    <span class="viz-tel-label">Slab Registry</span>
+                    <span class="viz-tel-value" id="tel-cache">14 Slabs</span>
+                </div>
+            </div>
 
-    <!-- ===== ROOM VISUALIZER CONTAINER (Active by Default) ===== -->
-    <div id="viz-modal" class="viz-modal active" role="main" aria-label="Room Visualizer">
-        <a id="viz-close" href="/" class="viz-close" aria-label="Back to Home">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-        </a>
+            <a id="viz-close" href="/" class="viz-exit-btn" aria-label="Exit Studio">
+                Exit Studio ↖
+            </a>
+        </div>
 
-        <!-- LEFT — Upload + AI Result -->
-        <div class="viz-left">
-            <!-- Upload zone / Result area -->
-            <div class="viz-room-wrap" id="viz-room-wrap">
+        <!-- 3-Column Workstation Dashboard Layout -->
+        <div class="viz-dashboard-grid">
+            
+            <!-- LEFT PANEL: TELEMETRY & CONTROLS -->
+            <div class="viz-sidebar">
+                
+                <!-- Environment parameters -->
+                <div>
+                    <h3 class="viz-section-title">Surface Context</h3>
+                    <div class="viz-panel-card">
+                        
+                        <!-- Space Selection -->
+                        <div class="viz-control-group">
+                            <span class="viz-control-label">Room Preset</span>
+                            <div class="viz-segment-row">
+                                <button class="viz-segment-btn active viz-rt" data-rt="hall">Hall</button>
+                                <button class="viz-segment-btn viz-rt" data-rt="kitchen">Kitchen</button>
+                                <button class="viz-segment-btn viz-rt" data-rt="bathroom">Bath</button>
+                            </div>
+                        </div>
 
-                <!-- Upload zone (shown when no photo) -->
-                <div class="viz-upload-zone" id="viz-upload-zone">
-                    <input type="file" id="viz-file-input" accept="image/*" hidden>
-                    <div class="viz-upload-icon">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.2">
-                            <rect x="3" y="3" width="18" height="18" rx="3" />
-                            <circle cx="8.5" cy="8.5" r="1.5" />
-                            <polyline points="21 15 16 10 5 21" />
+                        <!-- Repeat Pattern Selection -->
+                        <div class="viz-control-group">
+                            <span class="viz-control-label">Tiling Alignment</span>
+                            <div class="viz-segment-row viz-segment-row-4">
+                                <button class="viz-segment-btn active viz-pat" data-pat="grid">Grid</button>
+                                <button class="viz-segment-btn viz-pat" data-pat="bookmatch">Book</button>
+                                <button class="viz-segment-btn viz-pat" data-pat="staggered">Stag</button>
+                                <button class="viz-segment-btn viz-pat" data-pat="diagonal">Diag</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- AI graphics pipeline sliders -->
+                <div>
+                    <h3 class="viz-section-title">Engine Corrections</h3>
+                    <div class="viz-panel-card" style="gap: 14px;">
+                        
+                        <!-- Tile Rotation slider -->
+                        <div class="viz-control-group">
+                            <div class="viz-control-label-wrap">
+                                <span class="viz-control-label">Orientation Angle</span>
+                                <span class="viz-control-value-badge" id="lbl-rotation">0°</span>
+                            </div>
+                            <input type="range" class="viz-slider" id="slider-rotation" min="0" max="360" value="0">
+                        </div>
+
+                        <!-- Tile Repeat Scale slider -->
+                        <div class="viz-control-group">
+                            <div class="viz-control-label-wrap">
+                                <span class="viz-control-label">Pattern Repeat Scale</span>
+                                <span class="viz-control-value-badge" id="lbl-scale">1.0x</span>
+                            </div>
+                            <input type="range" class="viz-slider" id="slider-scale" min="30" max="300" value="100">
+                        </div>
+
+                        <!-- Exposure brightness slider -->
+                        <div class="viz-control-group">
+                            <div class="viz-control-label-wrap">
+                                <span class="viz-control-label">Exposure Multiplier</span>
+                                <span class="viz-control-value-badge" id="lbl-exposure">1.00x</span>
+                            </div>
+                            <input type="range" class="viz-slider" id="slider-exposure" min="50" max="200" value="100">
+                        </div>
+
+                        <!-- Shadow overlay depth slider -->
+                        <div class="viz-control-group">
+                            <div class="viz-control-label-wrap">
+                                <span class="viz-control-label">Preserved Shadow Depth</span>
+                                <span class="viz-control-value-badge" id="lbl-shadow">1.00</span>
+                            </div>
+                            <input type="range" class="viz-slider" id="slider-shadow" min="0" max="200" value="100">
+                        </div>
+
+                        <!-- Gaussian Edge Blur slider -->
+                        <div class="viz-control-group">
+                            <div class="viz-control-label-wrap">
+                                <span class="viz-control-label">Edge Seam Softness</span>
+                                <span class="viz-control-value-badge" id="lbl-blur">1.0</span>
+                            </div>
+                            <input type="range" class="viz-slider" id="slider-blur" min="0" max="200" value="100">
+                        </div>
+
+                        <!-- Wall cutoff slab height (Active only on countertop/wall) -->
+                        <div class="viz-control-group" id="group-wall-coverage" style="display:none;">
+                            <div class="viz-control-label-wrap">
+                                <span class="viz-control-label">Slab Vertical Height</span>
+                                <span class="viz-control-value-badge" id="lbl-wall">100%</span>
+                            </div>
+                            <input type="range" class="viz-slider" id="slider-wall" min="10" max="100" value="100">
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Neural Telemetry Stats -->
+                <div style="margin-top:auto;">
+                    <h3 class="viz-section-title">Telemetry metrics</h3>
+                    <div class="viz-panel-card viz-telemetry-hud">
+                        
+                        <!-- Circular HUD Gauge -->
+                        <div class="viz-hud-gauge-wrap">
+                            <svg class="viz-hud-svg" width="76" height="76" viewBox="0 0 76 76">
+                                <circle class="viz-hud-bg" cx="38" cy="38" r="34"></circle>
+                                <circle class="viz-hud-fill" id="hud-arc" cx="38" cy="38" r="34" style="stroke-dashoffset: 213;"></circle>
+                            </svg>
+                            <div class="viz-hud-inner-text">
+                                <span style="font-size: 0.72rem; font-weight:700;" id="hud-pct">0.0%</span>
+                                <span style="font-size: 0.48rem; color:#888; font-weight:bold;">CONF</span>
+                            </div>
+                        </div>
+
+                        <!-- Secondary list telemetry -->
+                        <div class="viz-hud-details">
+                            <div class="viz-hud-metric">Detected: <span id="hud-detected">0.0%</span></div>
+                            <div class="viz-hud-metric">VRAM slots: <span id="hud-vram">0 / 16</span></div>
+                            <div class="viz-hud-metric">GPU status: <span id="hud-status">STANDBY</span></div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CENTER WORKSPACE: WORKSTATION VIEWPORT -->
+            <div class="viz-center-workspace">
+                
+                <!-- Viewport Control Tray -->
+                <div class="viz-workspace-tray">
+                    <div class="viz-tray-actions">
+                        <button class="viz-btn-primary" id="btn-scan" disabled>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Scan Surface
+                        </button>
+                        <button class="viz-btn-secondary" id="btn-compare" disabled>
+                            Compare Split
+                        </button>
+                        <button class="viz-btn-secondary" id="btn-reset" disabled>
+                            Reset Workspace
+                        </button>
+                    </div>
+
+                    <div class="viz-tray-actions">
+                        <button class="viz-btn-primary" id="btn-download" style="background:#c5a880; border-color:#c5a880;" disabled>
+                            Export Render ↗
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main CAD Viewport -->
+                <div class="viz-viewport-frame" id="viz-viewport">
+                    
+                    <!-- Coordinate tick labels -->
+                    <span class="viz-cad-tick tick-tl">+ TL_310.2</span>
+                    <span class="viz-cad-tick tick-tr">+ TR_512.9</span>
+                    <span class="viz-cad-tick tick-bl">+ BL_080.4</span>
+                    <span class="viz-cad-tick tick-br">+ BR_920.1</span>
+
+                    <!-- Laser scan visual effect -->
+                    <div class="viz-scan-laser" id="scan-laser"></div>
+
+                    <!-- Top active metadata pill overlay -->
+                    <div class="viz-active-details-pill" id="active-metadata-pill">
+                        Slab Ref: STATUARIO PURE • Exposure: 1.00x • Angle: 0°
+                    </div>
+
+                    <!-- Upload drop box (shown by default) -->
+                    <div class="viz-viewport-upload-zone" id="upload-zone-wrapper">
+                        <input type="file" id="viz-file-input" accept="image/*">
+                        <div class="viz-drag-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0">
+                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                <polyline points="21 15 16 10 5 21" />
+                            </svg>
+                        </div>
+                        <h3 class="viz-drag-title">Import Room Photo</h3>
+                        <p class="viz-drag-sub">Drag and drop raw room scene or browse local files</p>
+                        
+                        <div class="viz-preset-tray">
+                            <button class="viz-preset-pill viz-preset" data-preset-rt="hall" data-preset-img="assets/flooring_luxury.png">Hall Preset</button>
+                            <button class="viz-preset-pill viz-preset" data-preset-rt="kitchen" data-preset-img="assets/kitchen_countertop.png">Kitchen Preset</button>
+                            <button class="viz-preset-pill viz-preset" data-preset-rt="bathroom" data-preset-img="assets/bathroom_sink.png">Bathroom Preset</button>
+                        </div>
+                    </div>
+
+                    <!-- Main rendered viewport image -->
+                    <img id="viz-result-img" class="viz-viewport-image" alt="Visualizer Screen" style="display:none;">
+
+                    <!-- Before/After Split compare view layer -->
+                    <div class="compare-viewport" id="compare-viewport-wrap">
+                        <div class="compare-img-wrap">
+                            <!-- Bottom layer (Original Room image) -->
+                            <img id="compare-img-original" class="compare-canvas-img" alt="Original room layout">
+                            
+                            <!-- Top layer (Rendered room image - clipped) -->
+                            <img id="compare-img-rendered" class="compare-canvas-img compare-rendered-layer" alt="Rendered material overlay">
+                            
+                            <!-- Split line indicator -->
+                            <div class="compare-divider-line"></div>
+                            
+                            <!-- Middle drag handle -->
+                            <div class="compare-slider-thumb-handle">SPLIT</div>
+                            
+                            <!-- Invisible range input on top -->
+                            <input type="range" class="compare-range-input" id="compare-range-slider" min="0" max="100" value="50">
+                        </div>
+                    </div>
+
+                    <!-- Viewport loading block -->
+                    <div class="viz-viewport-loading-overlay" id="viz-loading" style="display:none;">
+                        <div class="viz-viewport-spinner"></div>
+                        <h4 class="viz-viewport-loading-text" id="viz-loading-text">Ingesting Room Photo…</h4>
+                        <span class="viz-viewport-loading-sub">Uma Traders Neural GPU Engine</span>
+                    </div>
+
+                </div>
+
+                <!-- Bottom Pipeline and visual configuration history track -->
+                <div class="viz-bottom-bar">
+                    
+                    <!-- Trace timeline -->
+                    <div class="viz-pipeline-trace">
+                        <div class="viz-pipeline-line"></div>
+                        
+                        <div class="viz-pipeline-node active" id="node-ingest">
+                            <div class="viz-node-dot"></div>
+                            <span class="viz-node-label">01/INGEST</span>
+                        </div>
+                        <div class="viz-pipeline-node" id="node-segment">
+                            <div class="viz-node-dot"></div>
+                            <span class="viz-node-label">02/SEGMENT</span>
+                        </div>
+                        <div class="viz-pipeline-node" id="node-warp">
+                            <div class="viz-node-dot"></div>
+                            <span class="viz-node-label">03/WARP</span>
+                        </div>
+                        <div class="viz-pipeline-node" id="node-blend">
+                            <div class="viz-node-dot"></div>
+                            <span class="viz-node-label">04/BLEND</span>
+                        </div>
+                    </div>
+
+                    <!-- visual config history track (clickable snapshots) -->
+                    <div class="viz-history-track">
+                        <span class="viz-history-label">STUDIO SNAPSHOTS:</span>
+                        <div id="history-container" style="display: flex; gap: 8px;">
+                            <!-- Dynamically appended config snapshots will live here -->
+                            <div style="font-family: var(--font-mono); font-size: 0.6rem; color:#888;">-- Workspace Empty --</div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT PANEL: SAMPLE LIBRARY -->
+            <div class="viz-sidebar viz-sidebar-right">
+                
+                <!-- Search Slab Index -->
+                <div class="viz-control-group">
+                    <h3 class="viz-section-title" style="margin-bottom:0;">Material Search</h3>
+                    <div class="viz-search-wrapper">
+                        <svg class="viz-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                         </svg>
-                    </div>
-                    <p class="viz-upload-title">Upload Your Room Photo</p>
-                    <p class="viz-upload-sub">Drag & drop or click to browse</p>
-                    <button class="viz-upload-btn" id="viz-upload-btn">Choose Photo</button>
-                    <div class="viz-preset-row">
-                        <span class="viz-preset-label">Or try a preset:</span>
-                        <button class="viz-preset" data-preset-rt="hall"
-                            data-preset-img="assets/flooring_luxury.png">Hall</button>
-                        <button class="viz-preset" data-preset-rt="kitchen"
-                            data-preset-img="assets/kitchen_countertop.png">Kitchen</button>
-                        <button class="viz-preset" data-preset-rt="bathroom"
-                            data-preset-img="assets/bathroom_sink.png">Bathroom</button>
+                        <input type="text" class="viz-search-input" id="search-input" placeholder="Query slab library index...">
                     </div>
                 </div>
 
-                <!-- Result image (shown after AI render) -->
-                <img id="viz-result-img" class="viz-result-img" alt="AI Rendered Room" style="display:none">
-
-                <!-- Premium Loading overlay with Video Backdrop -->
-                <div class="viz-loading" id="viz-loading" style="display:none">
-                    <video class="viz-loading-video" src="assets/visualroom.mp4" autoplay muted loop playsinline></video>
-                    <div class="viz-loading-overlay"></div>
-                    <div class="viz-loading-content">
-                        <div class="viz-spinner"></div>
-                        <p class="viz-loading-text" id="viz-loading-text">AI is analysing your room…</p>
-                        <span class="viz-loading-sub">Uma Traders AI Engine</span>
+                <!-- Category Tabs Navigation -->
+                <div class="viz-control-group" style="gap:10px;">
+                    <span class="viz-control-label">Stone Classification</span>
+                    <div class="viz-category-tabs">
+                        <button class="viz-cat-btn active viz-cat" data-cat="all">All</button>
+                        <button class="viz-cat-btn viz-cat" data-cat="marble">Marble</button>
+                        <button class="viz-cat-btn viz-cat" data-cat="granite">Granite</button>
+                        <button class="viz-cat-btn viz-cat" data-cat="handicraft">Handicrafts</button>
                     </div>
                 </div>
 
-                <!-- Top bar on result -->
-                <div class="viz-result-bar" id="viz-result-bar" style="display:none">
-                    <span id="viz-result-label">Obsidian Noir • Floor</span>
-                    <button class="viz-reupload-btn" id="viz-reupload-btn">Change Photo</button>
+                <!-- Material Cards Grid -->
+                <div class="viz-material-scroll-grid" id="viz-mat-grid">
+                    <!-- Cards will be populated dynamically by JS -->
                 </div>
+
+                <!-- Monolith Details Widget -->
+                <div>
+                    <h3 class="viz-section-title">Selected Slab Monolith</h3>
+                    <div class="viz-monolith-widget">
+                        <div class="viz-monolith-slab" id="viz-slab"></div>
+                        <div class="viz-monolith-meta">
+                            <span class="viz-monolith-taxonomy" id="monolith-cat">Classification</span>
+                            <h4 class="viz-monolith-title" id="viz-sel-name">— Select a material —</h4>
+                            <p class="viz-monolith-desc" id="monolith-desc">Select a material card above to inspect physical stone attributes and query origin quarry telemetry.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Connection Beacon -->
+                <div class="viz-api-status" style="margin-top: auto;">
+                    <div class="viz-api-dot checking" id="viz-api-dot"></div>
+                    <span class="viz-api-label" id="viz-api-label">Connecting to AI engine…</span>
+                </div>
+
             </div>
 
-            <!-- Controls row -->
-            <div class="viz-controls-row">
-                <div class="viz-ctrl-block">
-                    <p class="viz-eyebrow">Room Type</p>
-                    <div class="viz-rt-btns">
-                        <button class="viz-rt active" data-rt="hall">Hall</button>
-                        <button class="viz-rt" data-rt="kitchen">Kitchen</button>
-                        <button class="viz-rt" data-rt="bathroom">Bathroom</button>
-                    </div>
-                </div>
-                <div class="viz-ctrl-block">
-                    <p class="viz-eyebrow">Pattern</p>
-                    <div class="viz-pat-btns">
-                        <button class="viz-pat active" data-pat="grid">Grid</button>
-                        <button class="viz-pat" data-pat="bookmatch">Bookmatch</button>
-                        <button class="viz-pat" data-pat="staggered">Staggered</button>
-                        <button class="viz-pat" data-pat="diagonal">Diagonal</button>
-                    </div>
-                </div>
-                <div class="viz-ctrl-block viz-slab-mini-wrap">
-                    <p class="viz-eyebrow">Material Preview</p>
-                    <div class="viz-slab-mini" id="viz-slab"></div>
-                    <p class="viz-sel-name" id="viz-sel-name">— select a material —</p>
-                </div>
-            </div>
         </div>
 
-        <!-- RIGHT — Picker -->
-        <div class="viz-right">
-            <div class="viz-right-head">
-                <h2 class="viz-title">AI Room <span>Visualizer</span></h2>
-                <p class="viz-subtitle">Upload your room photo · select a material · watch AI transform it instantly.</p>
-                <div class="viz-cat-tabs">
-                    <button class="viz-cat active" data-cat="all">All</button>
-                    <button class="viz-cat" data-cat="marble">Marble</button>
-                    <button class="viz-cat" data-cat="granite">Granite</button>
-                    <button class="viz-cat" data-cat="handicraft">Handicrafts</button>
-                </div>
-            </div>
-            <div class="viz-mat-grid" id="viz-mat-grid"></div>
-            <div class="viz-api-status">
-                <div class="viz-api-dot checking" id="viz-api-dot"></div>
-                <span class="viz-api-label" id="viz-api-label">Connecting to AI engine…</span>
-            </div>
-        </div>
     </div>
 
     <!-- Script loading -->
-    <script src="js/visualizer.js?v=4"></script>
+    <script src="js/visualizer.js?v=5"></script>
     <script>
         // Cinematic entry preloader auto-fade script
         window.addEventListener('load', () => {
             const preloader = document.getElementById('visualizer-preloader');
             if (preloader) {
-                // Keep the loader visible for 2.6s to allow the premium progress bar to finish loading
                 setTimeout(() => {
                     preloader.classList.add('fade-out');
                     setTimeout(() => {
-                        preloader.remove(); // Clean up from the DOM
+                        preloader.remove();
                     }, 800);
                 }, 2600);
             }
