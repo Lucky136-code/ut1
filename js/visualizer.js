@@ -1,7 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
     // === ROOM VISUALIZER (AI-Powered Luxury Workstation Client) ===
     (function() {
-        const API_BASE = 'http://localhost:8000';
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://127.0.0.1:8000'
+            : 'https://lucky1362002-umatraders-ai.hf.space';
 
         // Expanded Geology Monolith Telemetry Registry
         const MATERIALS = [
