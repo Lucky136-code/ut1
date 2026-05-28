@@ -168,6 +168,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const sliderWall     = document.getElementById('slider-wall');
         const lblWall        = document.getElementById('lbl-wall');
         const groupWallGroup = document.getElementById('group-wall-coverage');
+        const sliderOpacity  = document.getElementById('slider-opacity');
+        const lblOpacity     = document.getElementById('lbl-opacity');
 
         if (!modal) return;
 
@@ -362,6 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const shadowMult   = parseFloat(sliderShadow.value) / 100;
             const blurMult     = parseFloat(sliderBlur.value) / 100;
             const wallCoverage = parseFloat(sliderWall.value) / 100;
+            const opacityMult  = sliderOpacity ? parseFloat(sliderOpacity.value) / 100 : 1.0;
 
             const startTime = performance.now();
 
@@ -381,7 +384,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     brightness_exposure: exposureMult,
                     shadow_intensity:    shadowMult,
                     blur_softness:       blurMult,
-                    wall_coverage:       wallCoverage
+                    wall_coverage:       wallCoverage,
+                    texture_opacity:     opacityMult
                 };
 
                 if (window._scanToken) body.scan_token = window._scanToken;
@@ -526,7 +530,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     exposure: sliderExposure.value,
                     shadow: sliderShadow.value,
                     blur: sliderBlur.value,
-                    wall: sliderWall.value
+                    wall: sliderWall.value,
+                    opacity: sliderOpacity ? sliderOpacity.value : 100
                 },
                 finalImage: finalImageB64
             };
@@ -553,6 +558,9 @@ document.addEventListener("DOMContentLoaded", () => {
             sliderShadow.value = snapshot.sliderVals.shadow;
             sliderBlur.value = snapshot.sliderVals.blur;
             sliderWall.value = snapshot.sliderVals.wall;
+            if (sliderOpacity && snapshot.sliderVals.opacity !== undefined) {
+                sliderOpacity.value = snapshot.sliderVals.opacity;
+            }
 
             updateSliderLabels();
 
@@ -621,6 +629,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (lblShadow) lblShadow.textContent = (parseFloat(sliderShadow.value)/100).toFixed(2);
             if (lblBlur) lblBlur.textContent = (parseFloat(sliderBlur.value)/100).toFixed(1);
             if (lblWall) lblWall.textContent = sliderWall.value + '%';
+            if (lblOpacity && sliderOpacity) lblOpacity.textContent = sliderOpacity.value + '%';
 
             // Show/Hide wall cutoff slider dynamically based on room presets
             if (groupWallGroup) {
@@ -639,6 +648,7 @@ document.addEventListener("DOMContentLoaded", () => {
             sliderShadow.value = 100;
             sliderBlur.value = 100;
             sliderWall.value = 100;
+            if (sliderOpacity) sliderOpacity.value = 100;
             updateSliderLabels();
         }
 
@@ -820,6 +830,54 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
+        // --- Custom Polished Gloss & Ambient Tone selector bindings ---
+        document.querySelectorAll('.viz-gloss').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.viz-gloss').forEach(b => b.classList.remove('active'));
+                const target = e.target.closest('.viz-segment-btn');
+                if (!target) return;
+                target.classList.add('active');
+                
+                const gloss = target.dataset.gloss;
+                if (gloss === 'matte') {
+                    sliderShadow.value = 40; // softer shadows
+                    sliderBlur.value = 150;  // softer seams
+                } else if (gloss === 'satin') {
+                    sliderShadow.value = 100;
+                    sliderBlur.value = 100;
+                } else {
+                    sliderShadow.value = 160; // rich glossy highlights
+                    sliderBlur.value = 60;
+                }
+                updateSliderLabels();
+                if (selectedMat && roomImageB64 && apiOnline) {
+                    executeRenderPipeline(selectedMat);
+                }
+            });
+        });
+
+        document.querySelectorAll('.viz-tone').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.viz-tone').forEach(b => b.classList.remove('active'));
+                const target = e.target.closest('.viz-segment-btn');
+                if (!target) return;
+                target.classList.add('active');
+                
+                const tone = target.dataset.tone;
+                if (tone === 'warm') {
+                    sliderExposure.value = 120; // warmer exposure
+                } else if (tone === 'cool') {
+                    sliderExposure.value = 85;  // cooler exposure
+                } else {
+                    sliderExposure.value = 100;
+                }
+                updateSliderLabels();
+                if (selectedMat && roomImageB64 && apiOnline) {
+                    executeRenderPipeline(selectedMat);
+                }
+            });
+        });
+
         // --- Stone Class category tabs filter ---
         document.querySelectorAll('.viz-cat').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -850,7 +908,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // --- Precision Sliders Input bindings (throttled rendering loop) ---
-        const sliderList = [sliderRotation, sliderScale, sliderExposure, sliderShadow, sliderBlur, sliderWall];
+        const sliderList = [sliderRotation, sliderScale, sliderExposure, sliderShadow, sliderBlur, sliderWall, sliderOpacity];
         sliderList.forEach(slider => {
             if (slider) {
                 slider.addEventListener('input', () => {

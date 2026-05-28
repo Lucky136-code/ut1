@@ -120,6 +120,7 @@ class RenderRequest(BaseModel):
     blur_softness:       Optional[float]      = 1.0
     tile_scale:          Optional[float]      = 1.0
     tile_rotation:       Optional[float]      = 0.0
+    texture_opacity:     Optional[float]      = 1.0
 
 class ScanRequest(BaseModel):
     room_image:          str
@@ -525,6 +526,10 @@ def _do_render(request: RenderRequest) -> dict:
         
         # Apply grain as a light 5.5% bump-map texture overlay to preserve infinite crisp details
         blended_f = np.clip(blended_f * (1.0 + 0.055 * full_grain_3d), 0, 255)
+        
+        # Apply custom texture opacity blending
+        tex_opacity = request.texture_opacity if request.texture_opacity is not None else 1.0
+        blended_f = np.clip(blended_f * tex_opacity + orig_f * (1.0 - tex_opacity), 0, 255)
         
         final_image  = blended_f * mask_3d + final_image * (1 - mask_3d)
         overall_mask = np.maximum(overall_mask, mask_f)
