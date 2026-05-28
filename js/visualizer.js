@@ -531,6 +531,8 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => {
                 triggerScan();
             }, 100);
+
+            updateIngestModalCloseState();
         }
 
         // --- History Snapshots (Undo / Redo Configuration) ---
@@ -721,6 +723,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             updatePipelineProgress(0);
             updateHudGauge(0.0, 'STANDBY', '0%');
+            updateIngestModalCloseState();
         }
 
         // --- Split Screen Comparison Handling (60FPS native range slider) ---
@@ -932,8 +935,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         function closeIngestModal() {
+            if (!roomImageB64) return; // Prevent closing if no room image is loaded
             stopCamera();
             if (ingestModalBackdrop) ingestModalBackdrop.style.display = 'none';
+        }
+
+        function updateIngestModalCloseState() {
+            const displayStyle = roomImageB64 ? 'block' : 'none';
+            if (ingestModalCloseBtn) ingestModalCloseBtn.style.display = displayStyle;
+            if (ingestBtnCancel) ingestBtnCancel.style.display = displayStyle;
         }
 
         if (ingestModalCloseBtn) ingestModalCloseBtn.addEventListener('click', closeIngestModal);
@@ -1110,6 +1120,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Initialize materials on load
         initMaterialGrid();
         updateSliderLabels();
+        updateIngestModalCloseState();
 
     })();
 });
