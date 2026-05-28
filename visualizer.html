@@ -940,29 +940,36 @@
         }
 
         .viz-mat-thumb {
-            width: 100%;
-            aspect-ratio: 16/10;
-            background-size: cover;
-            background-position: center;
-            border-bottom: 1px solid var(--viz-border);
+            width: 100% !important;
+            aspect-ratio: 16/10 !important;
+            background-size: cover !important;
+            background-position: center !important;
+            border-bottom: 1px solid var(--viz-border) !important;
+            flex-shrink: 0 !important;
         }
 
         .viz-mat-info {
             background: #ffffff !important;
             padding: 10px 12px !important;
             border-top: none !important;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+            flex: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
         }
 
         .viz-mat-tag {
             font-family: var(--font-mono) !important;
-            font-size: 0.58rem !important;
+            font-size: 0.52rem !important;
             color: var(--viz-accent-gold) !important;
             font-weight: 700 !important;
-            text-transform: uppercase;
+            text-transform: uppercase !important;
+            background: rgba(197, 168, 128, 0.08) !important;
+            padding: 2px 6px !important;
+            border-radius: 2px !important;
+            display: inline-block !important;
+            width: fit-content !important;
+            letter-spacing: 0.05em !important;
         }
 
         .viz-mat-info h4 {
@@ -970,7 +977,7 @@
             font-size: 0.78rem !important;
             font-weight: 700 !important;
             margin: 0 !important;
-            color: var(--viz-text-primary);
+            color: var(--viz-text-primary) !important;
         }
 
         .viz-mat-hidden {

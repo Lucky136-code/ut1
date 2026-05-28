@@ -3110,12 +3110,21 @@ body::before {
 .viz-mat-tag {
     font-family: var(--font-mono) !important;
     color: var(--accent-gold) !important;
-    font-weight: 700;
+    font-weight: 700 !important;
+    font-size: 0.52rem !important;
+    text-transform: uppercase !important;
+    background: rgba(197, 168, 128, 0.08) !important;
+    padding: 2px 6px !important;
+    border-radius: 2px !important;
+    display: inline-block !important;
+    width: fit-content !important;
+    letter-spacing: 0.05em !important;
 }
 
 .viz-mat-info h4 {
     font-family: var(--font-heading) !important;
     font-size: 0.85rem !important;
+    color: var(--text-color) !important;
 }
 
 .viz-loading {
