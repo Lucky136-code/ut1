@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cat: 'marble',     
                 name: 'Obsidian Noir',   
                 img: '/assets/marble_dark_texture.png',
+                texture: '/assets/marble_dark_texture.png',
                 taxonomy: 'Volcanic Glass Silicate',
                 origin: 'Jalisco, Mexico',
                 hardness: '5.5 Mohs',
@@ -20,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cat: 'marble',     
                 name: 'Calacatta Oro',   
                 img: '/assets/marble_gold.png',
+                texture: '/assets/marble_gold.png',
                 taxonomy: 'Brecciated Calcite',
                 origin: 'Apuan Alps, Carrara, Italy',
                 hardness: '3.5 Mohs',
@@ -30,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cat: 'marble',     
                 name: 'Statuario Pure',  
                 img: '/assets/statuario_pure.png',
+                texture: '/assets/statuario_pure.png',
                 taxonomy: 'Pure Calcium Carbonate',
                 origin: 'Makrana, Rajasthan, India',
                 hardness: '4.0 Mohs',
@@ -40,6 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cat: 'marble',     
                 name: 'Emperador Dark',  
                 img: '/assets/emperador_dark.png',
+                texture: '/assets/emperador_dark.png',
                 taxonomy: 'Breccias Dolomite',
                 origin: 'Novelda, Alicante, Spain',
                 hardness: '3.0 Mohs',
@@ -50,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cat: 'granite',    
                 name: 'Cosmic Black',    
                 img: '/assets/cosmic_black.png',
+                texture: '/assets/cosmic_black.png',
                 taxonomy: 'Migmatitic Gneiss',
                 origin: 'Bahia, Brazil',
                 hardness: '6.5 Mohs',
@@ -60,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cat: 'granite',    
                 name: 'Blue Pearl',      
                 img: 'https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&q=80&w=400',
+                texture: 'https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&q=80&w=400',
                 taxonomy: 'Larvikite Syenite',
                 origin: 'Larvik, Vestfold, Norway',
                 hardness: '6.0 Mohs',
@@ -70,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cat: 'granite',    
                 name: 'Kashmir White',   
                 img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=400',
+                texture: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=400',
                 taxonomy: 'Metamorphic Granulite',
                 origin: 'Tamil Nadu, India',
                 hardness: '6.5 Mohs',
@@ -80,6 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cat: 'handicraft', 
                 name: 'Sculpted Vases',  
                 img: 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?auto=format&fit=crop&q=80&w=400',
+                texture: '/assets/statuario_pure.png',
                 taxonomy: 'Decorative Monolith Art',
                 origin: 'Jaipur, Rajasthan, India',
                 hardness: '4.0 Mohs',
@@ -90,6 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cat: 'handicraft', 
                 name: 'Inlay Tabletops', 
                 img: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&fit=crop&q=80&w=400',
+                texture: '/assets/statuario_pure.png',
                 taxonomy: 'Pietra Dura Inlay Mosaic',
                 origin: 'Agra, Uttar Pradesh, India',
                 hardness: '4.5 Mohs',
@@ -100,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cat: 'handicraft', 
                 name: 'Marble Figurines',
                 img: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=400',
+                texture: '/assets/statuario_pure.png',
                 taxonomy: 'Fine Statuary Carving',
                 origin: 'Makrana, India',
                 hardness: '4.0 Mohs',
@@ -378,7 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const startTime = performance.now();
 
             try {
-                const texB64 = await urlToBase64(mat.img);
+                const texB64 = await urlToBase64(mat.texture || mat.img);
                 const surfaceMap = { hall: 'floor', kitchen: 'countertop', bathroom: 'wall' };
                 const surface = surfaceMap[currentRoomType] || 'floor';
 
