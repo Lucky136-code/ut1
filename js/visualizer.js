@@ -110,13 +110,25 @@ document.addEventListener("DOMContentLoaded", () => {
         const monolithCat    = document.getElementById('monolith-cat');
         const monolithDesc   = document.getElementById('monolith-desc');
         
-        // Upload / Preset Elements
-        const uploadZoneWrap = document.getElementById('upload-zone-wrapper');
-        const fileInput      = document.getElementById('viz-file-input');
-        const resultImg      = document.getElementById('viz-result-img');
-        const activeMetaPill = document.getElementById('active-metadata-pill');
-        const cardTriggerUpload = document.getElementById('card-trigger-upload');
-        const cardTriggerCamera = document.getElementById('card-trigger-camera');
+        // Ingest Modal Elements
+        const ingestModalBackdrop = document.getElementById('ingest-modal-backdrop');
+        const ingestModalCloseBtn = document.getElementById('ingest-modal-close-btn');
+        const sidebarTabUpload    = document.getElementById('sidebar-tab-upload');
+        const sidebarTabCamera    = document.getElementById('sidebar-tab-camera');
+        const panelUploadZone     = document.getElementById('panel-upload-zone');
+        const panelCameraZone     = document.getElementById('panel-camera-zone');
+        const ingestDragArea      = document.getElementById('ingest-drag-area');
+        const fileInput           = document.getElementById('viz-file-input');
+        const ingestBtnBrowse     = document.getElementById('ingest-btn-browse');
+        const cameraFallback      = document.getElementById('camera-fallback');
+        const cameraVideo         = document.getElementById('camera-video');
+        const ingestShutterBtn    = document.getElementById('ingest-shutter-btn');
+        const ingestStatusText    = document.getElementById('ingest-status-text');
+        const ingestBtnCancel     = document.getElementById('ingest-btn-cancel');
+        const ingestBtnApply      = document.getElementById('ingest-btn-apply');
+        
+        const resultImg           = document.getElementById('viz-result-img');
+        const activeMetaPill      = document.getElementById('active-metadata-pill');
         const floatingChangeScene = document.getElementById('floating-change-trigger');
         
         // Viewport Loading elements
@@ -489,7 +501,7 @@ document.addEventListener("DOMContentLoaded", () => {
             scannedMaskB64 = null;
             window._scanToken = null;
 
-            if (uploadZoneWrap) uploadZoneWrap.style.display = 'none';
+            if (ingestModalBackdrop) ingestModalBackdrop.style.display = 'none';
             if (floatingChangeScene) floatingChangeScene.style.display = 'inline-flex';
             if (resultImg) {
                 resultImg.src = roomImageB64;
@@ -674,7 +686,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 resultImg.style.display = 'none';
                 resultImg.src = '';
             }
-            if (uploadZoneWrap) uploadZoneWrap.style.display = 'flex';
+            if (ingestModalBackdrop) ingestModalBackdrop.style.display = 'flex';
+            if (sidebarTabUpload) sidebarTabUpload.click();
+            if (ingestBtnApply) {
+                ingestBtnApply.disabled = true;
+                ingestBtnApply.textContent = 'Apply Scene';
+            }
+            if (ingestStatusText) ingestStatusText.textContent = 'Ready to import scene file';
             if (floatingChangeScene) floatingChangeScene.style.display = 'none';
             if (activeMetaPill) activeMetaPill.style.display = 'none';
 
@@ -742,146 +760,185 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.removeChild(link);
         }
 
-        // --- File Uploader Listeners ---
+        // --- Premium Ingest Modal overlay logic ---
+        let tempIngestedB64 = null;
+        let cameraStream = null;
+
+        // Tab Switching Logic
+        if (sidebarTabUpload) {
+            sidebarTabUpload.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebarTabUpload.classList.add('active');
+                if (sidebarTabCamera) sidebarTabCamera.classList.remove('active');
+                if (panelUploadZone) panelUploadZone.classList.add('active');
+                if (panelCameraZone) panelCameraZone.classList.remove('active');
+                stopCamera();
+                if (ingestStatusText) ingestStatusText.textContent = "Ready to import scene file";
+            });
+        }
+
+        if (sidebarTabCamera) {
+            sidebarTabCamera.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebarTabCamera.classList.add('active');
+                if (sidebarTabUpload) sidebarTabUpload.classList.remove('active');
+                if (panelCameraZone) panelCameraZone.classList.add('active');
+                if (panelUploadZone) panelUploadZone.classList.remove('active');
+                startCamera();
+                if (ingestStatusText) ingestStatusText.textContent = "Ready for live capture";
+            });
+        }
+
+        // Browse trigger inside drag area
+        if (ingestBtnBrowse) {
+            ingestBtnBrowse.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (fileInput) fileInput.click();
+            });
+        }
+
+        // Drag and Drop on Ingest Area
+        if (ingestDragArea) {
+            ingestDragArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                ingestDragArea.classList.add('drag-over');
+            });
+            ingestDragArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                ingestDragArea.classList.remove('drag-over');
+            });
+            ingestDragArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                ingestDragArea.classList.remove('drag-over');
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    const file = e.dataTransfer.files[0];
+                    if (file.type.startsWith('image/')) {
+                        fileToBase64(file).then(b64 => {
+                            tempIngestedB64 = b64;
+                            if (ingestStatusText) ingestStatusText.textContent = "Scene loaded! Click Apply to visualize.";
+                            if (ingestBtnApply) {
+                                ingestBtnApply.disabled = false;
+                                ingestBtnApply.click(); // Auto-apply for seamless UX!
+                            }
+                        });
+                    }
+                }
+            });
+            // Also make clicking the drag area itself trigger the browser file selector
+            ingestDragArea.addEventListener('click', (e) => {
+                // Only trigger if click wasn't on the button itself (to avoid double clicks)
+                if (e.target !== ingestBtnBrowse) {
+                    if (fileInput) fileInput.click();
+                }
+            });
+        }
+
+        // File change wrapper
         function handleFileSelection() {
             if (fileInput.files && fileInput.files[0]) {
                 const file = fileInput.files[0];
                 if (file.type.startsWith('image/')) {
-                    fileToBase64(file).then(loadRoomImage);
+                    fileToBase64(file).then(b64 => {
+                        tempIngestedB64 = b64;
+                        if (ingestStatusText) ingestStatusText.textContent = "Scene loaded! Click Apply to visualize.";
+                        if (ingestBtnApply) {
+                            ingestBtnApply.disabled = false;
+                            ingestBtnApply.click(); // Auto-apply for seamless UX!
+                        }
+                    });
                 }
             }
         }
 
-        if (uploadZoneWrap) {
-            // Prevent default drag over behavior
-            uploadZoneWrap.addEventListener('dragover', e => { 
-                e.preventDefault(); 
-                uploadZoneWrap.classList.add('drag-over'); 
-            });
-            uploadZoneWrap.addEventListener('dragleave', () => {
-                uploadZoneWrap.classList.remove('drag-over');
-            });
-            uploadZoneWrap.addEventListener('drop', e => {
-                e.preventDefault(); 
-                uploadZoneWrap.classList.remove('drag-over');
-                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    const file = e.dataTransfer.files[0];
-                    if (file.type.startsWith('image/')) {
-                        fileToBase64(file).then(loadRoomImage);
-                    }
-                }
-            });
-
-            // Bind triggers inside upload zone
-            const btnTriggerUpload = document.getElementById('btn-trigger-upload');
-            const btnTriggerCamera = document.getElementById('btn-trigger-camera');
+        // Web Camera Capture Functions
+        async function startCamera() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Camera access is not supported on this device/browser.');
+                if (sidebarTabUpload) sidebarTabUpload.click();
+                return;
+            }
+            if (cameraFallback) cameraFallback.style.display = 'flex';
             
-            if (btnTriggerUpload) {
-                btnTriggerUpload.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (fileInput) fileInput.click();
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
                 });
-            }
-
-            // --- Premium Web Camera Capture Pipeline ---
-            const cameraOverlay    = document.getElementById('camera-overlay');
-            const cameraVideo      = document.getElementById('camera-video');
-            const btnCameraCapture = document.getElementById('camera-btn-capture');
-            const btnCameraCancel  = document.getElementById('camera-btn-cancel');
-            let cameraStream       = null;
-
-            async function startCamera(e) {
-                if (e) e.stopPropagation();
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    alert('Camera access is not supported on this device/browser.');
-                    return;
+                if (cameraVideo) {
+                    cameraVideo.srcObject = cameraStream;
+                    cameraVideo.play();
+                    cameraVideo.onloadedmetadata = () => {
+                        if (cameraFallback) cameraFallback.style.display = 'none';
+                    };
                 }
-                
-                try {
-                    cameraStream = await navigator.mediaDevices.getUserMedia({
-                        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
-                    });
-                    if (cameraVideo) {
-                        cameraVideo.srcObject = cameraStream;
-                        cameraVideo.play();
-                    }
-                    if (cameraOverlay) cameraOverlay.style.display = 'flex';
-                } catch (err) {
-                    console.error('Camera access failed:', err);
-                    alert('Could not access camera. Please check browser permissions.');
-                }
+            } catch (err) {
+                console.error('Camera access failed:', err);
+                if (cameraFallback) cameraFallback.style.display = 'none';
+                alert('Could not access camera. Please check browser permissions.');
+                if (sidebarTabUpload) sidebarTabUpload.click();
             }
+        }
 
-            function stopCamera(e) {
-                if (e) e.stopPropagation();
-                if (cameraStream) {
-                    cameraStream.getTracks().forEach(track => track.stop());
-                    cameraStream = null;
-                }
-                if (cameraVideo) cameraVideo.srcObject = null;
-                if (cameraOverlay) cameraOverlay.style.display = 'none';
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
             }
+            if (cameraVideo) cameraVideo.srcObject = null;
+        }
 
-            function captureCameraImage(e) {
-                if (e) e.stopPropagation();
-                if (!cameraVideo || !cameraStream) return;
-                
-                const canvas = document.createElement('canvas');
-                canvas.width = cameraVideo.videoWidth || 640;
-                canvas.height = cameraVideo.videoHeight || 480;
-                
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
-                
-                const dataUrl = canvas.toDataURL('image/png');
-                stopCamera();
-                loadRoomImage(dataUrl);
+        function captureCameraImage(e) {
+            if (e) e.stopPropagation();
+            if (!cameraVideo || !cameraStream) return;
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = cameraVideo.videoWidth || 640;
+            canvas.height = cameraVideo.videoHeight || 480;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
+            
+            const dataUrl = canvas.toDataURL('image/png');
+            stopCamera();
+            
+            tempIngestedB64 = dataUrl;
+            if (ingestStatusText) ingestStatusText.textContent = "Live photo captured!";
+            if (ingestBtnApply) {
+                ingestBtnApply.disabled = false;
+                ingestBtnApply.click(); // Auto-apply captured photo instantly!
             }
+        }
 
-            // Card-Based Gateway Choice Controls
-            if (cardTriggerUpload) {
-                cardTriggerUpload.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (fileInput) fileInput.click();
-                });
-            }
+        if (ingestShutterBtn) {
+            ingestShutterBtn.addEventListener('click', captureCameraImage);
+        }
 
-            if (cardTriggerCamera) {
-                cardTriggerCamera.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (uploadZoneWrap) uploadZoneWrap.style.display = 'none';
-                    startCamera();
-                });
-            }
-
-            // Hover Change Scene Trigger
-            if (floatingChangeScene) {
-                floatingChangeScene.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    // Stop stream if active
+        // Apply and Close listeners
+        if (ingestBtnApply) {
+            ingestBtnApply.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (tempIngestedB64) {
                     stopCamera();
-                    
-                    // Show Gateway Choice Screen
-                    if (uploadZoneWrap) uploadZoneWrap.style.display = 'flex';
-                    floatingChangeScene.style.display = 'none';
-                    
-                    // Hide any active canvas renders until new photo ingested
-                    if (resultImg) resultImg.style.display = 'none';
-                    deactivateCompareMode();
-                    btnCompare.disabled = true;
-                    btnScan.disabled = true;
-                });
-            }
+                    loadRoomImage(tempIngestedB64);
+                    if (ingestModalBackdrop) ingestModalBackdrop.style.display = 'none';
+                }
+            });
+        }
 
-            if (btnCameraCancel) {
-                btnCameraCancel.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    stopCamera();
-                    // Return back to Gateway selection
-                    if (uploadZoneWrap) uploadZoneWrap.style.display = 'flex';
-                });
-            }
-            if (btnCameraCapture) btnCameraCapture.addEventListener('click', captureCameraImage);
+        function closeIngestModal() {
+            stopCamera();
+            if (ingestModalBackdrop) ingestModalBackdrop.style.display = 'none';
+        }
+
+        if (ingestModalCloseBtn) ingestModalCloseBtn.addEventListener('click', closeIngestModal);
+        if (ingestBtnCancel) ingestBtnCancel.addEventListener('click', closeIngestModal);
+
+        // Hover Change Scene Trigger
+        if (floatingChangeScene) {
+            floatingChangeScene.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (ingestModalBackdrop) ingestModalBackdrop.style.display = 'flex';
+                if (sidebarTabUpload) sidebarTabUpload.click();
+            });
         }
 
         if (fileInput) fileInput.addEventListener('change', handleFileSelection);
