@@ -696,19 +696,24 @@ async def health():
     }
 
 # ---------------------------------------------------------------------------
-# 11. FRONTEND ROUTING
+# 11. FRONTEND ROUTING (Conditional for Cloud Deployment)
 # ---------------------------------------------------------------------------
-@app.get("/")
-async def serve_home():
-    return FileResponse("index.html")
+if os.path.exists("index.html"):
+    @app.get("/")
+    async def serve_home():
+        return FileResponse("index.html")
 
-@app.get("/visualizer.html")
-async def serve_visualizer():
-    return FileResponse("visualizer.html")
+if os.path.exists("visualizer.html"):
+    @app.get("/visualizer.html")
+    async def serve_visualizer():
+        return FileResponse("visualizer.html")
 
-app.mount("/css", StaticFiles(directory="css"), name="css")
-app.mount("/js", StaticFiles(directory="js"), name="js")
-app.mount("/assets", StaticFiles(directory="assets"), name="assets")
+if os.path.isdir("css"):
+    app.mount("/css", StaticFiles(directory="css"), name="css")
+if os.path.isdir("js"):
+    app.mount("/js", StaticFiles(directory="js"), name="js")
+if os.path.isdir("assets"):
+    app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 if os.path.isdir("static"):
     app.mount("/static", StaticFiles(directory="static"), name="static")
