@@ -683,6 +683,7 @@ document.addEventListener("DOMContentLoaded", () => {
             scanDone = false;
             selectedMat = null;
             renderHistory = [];
+            if (fileInput) fileInput.value = '';
             
             deactivateCompareMode();
             resetSliders();
@@ -850,6 +851,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             ingestBtnApply.disabled = false;
                             ingestBtnApply.click(); // Auto-apply for seamless UX!
                         }
+                        fileInput.value = ''; // Reset input to allow selecting same file again
                     });
                 }
             }
@@ -941,6 +943,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (floatingChangeScene) {
             floatingChangeScene.addEventListener('click', (e) => {
                 e.stopPropagation();
+                if (fileInput) fileInput.value = ''; // Reset input to allow selecting same file again
                 if (ingestModalBackdrop) ingestModalBackdrop.style.display = 'flex';
                 if (sidebarTabUpload) sidebarTabUpload.click();
             });
