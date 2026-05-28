@@ -273,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // --- Main Operations: SCAN ---
         async function triggerScan() {
-            if (!roomImageB64 || !apiOnline || isScanning) return;
+            if (!roomImageB64 || isScanning) return;
             
             isScanning = true;
             btnScan.disabled = true;
@@ -521,11 +521,16 @@ document.addEventListener("DOMContentLoaded", () => {
             updateHudGauge(0.0, 'INGESTED', '0%');
 
             if (activeMetaPill) {
-                activeMetaPill.textContent = 'Scene loaded. Trigger "Scan Floor" to initialize neural segmentation.';
+                activeMetaPill.textContent = 'Scene loaded. Initializing neural segmentation scan...';
                 activeMetaPill.style.display = 'block';
             }
 
             btnScan.disabled = false;
+
+            // Automatically trigger Neural AI Segmentation scan
+            setTimeout(() => {
+                triggerScan();
+            }, 100);
         }
 
         // --- History Snapshots (Undo / Redo Configuration) ---
