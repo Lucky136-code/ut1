@@ -115,9 +115,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const fileInput      = document.getElementById('viz-file-input');
         const resultImg      = document.getElementById('viz-result-img');
         const activeMetaPill = document.getElementById('active-metadata-pill');
-        const sourceSwitcher = document.getElementById('viewport-source-switcher');
-        const switchUpload = document.getElementById('switch-to-upload');
-        const switchCamera = document.getElementById('switch-to-camera');
+        const cardTriggerUpload = document.getElementById('card-trigger-upload');
+        const cardTriggerCamera = document.getElementById('card-trigger-camera');
         const floatingChangeScene = document.getElementById('floating-change-trigger');
         
         // Viewport Loading elements
@@ -491,7 +490,6 @@ document.addEventListener("DOMContentLoaded", () => {
             window._scanToken = null;
 
             if (uploadZoneWrap) uploadZoneWrap.style.display = 'none';
-            if (sourceSwitcher) sourceSwitcher.style.display = 'none';
             if (floatingChangeScene) floatingChangeScene.style.display = 'inline-flex';
             if (resultImg) {
                 resultImg.src = roomImageB64;
@@ -677,10 +675,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 resultImg.src = '';
             }
             if (uploadZoneWrap) uploadZoneWrap.style.display = 'flex';
-            if (sourceSwitcher) sourceSwitcher.style.display = 'flex';
             if (floatingChangeScene) floatingChangeScene.style.display = 'none';
-            if (switchUpload) switchUpload.classList.add('active');
-            if (switchCamera) switchCamera.classList.remove('active');
             if (activeMetaPill) activeMetaPill.style.display = 'none';
 
             btnScan.disabled = true;
@@ -843,22 +838,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 loadRoomImage(dataUrl);
             }
 
-            // Segmented Switcher Controls
-            if (switchUpload) {
-                switchUpload.addEventListener('click', (e) => {
+            // Card-Based Gateway Choice Controls
+            if (cardTriggerUpload) {
+                cardTriggerUpload.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    switchUpload.classList.add('active');
-                    switchCamera.classList.remove('active');
-                    stopCamera();
-                    if (uploadZoneWrap) uploadZoneWrap.style.display = 'flex';
+                    if (fileInput) fileInput.click();
                 });
             }
 
-            if (switchCamera) {
-                switchCamera.addEventListener('click', (e) => {
+            if (cardTriggerCamera) {
+                cardTriggerCamera.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    switchCamera.classList.add('active');
-                    switchUpload.classList.remove('active');
                     if (uploadZoneWrap) uploadZoneWrap.style.display = 'none';
                     startCamera();
                 });
@@ -868,27 +858,27 @@ document.addEventListener("DOMContentLoaded", () => {
             if (floatingChangeScene) {
                 floatingChangeScene.addEventListener('click', (e) => {
                     e.stopPropagation();
+                    // Stop stream if active
+                    stopCamera();
+                    
+                    // Show Gateway Choice Screen
                     if (uploadZoneWrap) uploadZoneWrap.style.display = 'flex';
-                    if (sourceSwitcher) sourceSwitcher.style.display = 'flex';
                     floatingChangeScene.style.display = 'none';
                     
-                    // Activate upload tab by default when reopening
-                    switchUpload.classList.add('active');
-                    switchCamera.classList.remove('active');
-                    stopCamera();
+                    // Hide any active canvas renders until new photo ingested
+                    if (resultImg) resultImg.style.display = 'none';
+                    deactivateCompareMode();
+                    btnCompare.disabled = true;
+                    btnScan.disabled = true;
                 });
             }
 
-            if (btnTriggerCamera) {
-                btnTriggerCamera.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (switchCamera) switchCamera.click();
-                });
-            }
             if (btnCameraCancel) {
                 btnCameraCancel.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    if (switchUpload) switchUpload.click();
+                    stopCamera();
+                    // Return back to Gateway selection
+                    if (uploadZoneWrap) uploadZoneWrap.style.display = 'flex';
                 });
             }
             if (btnCameraCapture) btnCameraCapture.addEventListener('click', captureCameraImage);
