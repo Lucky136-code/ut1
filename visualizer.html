@@ -1109,14 +1109,14 @@
             height: auto;
             transform: translate(-50%, -50%);
             object-fit: cover;
-            opacity: 0.12;
-            filter: brightness(1.1) contrast(1.05) grayscale(0.5);
+            opacity: 0.55; /* Increased opacity from 0.12 to 0.55 for rich cinematic clarity */
+            filter: brightness(0.85) contrast(1.1) grayscale(0.1);
         }
 
         .preloader-overlay {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.25) 0%, #ffffff 85%);
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, rgba(245, 244, 240, 0.6) 85%);
             z-index: 1;
         }
 
