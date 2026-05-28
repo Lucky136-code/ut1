@@ -476,7 +476,9 @@ def _do_render(request: RenderRequest) -> dict:
         overall_mask = np.maximum(overall_mask, mask_f)
 
         # Free per-iteration large arrays immediately
-        del tiled_marble, warped_marble, marble_f, blended_f, mask_3d
+        if "tiled_marble" in locals():
+            del tiled_marble
+        del warped_marble, marble_f, blended_f, mask_3d
         gc.collect()
 
     final_image_u8   = final_image.astype(np.uint8)
