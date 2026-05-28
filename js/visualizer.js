@@ -766,39 +766,79 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
             });
-            uploadZoneWrap.addEventListener('click', () => {
-                if (fileInput) fileInput.click();
-            });
+
+            // Bind triggers inside upload zone
+            const btnTriggerUpload = document.getElementById('btn-trigger-upload');
+            const btnTriggerCamera = document.getElementById('btn-trigger-camera');
+            
+            if (btnTriggerUpload) {
+                btnTriggerUpload.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (fileInput) fileInput.click();
+                });
+            }
+
+            // --- Premium Web Camera Capture Pipeline ---
+            const cameraOverlay    = document.getElementById('camera-overlay');
+            const cameraVideo      = document.getElementById('camera-video');
+            const btnCameraCapture = document.getElementById('camera-btn-capture');
+            const btnCameraCancel  = document.getElementById('camera-btn-cancel');
+            let cameraStream       = null;
+
+            async function startCamera(e) {
+                if (e) e.stopPropagation();
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('Camera access is not supported on this device/browser.');
+                    return;
+                }
+                
+                try {
+                    cameraStream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+                    });
+                    if (cameraVideo) {
+                        cameraVideo.srcObject = cameraStream;
+                        cameraVideo.play();
+                    }
+                    if (cameraOverlay) cameraOverlay.style.display = 'flex';
+                } catch (err) {
+                    console.error('Camera access failed:', err);
+                    alert('Could not access camera. Please check browser permissions.');
+                }
+            }
+
+            function stopCamera(e) {
+                if (e) e.stopPropagation();
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                    cameraStream = null;
+                }
+                if (cameraVideo) cameraVideo.srcObject = null;
+                if (cameraOverlay) cameraOverlay.style.display = 'none';
+            }
+
+            function captureCameraImage(e) {
+                if (e) e.stopPropagation();
+                if (!cameraVideo || !cameraStream) return;
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = cameraVideo.videoWidth || 640;
+                canvas.height = cameraVideo.videoHeight || 480;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
+                
+                const dataUrl = canvas.toDataURL('image/png');
+                stopCamera();
+                loadRoomImage(dataUrl);
+            }
+
+            if (btnTriggerCamera) btnTriggerCamera.addEventListener('click', startCamera);
+            if (btnCameraCancel) btnCameraCancel.addEventListener('click', stopCamera);
+            if (btnCameraCapture) btnCameraCapture.addEventListener('click', captureCameraImage);
         }
 
         if (fileInput) fileInput.addEventListener('change', handleFileSelection);
-
-        // --- Preset Loader ---
-        document.querySelectorAll('.viz-preset').forEach(btn => {
-            btn.addEventListener('click', async e => {
-                e.stopPropagation();
-                const rt  = btn.dataset.presetRt;
-                const url = btn.dataset.presetImg;
-                currentRoomType = rt;
-
-                // Set preset category active class
-                document.querySelectorAll('.viz-rt').forEach(b => b.classList.toggle('active', b.dataset.rt === rt));
-
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'flex';
-                    loadingText.textContent = 'Ingesting Room Preset...';
-                }
-
-                try {
-                    const b64 = await urlToBase64(url);
-                    await loadRoomImage(b64);
-                } catch(err) {
-                    console.error('Preset loading failed:', err);
-                } finally {
-                    if (loadingOverlay) loadingOverlay.style.display = 'none';
-                }
-            });
-        });
 
         // --- Workspace Trigger Bindings ---
         if (btnScan) btnScan.addEventListener('click', triggerScan);
