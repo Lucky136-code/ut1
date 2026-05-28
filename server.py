@@ -185,6 +185,15 @@ def load_marble_texture(marble_id: str, texture_b64: Optional[str] = None) -> np
                 cv2.FONT_HERSHEY_SIMPLEX, 1.2, (55, 175, 212), 3)
     return ph
 
+@lru_cache(maxsize=1)
+def _get_stone_grain_tile() -> np.ndarray:
+    # Generate 256x256 micro-texture grain procedurally
+    grain = np.random.normal(128, 5, (256, 256)).astype(np.uint8)
+    grain = cv2.GaussianBlur(grain, (3, 3), 0)
+    # Normalize to -1.0 to 1.0 (centered on 0.0)
+    grain_f = (grain.astype(np.float32) - 128.0) / 128.0
+    return grain_f
+
 # ---------------------------------------------------------------------------
 # 6.  PATTERN GENERATOR  (leaner canvas allocation)
 # ---------------------------------------------------------------------------
@@ -217,7 +226,62 @@ def generate_pattern(texture: np.ndarray, pattern_type: str,
                    interpolation=cv2.INTER_LINEAR)
 
     try:
-        if pattern_type == "bookmatch":
+        if pattern_type == "staggered" or pattern_type == "grid":
+            reps_y = math.ceil(target_h / tile_size) + 1
+            reps_x = math.ceil(target_w / tile_size) + 2
+            
+            # Canvas to build on
+            canvas = np.zeros((reps_y * tile_size, reps_x * tile_size, 3), dtype=np.uint8)
+            
+            # Precompute 4 flipped orientations to completely eliminate cloned appearance
+            t_normal = t
+            t_flip_h = cv2.flip(t, 1)
+            t_flip_v = cv2.flip(t, 0)
+            t_flip_both = cv2.flip(t, -1)
+            orientations = [t_normal, t_flip_h, t_flip_both, t_flip_v]
+            
+            for y in range(reps_y):
+                for x in range(reps_x):
+                    # Staggered row horizontal shift
+                    offset_x = (tile_size // 2) if (pattern_type == "staggered" and y % 2 == 1) else 0
+                    
+                    # Choose a pseudo-random orientation based on grid position
+                    idx = (x * 3 + y * 7) % 4
+                    tile_to_use = orientations[idx]
+                    
+                    sy = y * tile_size
+                    sx = x * tile_size + offset_x
+                    
+                    ey = sy + tile_size
+                    ex = sx + tile_size
+                    
+                    # Safely place tile on canvas
+                    if ex <= canvas.shape[1]:
+                        canvas[sy:ey, sx:ex] = tile_to_use
+                    else:
+                        canvas[sy:ey, sx:canvas.shape[1]] = tile_to_use[:, :canvas.shape[1] - sx]
+                        
+            return canvas[:target_h, :target_w]
+            
+        elif pattern_type == "diagonal":
+            # Build just enough to cover after a 45° rotation
+            diag   = int(math.ceil(math.sqrt(target_w**2 + target_h**2))) + tile_size
+            
+            # Build a large rotated layout with randomized orientations too!
+            large = generate_pattern(texture, "grid", diag, diag, tile_size, 0.0)
+            cx, cy = diag // 2, diag // 2
+            M      = cv2.getRotationMatrix2D((cx, cy), 45, 1.0)
+            rot    = cv2.warpAffine(large, M, (diag, diag))
+            sy     = max(0, cy - target_h // 2)
+            sx     = max(0, cx - target_w // 2)
+            crop   = rot[sy:sy + target_h, sx:sx + target_w]
+            # Pad if the crop came out short
+            if crop.shape[0] < target_h or crop.shape[1] < target_w:
+                t_pad = generate_pattern(texture, "grid", target_w, target_h, tile_size, 0.0)
+                return t_pad
+            return crop
+
+        else: # bookmatch
             t_lr   = cv2.flip(t, 1)
             t_ud   = cv2.flip(t, 0)
             t_udlr = cv2.flip(t, -1)
@@ -226,44 +290,9 @@ def generate_pattern(texture: np.ndarray, pattern_type: str,
             reps_x = math.ceil(target_w / block.shape[1]) + 1
             return np.tile(block, (reps_y, reps_x, 1))[:target_h, :target_w]
 
-        elif pattern_type == "staggered":
-            reps_y = math.ceil(target_h / tile_size) + 1
-            reps_x = math.ceil(target_w / tile_size) + 2   # +1 extra for half-offset
-            row_a  = np.tile(t, (1, reps_x, 1))[:tile_size, :target_w + tile_size]
-            row_b  = np.roll(row_a, tile_size // 2, axis=1)[:, :target_w + tile_size]
-            rows   = []
-            for i in range(reps_y):
-                rows.append(row_b if i % 2 else row_a)
-            canvas = np.vstack(rows)[:target_h, :target_w]
-            return canvas
-
-        elif pattern_type == "diagonal":
-            # Build just enough to cover after a 45° rotation
-            diag   = int(math.ceil(math.sqrt(target_w**2 + target_h**2))) + tile_size
-            reps   = math.ceil(diag / tile_size) + 1
-            large  = np.tile(t, (reps, reps, 1))[:diag, :diag]
-            cx, cy = diag // 2, diag // 2
-            M      = cv2.getRotationMatrix2D((cx, cy), 45, 1.0)
-            rot    = cv2.warpAffine(large, M, (diag, diag))
-            sy     = max(0, cy - target_h // 2)
-            sx     = max(0, cx - target_w // 2)
-            crop   = rot[sy:sy + target_h, sx:sx + target_w]
-            # Pad if the crop came out short (edge of rotated canvas)
-            if crop.shape[0] < target_h or crop.shape[1] < target_w:
-                reps2 = math.ceil(target_h / tile_size) + 2
-                return np.tile(t, (reps2, reps2, 1))[:target_h, :target_w]
-            return crop
-
-        else:  # "grid"
-            reps_y = math.ceil(target_h / tile_size) + 1
-            reps_x = math.ceil(target_w / tile_size) + 1
-            return np.tile(t, (reps_y, reps_x, 1))[:target_h, :target_w]
-
     except Exception as e:
-        print(f"Pattern '{pattern_type}' failed ({e}), using grid fallback.")
-        reps_y = math.ceil(target_h / tile_size) + 1
-        reps_x = math.ceil(target_w / tile_size) + 1
-        return np.tile(t, (reps_y, reps_x, 1))[:target_h, :target_w]
+        print(f"Pattern '{pattern_type}' failed ({e}), using randomized grid fallback.")
+        return generate_pattern(texture, "grid", target_w, target_h, tile_size, 0.0)
 
 # ---------------------------------------------------------------------------
 # 7.  SEGMENTATION  (cached + runs in thread pool)
@@ -485,6 +514,17 @@ def _do_render(request: RenderRequest) -> dict:
         # Additive & overlay blend of specular reflections to replicate glossy polished marble
         gloss_mix = 0.48 # elegant polished sheen reflection level
         blended_f = np.clip(blended_f * (1.0 - gloss_mix * highlights_intensity_3d) + orig_f * gloss_mix * highlights_intensity_3d, 0, 255)
+        
+        # Procedural Ultra-Crisp Polished Crystalline Stone Micro-Grain
+        # We tile a seamless 256x256 grain block at native resolution to give absolute razor-sharpness
+        grain_tile = _get_stone_grain_tile()
+        reps_y = math.ceil(h / 256)
+        reps_x = math.ceil(w / 256)
+        full_grain = np.tile(grain_tile, (reps_y, reps_x))[:h, :w]
+        full_grain_3d = np.stack([full_grain] * 3, axis=-1)
+        
+        # Apply grain as a light 5.5% bump-map texture overlay to preserve infinite crisp details
+        blended_f = np.clip(blended_f * (1.0 + 0.055 * full_grain_3d), 0, 255)
         
         final_image  = blended_f * mask_3d + final_image * (1 - mask_3d)
         overall_mask = np.maximum(overall_mask, mask_f)
