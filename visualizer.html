@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&family=Space+Mono:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&family=Space+Mono:wght@400;700&family=Cinzel:wght@600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css?v=5">
     
@@ -97,11 +97,11 @@
         }
 
         .viz-brand-title {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 1.05rem;
+            font-family: 'Cinzel', serif !important;
+            font-weight: 700;
+            font-size: 1.15rem;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.05em;
             color: var(--viz-text-primary);
         }
 
@@ -1683,11 +1683,11 @@
         }
 
         .preloader-logo {
-            font-family: var(--font-heading);
+            font-family: 'Cinzel', serif !important;
             font-size: 2.6rem;
-            font-weight: 800;
+            font-weight: 700;
             color: var(--viz-text-primary);
-            letter-spacing: 0.16em;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
             margin-bottom: 8px;
             animation: preloaderFadeDown 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -1846,7 +1846,7 @@
         <!-- Header Bar -->
         <div class="viz-header-bar">
             <a href="/" class="viz-brand-block">
-                <div class="viz-brand-logo">UT</div>
+                <img src="assets/logo.jpeg" class="viz-brand-logo" alt="Uma Traders Logo" style="object-fit: cover; border: 1px solid rgba(0,0,0,0.12); padding: 0;">
                 <div class="viz-brand-title">Uma Traders<span class="viz-brand-subtitle">✦ AI DESIGN STUDIO</span></div>
             </a>
             
@@ -1886,9 +1886,7 @@
                         <div class="viz-control-group">
                             <span class="viz-control-label">Target Surface</span>
                             <div class="viz-segment-row">
-                                <button class="viz-segment-btn active viz-rt" data-rt="hall">Floor</button>
-                                <button class="viz-segment-btn viz-rt" data-rt="kitchen">Countertop</button>
-                                <button class="viz-segment-btn viz-rt" data-rt="bathroom">Wall/Sink</button>
+                                <button class="viz-segment-btn active viz-rt" data-rt="hall" style="flex: 1; cursor: default;">Floor</button>
                             </div>
                         </div>
 
