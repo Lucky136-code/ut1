@@ -115,6 +115,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const fileInput      = document.getElementById('viz-file-input');
         const resultImg      = document.getElementById('viz-result-img');
         const activeMetaPill = document.getElementById('active-metadata-pill');
+        const sourceSwitcher = document.getElementById('viewport-source-switcher');
+        const switchUpload = document.getElementById('switch-to-upload');
+        const switchCamera = document.getElementById('switch-to-camera');
+        const floatingChangeScene = document.getElementById('floating-change-trigger');
         
         // Viewport Loading elements
         const loadingOverlay = document.getElementById('viz-loading');
@@ -487,6 +491,8 @@ document.addEventListener("DOMContentLoaded", () => {
             window._scanToken = null;
 
             if (uploadZoneWrap) uploadZoneWrap.style.display = 'none';
+            if (sourceSwitcher) sourceSwitcher.style.display = 'none';
+            if (floatingChangeScene) floatingChangeScene.style.display = 'inline-flex';
             if (resultImg) {
                 resultImg.src = roomImageB64;
                 resultImg.style.display = 'block';
@@ -671,6 +677,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 resultImg.src = '';
             }
             if (uploadZoneWrap) uploadZoneWrap.style.display = 'flex';
+            if (sourceSwitcher) sourceSwitcher.style.display = 'flex';
+            if (floatingChangeScene) floatingChangeScene.style.display = 'none';
+            if (switchUpload) switchUpload.classList.add('active');
+            if (switchCamera) switchCamera.classList.remove('active');
             if (activeMetaPill) activeMetaPill.style.display = 'none';
 
             btnScan.disabled = true;
@@ -833,8 +843,54 @@ document.addEventListener("DOMContentLoaded", () => {
                 loadRoomImage(dataUrl);
             }
 
-            if (btnTriggerCamera) btnTriggerCamera.addEventListener('click', startCamera);
-            if (btnCameraCancel) btnCameraCancel.addEventListener('click', stopCamera);
+            // Segmented Switcher Controls
+            if (switchUpload) {
+                switchUpload.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    switchUpload.classList.add('active');
+                    switchCamera.classList.remove('active');
+                    stopCamera();
+                    if (uploadZoneWrap) uploadZoneWrap.style.display = 'flex';
+                });
+            }
+
+            if (switchCamera) {
+                switchCamera.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    switchCamera.classList.add('active');
+                    switchUpload.classList.remove('active');
+                    if (uploadZoneWrap) uploadZoneWrap.style.display = 'none';
+                    startCamera();
+                });
+            }
+
+            // Hover Change Scene Trigger
+            if (floatingChangeScene) {
+                floatingChangeScene.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (uploadZoneWrap) uploadZoneWrap.style.display = 'flex';
+                    if (sourceSwitcher) sourceSwitcher.style.display = 'flex';
+                    floatingChangeScene.style.display = 'none';
+                    
+                    // Activate upload tab by default when reopening
+                    switchUpload.classList.add('active');
+                    switchCamera.classList.remove('active');
+                    stopCamera();
+                });
+            }
+
+            if (btnTriggerCamera) {
+                btnTriggerCamera.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (switchCamera) switchCamera.click();
+                });
+            }
+            if (btnCameraCancel) {
+                btnCameraCancel.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (switchUpload) switchUpload.click();
+                });
+            }
             if (btnCameraCapture) btnCameraCapture.addEventListener('click', captureCameraImage);
         }
 
