@@ -6,3 +6,4 @@ opencv-python-headless
 pillow
 transformers
 torch --index-url https://download.pytorch.org/whl/cpu
+torchvision --index-url https://download.pytorch.org/whl/cpu
