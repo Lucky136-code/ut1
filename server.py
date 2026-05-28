@@ -461,8 +461,8 @@ def _do_render(request: RenderRequest) -> dict:
             horizon_y = h * 0.45
             src_pts   = np.float32([[0, 0],    [w, 0],    [0, h],    [w, h]])
             dst_pts   = np.float32([
-                [w * 0.2, horizon_y], [w * 0.8, horizon_y],
-                [-w * 0.8, h * 1.5],  [w * 1.8, h * 1.5],
+                [w * 0.15, horizon_y], [w * 0.85, horizon_y],
+                [-w * 0.4,  h * 1.25], [w * 1.4,  h * 1.25],
             ])
             warped_marble = cv2.warpPerspective(
                 tiled_marble, cv2.getPerspectiveTransform(src_pts, dst_pts), (w, h)
@@ -471,7 +471,21 @@ def _do_render(request: RenderRequest) -> dict:
             warped_marble = generate_pattern(texture, "grid", w, h, tile_size_base, tile_rotation=rot_angle)
 
         marble_f  = warped_marble.astype(np.float32) / 255.0
+        
+        # Photorealistic Specular Highlight/Reflection Overlay Blending
+        # We blend the original bright highlights from original_img on top of the dark marble texture
+        orig_f = original_img.astype(np.float32)
+        # Isolate highlights: bright spots in room_gray (cube of room_gray is a soft bright threshold)
+        highlights_intensity = np.power(room_gray, 3.0)
+        highlights_intensity_3d = np.stack([highlights_intensity] * 3, axis=-1)
+        
+        # Base shadow and exposure blend
         blended_f = np.clip(marble_f * room_gray_3d * light_mult, 0, 1) * 255.0
+        
+        # Additive & overlay blend of specular reflections to replicate glossy polished marble
+        gloss_mix = 0.48 # elegant polished sheen reflection level
+        blended_f = np.clip(blended_f * (1.0 - gloss_mix * highlights_intensity_3d) + orig_f * gloss_mix * highlights_intensity_3d, 0, 255)
+        
         final_image  = blended_f * mask_3d + final_image * (1 - mask_3d)
         overall_mask = np.maximum(overall_mask, mask_f)
 
