@@ -17,4 +17,4 @@ RUN python -c "from transformers import SegformerForSemanticSegmentation, Segfor
 COPY . .
 
 # Run FastAPI on port 7860 (Hugging Face's default port)
-CMD ["uvicorn", "server.py:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "7860"]
