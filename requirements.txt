@@ -1,10 +1,8 @@
 fastapi
-uvicorn[standard]
-opencv-python
-numpy
-Pillow
-transformers
-torch
-torchvision
+uvicorn
 pydantic
-python-multipart
+numpy
+opencv-python-headless
+pillow
+transformers
+torch --index-url https://download.pytorch.org/whl/cpu
