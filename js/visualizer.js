@@ -6,6 +6,28 @@ document.addEventListener("DOMContentLoaded", () => {
         // Expanded Geology Monolith Telemetry Registry
         const MATERIALS = [
             { 
+                id: 'makrana-crystalline',   
+                cat: 'marble',     
+                name: 'Makrana Crystalline',   
+                img: '/assets/statuario_pure.png',
+                texture: '/assets/statuario_pure.png',
+                taxonomy: 'Pure Crystalline Calcite',
+                origin: 'Makrana, Rajasthan, India',
+                hardness: '4.0 Mohs',
+                desc: 'Prsitne pure white crystalline marble, the peak of Indian heritage, used in historic monuments like the Taj Mahal.'
+            },
+            { 
+                id: 'italian-calacatta',   
+                cat: 'marble',     
+                name: 'Italian Calacatta',   
+                img: '/assets/marble_gold.png',
+                texture: '/assets/marble_gold.png',
+                taxonomy: 'Brecciated Calcite',
+                origin: 'Apuan Alps, Carrara, Italy',
+                hardness: '3.5 Mohs',
+                desc: 'Timeless Carrara luxury with sweeping bold golden and warm grey veining patterns.'
+            },
+            { 
                 id: 'obsidian-noir',   
                 cat: 'marble',     
                 name: 'Obsidian Noir',   
@@ -14,106 +36,84 @@ document.addEventListener("DOMContentLoaded", () => {
                 taxonomy: 'Volcanic Glass Silicate',
                 origin: 'Jalisco, Mexico',
                 hardness: '5.5 Mohs',
-                desc: 'Highly polished volcanic silicate with smoky dark waves. Deep glassy luster that reflects modern structural sophistication.'
+                desc: 'Deep black canvas pierced by brilliant golden veins. A striking statement of modern luxury.'
             },
             { 
-                id: 'calacatta-oro',   
+                id: 'sample-1',   
                 cat: 'marble',     
-                name: 'Calacatta Oro',   
-                img: '/assets/marble_gold.png',
-                texture: '/assets/marble_gold.png',
-                taxonomy: 'Brecciated Calcite',
-                origin: 'Apuan Alps, Carrara, Italy',
-                hardness: '3.5 Mohs',
-                desc: 'Extremely rare bold golden and charcoal veining suspended on a creamy white calcite background. The absolute peak of luxury.'
-            },
-            { 
-                id: 'statuario-pure',  
-                cat: 'marble',     
-                name: 'Statuario Pure',  
-                img: '/assets/statuario_pure.png',
+                name: 'Sample 1',   
+                img: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=400',
                 texture: '/assets/statuario_pure.png',
-                taxonomy: 'Pure Calcium Carbonate',
-                origin: 'Makrana, Rajasthan, India',
-                hardness: '4.0 Mohs',
-                desc: 'Pristine, ultra-dense snow white marble with subtle crystalline structure. Historical marble used in monuments like Taj Mahal.'
+                taxonomy: 'Unassigned Sample',
+                origin: 'Quarry Registry Pending',
+                hardness: '— Mohs',
+                desc: 'Upcoming luxury collection addition. Inquire for private viewing and custom slab dimensions.'
             },
             { 
-                id: 'emperador-dark',  
-                cat: 'marble',     
-                name: 'Emperador Dark',  
-                img: '/assets/emperador_dark.png',
-                texture: '/assets/emperador_dark.png',
-                taxonomy: 'Breccias Dolomite',
-                origin: 'Novelda, Alicante, Spain',
-                hardness: '3.0 Mohs',
-                desc: 'Exquisite deep chocolate brown tones highlighted by irregular, webbed light-cream calcite lines and crystal deposits.'
-            },
-            { 
-                id: 'cosmic-black',    
-                cat: 'granite',    
-                name: 'Cosmic Black',    
-                img: '/assets/cosmic_black.png',
-                texture: '/assets/cosmic_black.png',
-                taxonomy: 'Migmatitic Gneiss',
-                origin: 'Bahia, Brazil',
-                hardness: '6.5 Mohs',
-                desc: 'Dramatic golden waves and silver quartz crystals swirling in a solid black feldspar ocean. Near diamond-grade durability.'
-            },
-            { 
-                id: 'blue-pearl',      
-                cat: 'granite',    
-                name: 'Blue Pearl',      
-                img: 'https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&q=80&w=400',
-                texture: 'https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&q=80&w=400',
-                taxonomy: 'Larvikite Syenite',
-                origin: 'Larvik, Vestfold, Norway',
-                hardness: '6.0 Mohs',
-                desc: 'Uniform medium-grained rock with large, iridescent feldspar crystals flashing intense steel blue and silver reflections.'
-            },
-            { 
-                id: 'kashmir-white',   
-                cat: 'granite',    
-                name: 'Kashmir White',   
-                img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=400',
-                texture: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=400',
-                taxonomy: 'Metamorphic Granulite',
-                origin: 'Tamil Nadu, India',
-                hardness: '6.5 Mohs',
-                desc: 'Soft white and light grey base sprinkled with tiny blackberry-colored garnets. Provides a spacious, airy visual footprint.'
-            },
-            { 
-                id: 'sculpted-vases',  
-                cat: 'handicraft', 
-                name: 'Sculpted Vases',  
-                img: 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?auto=format&fit=crop&q=80&w=400',
+                id: 'sample-2',   
+                cat: 'granite',     
+                name: 'Sample 2',   
+                img: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=400',
                 texture: '/assets/statuario_pure.png',
-                taxonomy: 'Decorative Monolith Art',
-                origin: 'Jaipur, Rajasthan, India',
-                hardness: '4.0 Mohs',
-                desc: 'Hand-carved premium marble home accents, carefully turned and finished by hereditary masters of Jaipur school.'
+                taxonomy: 'Unassigned Sample',
+                origin: 'Quarry Registry Pending',
+                hardness: '— Mohs',
+                desc: 'Upcoming premium granite addition. Inquire for custom slab dimensions.'
             },
             { 
-                id: 'inlay-tabletops', 
-                cat: 'handicraft', 
-                name: 'Inlay Tabletops', 
-                img: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&fit=crop&q=80&w=400',
+                id: 'sample-3',   
+                cat: 'granite',     
+                name: 'Sample 3',   
+                img: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=400',
                 texture: '/assets/statuario_pure.png',
-                taxonomy: 'Pietra Dura Inlay Mosaic',
-                origin: 'Agra, Uttar Pradesh, India',
-                hardness: '4.5 Mohs',
-                desc: 'Precision gemstone mosaic inlaid into flawless white Makrana marble base, displaying timeless Mughal geometry.'
+                taxonomy: 'Unassigned Sample',
+                origin: 'Quarry Registry Pending',
+                hardness: '— Mohs',
+                desc: 'Upcoming premium granite addition. Inquire for custom slab dimensions.'
             },
             { 
-                id: 'figurines',       
-                cat: 'handicraft', 
-                name: 'Marble Figurines',
-                img: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=400',
+                id: 'sample-4',   
+                cat: 'granite',     
+                name: 'Sample 4',   
+                img: 'https://images.unsplash.com/photo-161821195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=400',
                 texture: '/assets/statuario_pure.png',
-                taxonomy: 'Fine Statuary Carving',
-                origin: 'Makrana, India',
-                hardness: '4.0 Mohs',
-                desc: 'Polished spiritual figurines sculpted from high-grade crystalline white marble. Beautiful satin touch texture.'
+                taxonomy: 'Unassigned Sample',
+                origin: 'Quarry Registry Pending',
+                hardness: '— Mohs',
+                desc: 'Upcoming premium granite addition. Inquire for custom slab dimensions.'
+            },
+            { 
+                id: 'sample-5',   
+                cat: 'handicraft',     
+                name: 'Sample 5',   
+                img: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=400',
+                texture: '/assets/statuario_pure.png',
+                taxonomy: 'Unassigned Sample',
+                origin: 'Agra School Artisan Lab',
+                hardness: '— Mohs',
+                desc: 'Artisanal masterpiece. Hand-polished Makrana accent piece designed by hereditary masters.'
+            },
+            { 
+                id: 'sample-6',   
+                cat: 'handicraft',     
+                name: 'Sample 6',   
+                img: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=400',
+                texture: '/assets/statuario_pure.png',
+                taxonomy: 'Unassigned Sample',
+                origin: 'Agra School Artisan Lab',
+                hardness: '— Mohs',
+                desc: 'Artisanal masterpiece. Hand-polished Makrana accent piece designed by hereditary masters.'
+            },
+            { 
+                id: 'sample-7',   
+                cat: 'handicraft',     
+                name: 'Sample 7',   
+                img: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=400',
+                texture: '/assets/statuario_pure.png',
+                taxonomy: 'Unassigned Sample',
+                origin: 'Agra School Artisan Lab',
+                hardness: '— Mohs',
+                desc: 'Artisanal masterpiece. Hand-polished Makrana accent piece designed by hereditary masters.'
             },
         ];
 
