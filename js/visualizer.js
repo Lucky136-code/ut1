@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
     // === ROOM VISUALIZER (AI-Powered Luxury Workstation Client) ===
     (function() {
-        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        const API_BASE = window.location.hostname === 'localhost' || 
+                         window.location.hostname === '127.0.0.1' || 
+                         window.location.hostname === '' || 
+                         window.location.protocol === 'file:'
             ? 'http://127.0.0.1:8000'
             : 'https://lucky1362002-umatraders-ai.hf.space';
 
@@ -322,20 +325,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (uploadZoneWrap) uploadZoneWrap.style.display = 'none';
 
                 // Unlock compare, reset, download
-                btnCompare.disabled = false;
+                if (btnCompare) btnCompare.disabled = false;
                 btnReset.disabled = false;
                 btnDownload.disabled = false;
                 if (btnRefine) {
                     btnRefine.disabled = false;
-                    btnRefine.classList.add('pulse-refine');
                 }
+
+                // Show Photoshop-style floating paint toolbar
+                const paintToolbar = document.getElementById('paint-toolbar');
+                if (paintToolbar) paintToolbar.style.display = 'flex';
 
                 // Update HUD metrics
                 updateHudGauge(98.4, 'SUCCESS', data.coverage_pct + '%');
                 updatePipelineProgress(2); // Ingest -> Segment done
 
                 if (activeMetaPill) {
-                    activeMetaPill.textContent = `Surface Detected: ${data.coverage_pct}% coverage. Select material →`;
+                    activeMetaPill.textContent = `Surface Detected: ${data.coverage_pct}% coverage. Manual Refinement active.`;
                     activeMetaPill.style.display = 'block';
                 }
 
@@ -433,6 +439,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     resultImg.src = data.final_image_url;
                     resultImg.style.display = 'block';
                 }
+
+                // CRITICAL: Hide the paint canvas overlay so the marble is visible!
+                // The canvas was sitting on top at z-index 9, blocking the rendered result.
+                const pcw = document.getElementById('paint-canvas-wrap');
+                if (pcw) pcw.style.display = 'none';
+                // Clear any saved source — the new render IS the latest result
+                _savedResultSrc = null;
+                // Switch to pointer tool (resets active tool state)
+                if (typeof selectTool === 'function') selectTool('tool-pointer');
                 
                 // Set layers for split slider comparison
                 if (compareImgOrig) compareImgOrig.src = roomImageB64;
@@ -460,7 +475,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // --- Slider Throttling / Debouncing Engine (sub-100ms real time updates) ---
         function queueThrottledRender() {
-            if (!roomImageB64 || !scanDone || !selectedMat || !apiOnline) return;
+            if (!roomImageB64 || !scanDone || !selectedMat) return;
             
             // Clear any active timers to debounce sliding movements
             if (sliderTimer) clearTimeout(sliderTimer);
@@ -494,12 +509,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Execute render immediately if image exists
             if (roomImageB64) {
-                if (apiOnline) {
-                    executeRenderPipeline(mat);
-                } else {
-                    // Fallback to pure original room if API offline
-                    if (resultImg) resultImg.src = roomImageB64;
-                }
+                executeRenderPipeline(mat);
             }
         }
 
@@ -509,9 +519,14 @@ document.addEventListener("DOMContentLoaded", () => {
             scanDone = false;
             scannedMaskB64 = null;
             window._scanToken = null;
+            window._customMask = null;
+            _roomPixelCache = null; // Clear flood fill cache
 
             if (ingestModalBackdrop) ingestModalBackdrop.style.display = 'none';
             if (floatingChangeScene) floatingChangeScene.style.display = 'inline-flex';
+            // Show the Photoshop brush toolbar as soon as a scene is loaded
+            const pt = document.getElementById('paint-toolbar');
+            if (pt) pt.style.display = 'flex';
             if (resultImg) {
                 resultImg.src = roomImageB64;
                 resultImg.style.display = 'block';
@@ -519,7 +534,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Reset comparison view
             deactivateCompareMode();
-            btnCompare.disabled = true;
+            if (btnCompare) btnCompare.disabled = true;
             btnReset.disabled = false;
             btnDownload.disabled = true;
             if (btnRefine) btnRefine.disabled = true;
@@ -617,7 +632,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (compareImgRend) compareImgRend.src = snapshot.finalImage;
 
             if (uploadZoneWrap) uploadZoneWrap.style.display = 'none';
-            btnCompare.disabled = false;
+            if (btnCompare) btnCompare.disabled = false;
             btnReset.disabled = false;
             btnDownload.disabled = false;
 
@@ -699,6 +714,22 @@ document.addEventListener("DOMContentLoaded", () => {
             if (fileInput) fileInput.value = '';
             
             deactivateCompareMode();
+            const paintToolbar = document.getElementById('paint-toolbar');
+            if (paintToolbar) paintToolbar.style.display = 'none';
+            const toolPointerEl = document.getElementById('tool-pointer');
+            const toolBrushEl = document.getElementById('tool-brush');
+            const toolEraserEl = document.getElementById('tool-eraser');
+            const toolFillEl = document.getElementById('tool-fill');
+            if (toolPointerEl) toolPointerEl.classList.add('active');
+            if (toolBrushEl) toolBrushEl.classList.remove('active');
+            if (toolEraserEl) toolEraserEl.classList.remove('active');
+            if (toolFillEl) toolFillEl.classList.remove('active');
+            if (paintCanvasWrap) paintCanvasWrap.style.display = 'none';
+            const brushCursorEl = document.getElementById('brush-cursor');
+            if (brushCursorEl) brushCursorEl.style.display = 'none';
+            _roomPixelCache = null;
+            undoStack.length = 0;
+            redoStack.length = 0;
             resetSliders();
             if (btnRefine) btnRefine.disabled = true;
             window._customMask = null;
@@ -718,7 +749,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (activeMetaPill) activeMetaPill.style.display = 'none';
 
             btnScan.disabled = true;
-            btnCompare.disabled = true;
+            if (btnCompare) btnCompare.disabled = true;
             btnReset.disabled = true;
             btnDownload.disabled = true;
 
@@ -988,7 +1019,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 currentRoomType = btn.dataset.rt;
                 updateSliderLabels(); // update dynamically wall cutoff group
                 
-                if (selectedMat && roomImageB64 && apiOnline) {
+                if (selectedMat && roomImageB64) {
                     executeRenderPipeline(selectedMat);
                 }
             });
@@ -1000,7 +1031,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.classList.add('active');
                 currentPattern = btn.dataset.pat;
                 
-                if (selectedMat && roomImageB64 && apiOnline) {
+                if (selectedMat && roomImageB64) {
                     executeRenderPipeline(selectedMat);
                 }
             });
@@ -1026,7 +1057,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     sliderBlur.value = 60;
                 }
                 updateSliderLabels();
-                if (selectedMat && roomImageB64 && apiOnline) {
+                if (selectedMat && roomImageB64) {
                     executeRenderPipeline(selectedMat);
                 }
             });
@@ -1048,7 +1079,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     sliderExposure.value = 100;
                 }
                 updateSliderLabels();
-                if (selectedMat && roomImageB64 && apiOnline) {
+                if (selectedMat && roomImageB64) {
                     executeRenderPipeline(selectedMat);
                 }
             });
@@ -1134,12 +1165,19 @@ document.addEventListener("DOMContentLoaded", () => {
         let isPainting = false;
         let brushMode = 'draw';
         let brushSize = 30;
+        let activeTool = 'tool-pointer';
+        let _roomPixelCache = null;
+
+        // Undo/Redo history (stores canvas ImageData snapshots)
+        const undoStack = [];
+        const redoStack = [];
+        const MAX_UNDO = 30;
 
         const paintCanvasWrap  = document.getElementById('paint-canvas-wrap');
         const refineToolbar    = document.getElementById('refine-toolbar');
-        const paintBgImg       = document.getElementById('paint-bg-img');
         const paintMaskCanvas  = document.getElementById('paint-mask-canvas');
         const paintCtx         = paintMaskCanvas ? paintMaskCanvas.getContext('2d') : null;
+        const brushCursor      = document.getElementById('brush-cursor');
 
         const sizeSlider       = document.getElementById('slider-brush-size');
         const sizeLbl          = document.getElementById('lbl-brush-size');
@@ -1148,79 +1186,471 @@ document.addEventListener("DOMContentLoaded", () => {
         const btnRefineApply   = document.getElementById('btn-refine-apply');
         const btnRefineCancel  = document.getElementById('btn-refine-cancel');
 
-        if (sizeSlider && sizeLbl) {
-            sizeSlider.addEventListener('input', () => {
-                brushSize = parseInt(sizeSlider.value);
-                sizeLbl.textContent = brushSize + 'px';
+        // Photoshop toolbar DOM
+        const paintToolbar       = document.getElementById('paint-toolbar');
+        const toolPointer        = document.getElementById('tool-pointer');
+        const toolBrush          = document.getElementById('tool-brush');
+        const toolEraser         = document.getElementById('tool-eraser');
+        const toolFill           = document.getElementById('tool-fill');
+        const toolSize           = document.getElementById('tool-size');
+        const toolSizeVal        = document.getElementById('tool-size-val');
+        const sizePopover        = document.getElementById('size-popover');
+        const popoverSizeSlider  = document.getElementById('popover-size-slider');
+        const popoverSizeLbl     = document.getElementById('popover-size-lbl');
+
+        // ─── Helper: compute the rendered content area of the result image ───
+        // The image uses object-fit:contain, so we need its actual rendered rect
+        function getImageContentRect() {
+            if (!resultImg || !resultImg.naturalWidth) return null;
+            const viewport = document.getElementById('viz-viewport');
+            if (!viewport) return null;
+            const vRect = viewport.getBoundingClientRect();
+            const natW = resultImg.naturalWidth;
+            const natH = resultImg.naturalHeight;
+            const scale = Math.min(vRect.width / natW, vRect.height / natH);
+            const renderedW = natW * scale;
+            const renderedH = natH * scale;
+            const offsetX = (vRect.width - renderedW) / 2;
+            const offsetY = (vRect.height - renderedH) / 2;
+            return { left: offsetX, top: offsetY, width: renderedW, height: renderedH, natW, natH };
+        }
+
+        // ─── Helper: Position the canvas to exactly overlay the image ───
+        function alignCanvasToImage() {
+            if (!paintMaskCanvas) return;
+            const rect = getImageContentRect();
+            if (!rect) return;
+            // Set the CSS position/size to match the rendered image area
+            paintMaskCanvas.style.left   = rect.left + 'px';
+            paintMaskCanvas.style.top    = rect.top + 'px';
+            paintMaskCanvas.style.width  = rect.width + 'px';
+            paintMaskCanvas.style.height = rect.height + 'px';
+        }
+
+        // ─── Initialize paint canvas with the current AI mask ───
+        function initializePaintCanvas() {
+            if (!roomImageB64 || !paintMaskCanvas || !paintCtx) return;
+            const maskSrc = window._customMask || scannedMaskB64;
+
+            // Align the canvas position first
+            alignCanvasToImage();
+
+            if (!maskSrc) {
+                // No mask yet — create an empty canvas at the image resolution
+                const rect = getImageContentRect();
+                if (!rect) return;
+                paintMaskCanvas.width = rect.natW;
+                paintMaskCanvas.height = rect.natH;
+                paintCtx.clearRect(0, 0, paintMaskCanvas.width, paintMaskCanvas.height);
+                return;
+            }
+
+            const img = new Image();
+            img.onload = function() {
+                paintMaskCanvas.width = img.naturalWidth;
+                paintMaskCanvas.height = img.naturalHeight;
+                paintCtx.clearRect(0, 0, paintMaskCanvas.width, paintMaskCanvas.height);
+
+                // Draw the mask to a temp canvas, then convert to semi-transparent cyan
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = img.naturalWidth;
+                tempCanvas.height = img.naturalHeight;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.drawImage(img, 0, 0);
+
+                const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+                const data = imgData.data;
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+                    const isWhite = (r > 127 && g > 127 && b > 127 && a > 127);
+                    const isCyan  = (g > 180 && b > 180 && r < 80 && a > 0);
+                    if (isWhite || isCyan) {
+                        data[i] = 40; data[i+1] = 220; data[i+2] = 180; data[i+3] = 153;
+                    } else {
+                        data[i] = 0; data[i+1] = 0; data[i+2] = 0; data[i+3] = 0;
+                    }
+                }
+                paintCtx.putImageData(imgData, 0, 0);
+
+                // Re-align after canvas resolution is set
+                alignCanvasToImage();
+            };
+            img.src = maskSrc;
+        }
+
+        // ─── Export canvas → B&W mask → custom_mask → trigger render ───
+        function applyManualRefinement() {
+            if (!paintMaskCanvas || !paintCtx) return;
+            const w = paintMaskCanvas.width, h = paintMaskCanvas.height;
+            if (w === 0 || h === 0) return;
+
+            const srcData = paintCtx.getImageData(0, 0, w, h).data;
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = w; exportCanvas.height = h;
+            const exportCtx = exportCanvas.getContext('2d');
+            const exportImg = exportCtx.createImageData(w, h);
+            const out = exportImg.data;
+
+            for (let i = 0; i < srcData.length; i += 4) {
+                if (srcData[i+3] > 20) {
+                    // Any pixel with alpha > 20 = covered area → white
+                    out[i] = 255; out[i+1] = 255; out[i+2] = 255; out[i+3] = 255;
+                } else {
+                    // Uncovered → black
+                    out[i] = 0; out[i+1] = 0; out[i+2] = 0; out[i+3] = 255;
+                }
+            }
+            exportCtx.putImageData(exportImg, 0, 0);
+            window._customMask = exportCanvas.toDataURL('image/png');
+
+            // Auto re-render if a material is selected
+            if (selectedMat) {
+                executeRenderPipeline(selectedMat);
+            }
+        }
+
+        // ─── Tool selection ───
+        let _savedResultSrc = null;
+
+        function selectTool(toolId) {
+            activeTool = toolId;
+            [toolPointer, toolBrush, toolEraser, toolFill].forEach(btn => {
+                if (btn) btn.classList.toggle('active', btn.id === toolId);
+            });
+
+            if (toolId === 'tool-pointer') {
+                if (paintCanvasWrap) paintCanvasWrap.style.display = 'none';
+                if (brushCursor) brushCursor.style.display = 'none';
+                if (_savedResultSrc && resultImg) {
+                    resultImg.src = _savedResultSrc;
+                    _savedResultSrc = null;
+                }
+            } else {
+                if (toolId === 'tool-brush') brushMode = 'draw';
+                else if (toolId === 'tool-eraser') brushMode = 'erase';
+                else if (toolId === 'tool-fill') brushMode = 'fill';
+                // Show clean room image underneath so there's no double-teal
+                if (resultImg && roomImageB64) {
+                    if (!_savedResultSrc) _savedResultSrc = resultImg.src;
+                    resultImg.src = roomImageB64;
+                }
+                if (paintCanvasWrap) paintCanvasWrap.style.display = 'block';
+                if (toolId === 'tool-fill') {
+                    // Fill mode: use crosshair cursor, hide brush circle
+                    if (paintCanvasWrap) paintCanvasWrap.style.cursor = 'crosshair';
+                    if (paintMaskCanvas) paintMaskCanvas.style.cursor = 'crosshair';
+                    if (brushCursor) brushCursor.style.display = 'none';
+                } else {
+                    if (paintCanvasWrap) paintCanvasWrap.style.cursor = 'none';
+                    if (paintMaskCanvas) paintMaskCanvas.style.cursor = 'none';
+                }
+                initializePaintCanvas();
+            }
+        }
+
+        // ─── Flood fill (Smart Fill) algorithm ───
+        function getRoomPixelData() {
+            return new Promise((resolve) => {
+                if (_roomPixelCache) { resolve(_roomPixelCache); return; }
+                const img = new Image();
+                img.onload = function() {
+                    const c = document.createElement('canvas');
+                    c.width = img.naturalWidth; c.height = img.naturalHeight;
+                    const ctx = c.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    _roomPixelCache = {
+                        width: c.width, height: c.height,
+                        data: ctx.getImageData(0, 0, c.width, c.height).data
+                    };
+                    resolve(_roomPixelCache);
+                };
+                img.src = roomImageB64;
             });
         }
 
+        async function floodFillAt(canvasX, canvasY) {
+            if (!paintMaskCanvas || !paintCtx || !roomImageB64) return;
+            const pixData = await getRoomPixelData();
+            const w = pixData.width, h = pixData.height;
+            const pixels = pixData.data;
+
+            const x0 = Math.round(canvasX), y0 = Math.round(canvasY);
+            if (x0 < 0 || x0 >= w || y0 < 0 || y0 >= h) return;
+
+            // Target color at click point
+            const idx0 = (y0 * w + x0) * 4;
+            const tR = pixels[idx0], tG = pixels[idx0+1], tB = pixels[idx0+2];
+
+            const tolerance = 45; // Euclidean RGB distance
+            const tolSq = tolerance * tolerance;
+            const visited = new Uint8Array(w * h);
+            const startPos = y0 * w + x0;
+            const stack = [startPos];
+            visited[startPos] = 1;
+
+            // Read current mask so we can add to it
+            const maskImgData = paintCtx.getImageData(0, 0, w, h);
+            const mask = maskImgData.data;
+            let filled = 0;
+            const maxFill = w * h * 0.6;
+
+            while (stack.length > 0 && filled < maxFill) {
+                const pos = stack.pop();
+                const pi = pos * 4;
+                const dr = pixels[pi] - tR, dg = pixels[pi+1] - tG, db = pixels[pi+2] - tB;
+                if (dr*dr + dg*dg + db*db > tolSq) continue;
+
+                // Paint this pixel on the mask (matching scan overlay color)
+                mask[pi] = 40; mask[pi+1] = 220; mask[pi+2] = 180; mask[pi+3] = 153;
+                filled++;
+
+                const px = pos % w, py = (pos - px) / w;
+                if (py > 0     && !visited[pos - w]) { visited[pos - w] = 1; stack.push(pos - w); }
+                if (py < h - 1 && !visited[pos + w]) { visited[pos + w] = 1; stack.push(pos + w); }
+                if (px > 0     && !visited[pos - 1]) { visited[pos - 1] = 1; stack.push(pos - 1); }
+                if (px < w - 1 && !visited[pos + 1]) { visited[pos + 1] = 1; stack.push(pos + 1); }
+            }
+
+            paintCtx.putImageData(maskImgData, 0, 0);
+            if (filled > 0) applyManualRefinement();
+        }
+
+        // ─── Undo / Redo system ───
+        function saveCanvasState() {
+            if (!paintMaskCanvas || !paintCtx) return;
+            const w = paintMaskCanvas.width, h = paintMaskCanvas.height;
+            if (w === 0 || h === 0) return;
+            undoStack.push(paintCtx.getImageData(0, 0, w, h));
+            if (undoStack.length > MAX_UNDO) undoStack.shift();
+            redoStack.length = 0; // Clear redo when new action happens
+            updateUndoRedoButtons();
+        }
+
+        function undoCanvas() {
+            if (!paintMaskCanvas || !paintCtx || undoStack.length === 0) return;
+            const w = paintMaskCanvas.width, h = paintMaskCanvas.height;
+            // Save current state to redo stack
+            redoStack.push(paintCtx.getImageData(0, 0, w, h));
+            // Restore previous state
+            const prev = undoStack.pop();
+            paintCtx.putImageData(prev, 0, 0);
+            updateUndoRedoButtons();
+            applyManualRefinement();
+        }
+
+        function redoCanvas() {
+            if (!paintMaskCanvas || !paintCtx || redoStack.length === 0) return;
+            const w = paintMaskCanvas.width, h = paintMaskCanvas.height;
+            // Save current state to undo stack
+            undoStack.push(paintCtx.getImageData(0, 0, w, h));
+            // Restore redo state
+            const next = redoStack.pop();
+            paintCtx.putImageData(next, 0, 0);
+            updateUndoRedoButtons();
+            applyManualRefinement();
+        }
+
+        function updateUndoRedoButtons() {
+            const undoBtn = document.getElementById('tool-undo');
+            const redoBtn = document.getElementById('tool-redo');
+            if (undoBtn) undoBtn.style.opacity = undoStack.length > 0 ? '1' : '0.35';
+            if (redoBtn) redoBtn.style.opacity = redoStack.length > 0 ? '1' : '0.35';
+        }
+
+        // Wire up undo/redo buttons
+        const toolUndo = document.getElementById('tool-undo');
+        const toolRedo = document.getElementById('tool-redo');
+        if (toolUndo) toolUndo.addEventListener('click', () => undoCanvas());
+        if (toolRedo) toolRedo.addEventListener('click', () => redoCanvas());
+        updateUndoRedoButtons();
+
+        // Keyboard shortcuts: Ctrl+Z = Undo, Ctrl+Shift+Z = Redo
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                undoCanvas();
+            } else if ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey) {
+                e.preventDefault();
+                redoCanvas();
+            } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+                e.preventDefault();
+                redoCanvas();
+            }
+        });
+
+        if (toolPointer) toolPointer.addEventListener('click', () => {
+            selectTool('tool-pointer');
+            if (sizePopover) sizePopover.style.display = 'none';
+        });
+        if (toolBrush) toolBrush.addEventListener('click', () => {
+            selectTool('tool-brush');
+            if (sizePopover) sizePopover.style.display = 'none';
+        });
+        if (toolEraser) toolEraser.addEventListener('click', () => {
+            selectTool('tool-eraser');
+            if (sizePopover) sizePopover.style.display = 'none';
+        });
+        if (toolFill) toolFill.addEventListener('click', () => {
+            selectTool('tool-fill');
+            if (sizePopover) sizePopover.style.display = 'none';
+        });
+
+        // ─── Size popover ───
+        if (toolSize) {
+            toolSize.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (sizePopover) {
+                    const isOpen = sizePopover.style.display === 'block';
+                    if (isOpen) {
+                        sizePopover.style.display = 'none';
+                    } else {
+                        // Position the popover next to the button using fixed positioning
+                        const btnRect = toolSize.getBoundingClientRect();
+                        sizePopover.style.position = 'fixed';
+                        sizePopover.style.left = (btnRect.right + 8) + 'px';
+                        sizePopover.style.top = (btnRect.top - 10) + 'px';
+                        sizePopover.style.transform = 'none';
+                        sizePopover.style.display = 'block';
+                    }
+                }
+            });
+        }
+
+        function updateBrushSize(val) {
+            brushSize = val;
+            if (popoverSizeLbl) popoverSizeLbl.textContent = val + 'px';
+            if (toolSizeVal) toolSizeVal.textContent = val;
+            if (sizeSlider) sizeSlider.value = val;
+            if (sizeLbl) sizeLbl.textContent = val + 'px';
+            updateBrushCursorSize();
+        }
+
+        if (popoverSizeSlider) {
+            popoverSizeSlider.addEventListener('input', () => updateBrushSize(parseInt(popoverSizeSlider.value)));
+        }
+        if (sizeSlider && sizeLbl) {
+            sizeSlider.addEventListener('input', () => updateBrushSize(parseInt(sizeSlider.value)));
+        }
+
+        document.addEventListener('click', (e) => {
+            if (sizePopover && toolSize && !sizePopover.contains(e.target) && !toolSize.contains(e.target)) {
+                sizePopover.style.display = 'none';
+            }
+        });
+
+        // ─── Dynamic Brush Cursor ───
+        function updateBrushCursorSize() {
+            if (!brushCursor) return;
+            const rect = getImageContentRect();
+            if (!rect) return;
+            const displaySize = brushSize * (rect.width / rect.natW);
+            brushCursor.style.width = displaySize + 'px';
+            brushCursor.style.height = displaySize + 'px';
+        }
+
+        if (paintCanvasWrap) {
+            paintCanvasWrap.addEventListener('mousemove', (e) => {
+                if (!brushCursor || activeTool === 'tool-pointer') return;
+                const rect = getImageContentRect();
+                if (!rect) return;
+                const displaySize = brushSize * (rect.width / rect.natW);
+                brushCursor.style.display = 'block';
+                brushCursor.style.width = displaySize + 'px';
+                brushCursor.style.height = displaySize + 'px';
+                brushCursor.style.left = (e.clientX - displaySize / 2) + 'px';
+                brushCursor.style.top  = (e.clientY - displaySize / 2) + 'px';
+            });
+            paintCanvasWrap.addEventListener('mouseleave', () => {
+                if (brushCursor) brushCursor.style.display = 'none';
+            });
+        }
+
+        // ─── Legacy refine toolbar brush/eraser binding ───
         if (btnBrushDraw && btnBrushErase) {
             btnBrushDraw.addEventListener('click', () => {
                 brushMode = 'draw';
-                btnBrushDraw.style.background = '#1b3d33';
-                btnBrushDraw.style.color = 'white';
-                btnBrushDraw.style.borderColor = '#1b3d33';
-                
-                btnBrushErase.style.background = '#f5f3ef';
-                btnBrushErase.style.color = '#333';
-                btnBrushErase.style.borderColor = '#d4d1cb';
+                btnBrushDraw.style.background = '#1b3d33'; btnBrushDraw.style.color = 'white'; btnBrushDraw.style.borderColor = '#1b3d33';
+                btnBrushErase.style.background = '#f5f3ef'; btnBrushErase.style.color = '#333'; btnBrushErase.style.borderColor = '#d4d1cb';
             });
             btnBrushErase.addEventListener('click', () => {
                 brushMode = 'erase';
-                btnBrushErase.style.background = '#1b3d33';
-                btnBrushErase.style.color = 'white';
-                btnBrushErase.style.borderColor = '#1b3d33';
-                
-                btnBrushDraw.style.background = '#f5f3ef';
-                btnBrushDraw.style.color = '#333';
-                btnBrushDraw.style.borderColor = '#d4d1cb';
+                btnBrushErase.style.background = '#1b3d33'; btnBrushErase.style.color = 'white'; btnBrushErase.style.borderColor = '#1b3d33';
+                btnBrushDraw.style.background = '#f5f3ef'; btnBrushDraw.style.color = '#333'; btnBrushDraw.style.borderColor = '#d4d1cb';
             });
         }
 
+        // ─── Canvas coordinate mapping (pixel-perfect) ───
         function getCoordinates(e) {
             if (!paintMaskCanvas) return { x: 0, y: 0 };
             const rect = paintMaskCanvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            
-            const x = ((clientX - rect.left) / rect.width) * paintMaskCanvas.width;
-            const y = ((clientY - rect.top) / rect.height) * paintMaskCanvas.height;
+            // Map screen pixel → canvas internal pixel
+            const x = ((clientX - rect.left) / rect.width)  * paintMaskCanvas.width;
+            const y = ((clientY - rect.top)  / rect.height) * paintMaskCanvas.height;
             return { x, y };
         }
 
         function startPaint(e) {
             if (!paintCtx) return;
+            e.preventDefault();
+
+            // Smart Fill mode: flood fill at click point, no dragging
+            if (brushMode === 'fill') {
+                saveCanvasState(); // Save state before fill for undo
+                const { x, y } = getCoordinates(e);
+                floodFillAt(x, y);
+                return; // Don't enter paint drag mode
+            }
+
+            saveCanvasState(); // Save state before brush stroke for undo
             isPainting = true;
-            paintCtx.beginPath();
             const { x, y } = getCoordinates(e);
+            // Draw a dot at the start point
+            paintCtx.lineCap = 'round';
+            paintCtx.lineJoin = 'round';
+            paintCtx.lineWidth = brushSize;
+            if (brushMode === 'draw') {
+                paintCtx.globalCompositeOperation = 'source-over';
+                paintCtx.strokeStyle = 'rgba(40, 220, 180, 0.6)';
+                paintCtx.fillStyle   = 'rgba(40, 220, 180, 0.6)';
+            } else {
+                paintCtx.globalCompositeOperation = 'destination-out';
+                paintCtx.fillStyle = 'rgba(0,0,0,1)';
+            }
+            paintCtx.beginPath();
+            paintCtx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
+            paintCtx.fill();
+            paintCtx.beginPath();
             paintCtx.moveTo(x, y);
-            paint(e);
         }
 
         function paint(e) {
             if (!isPainting || !paintCtx || !paintMaskCanvas) return;
             e.preventDefault();
             const { x, y } = getCoordinates(e);
-            
             paintCtx.lineCap = 'round';
             paintCtx.lineJoin = 'round';
             paintCtx.lineWidth = brushSize;
-            
             if (brushMode === 'draw') {
                 paintCtx.globalCompositeOperation = 'source-over';
-                paintCtx.strokeStyle = 'rgba(0, 240, 240, 0.45)';
+                paintCtx.strokeStyle = 'rgba(40, 220, 180, 0.6)';
             } else {
                 paintCtx.globalCompositeOperation = 'destination-out';
             }
-            
             paintCtx.lineTo(x, y);
             paintCtx.stroke();
         }
 
         function stopPaint() {
-            isPainting = false;
-            if (paintCtx) paintCtx.closePath();
+            if (isPainting) {
+                isPainting = false;
+                if (paintCtx) paintCtx.closePath();
+                // Debounce: apply refinement after a short delay so rapid strokes batch
+                clearTimeout(window._paintApplyTimer);
+                window._paintApplyTimer = setTimeout(() => applyManualRefinement(), 300);
+            }
         }
 
         if (paintMaskCanvas) {
@@ -1228,11 +1658,17 @@ document.addEventListener("DOMContentLoaded", () => {
             paintMaskCanvas.addEventListener('mousemove', paint);
             paintMaskCanvas.addEventListener('mouseup', stopPaint);
             paintMaskCanvas.addEventListener('mouseleave', stopPaint);
-
             paintMaskCanvas.addEventListener('touchstart', startPaint, { passive: false });
             paintMaskCanvas.addEventListener('touchmove', paint, { passive: false });
             paintMaskCanvas.addEventListener('touchend', stopPaint);
         }
+
+        // Re-align canvas when window resizes
+        window.addEventListener('resize', () => {
+            if (activeTool !== 'tool-pointer' && paintCanvasWrap && paintCanvasWrap.style.display !== 'none') {
+                alignCanvasToImage();
+            }
+        });
 
         if (btnRefine) {
             btnRefine.addEventListener('click', () => {
@@ -1242,9 +1678,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     deactivateCompareMode();
                 }
                 
-                if (paintBgImg) paintBgImg.src = roomImageB64;
-                if (paintCanvasWrap) paintCanvasWrap.style.display = 'flex';
+                if (paintCanvasWrap) paintCanvasWrap.style.display = 'block';
                 if (refineToolbar) refineToolbar.style.display = 'flex';
+                initializePaintCanvas();
                 
                 // Initialize default tool to Brush
                 brushMode = 'draw';
@@ -1352,6 +1788,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 if (selectedMat) {
                     executeRenderPipeline(selectedMat);
+                } else {
+                    // Dynamically compile a premium live cyan mask preview so they see their changes instantly!
+                    const previewCanvas = document.createElement('canvas');
+                    previewCanvas.width = paintMaskCanvas.width;
+                    previewCanvas.height = paintMaskCanvas.height;
+                    const previewCtx = previewCanvas.getContext('2d');
+                    
+                    const bgImg = new Image();
+                    bgImg.onload = function() {
+                        previewCtx.drawImage(bgImg, 0, 0);
+                        previewCtx.drawImage(paintMaskCanvas, 0, 0);
+                        if (resultImg) {
+                            resultImg.src = previewCanvas.toDataURL('image/jpeg', 0.95);
+                        }
+                        if (compareImgRend) {
+                            compareImgRend.src = resultImg.src;
+                        }
+                    };
+                    bgImg.src = roomImageB64;
                 }
             });
         }

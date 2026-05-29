@@ -214,8 +214,11 @@ def refine_mask_with_cv(pred_map: np.ndarray, target_ids: list, model, small_img
             bgdModel = np.zeros((1, 65), np.float64)
             fgdModel = np.zeros((1, 65), np.float64)
             
-            # Run GrabCut for 3 iterations
-            cv2.grabCut(small_img, gc_mask, None, bgdModel, fgdModel, 3, cv2.GC_INIT_WITH_MASK)
+            # Bilateral filter to smooth low-end sensor noise while keeping structural boundary edges razor-sharp
+            denoised_img = cv2.bilateralFilter(small_img, 7, 50, 50)
+            
+            # Run GrabCut for 3 iterations using the edge-preserved denoised image
+            cv2.grabCut(denoised_img, gc_mask, None, bgdModel, fgdModel, 3, cv2.GC_INIT_WITH_MASK)
             
             # Extract refined mask (GC_FGD or GC_PR_FGD)
             refined_mask = np.where((gc_mask == cv2.GC_FGD) | (gc_mask == cv2.GC_PR_FGD), 255, 0).astype(np.uint8)
@@ -236,10 +239,33 @@ def _strip_data_url(b64: str) -> str:
 
 def base64_to_cv2(b64_string: str) -> Optional[np.ndarray]:
     try:
-        img_data  = base64.b64decode(_strip_data_url(b64_string))
-        img_array = np.frombuffer(img_data, np.uint8)
-        return cv2.imdecode(img_array, cv2.IMREAD_COLOR)
-    except Exception:
+        # Pre-emptive standardizer & HEIC / Transparent Alpha Handler
+        img_data = base64.b64decode(_strip_data_url(b64_string))
+        import io
+        from PIL import Image
+        
+        # Dynamically register HEIF opener for iPhone HEIC support if package is present
+        try:
+            from pillow_heif import register_heif_opener
+            register_heif_opener()
+        except ImportError:
+            pass
+            
+        pil_img = Image.open(io.BytesIO(img_data))
+        
+        # Strip Alpha transparent channel (convert RGBA to RGB on solid white background)
+        if pil_img.mode in ("RGBA", "LA") or (pil_img.mode == "P" and "transparency" in pil_img.info):
+            background = Image.new("RGB", pil_img.size, (255, 255, 255))
+            background.paste(pil_img, mask=pil_img.convert("RGBA").split()[3])
+            pil_img = background
+        else:
+            pil_img = pil_img.convert("RGB")
+            
+        # Convert PIL RGB to OpenCV standard BGR
+        cv_img = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+        return cv_img
+    except Exception as e:
+        print(f"Image decode failed: {e}")
         return None
 
 def cv2_to_base64(img: np.ndarray) -> str:
@@ -424,7 +450,24 @@ def run_segmentation(small_img: np.ndarray, img_hash: str) -> np.ndarray:
         return _seg_cache[img_hash]
 
     h, w  = small_img.shape[:2]
-    pil   = Image.fromarray(cv2.cvtColor(small_img, cv2.COLOR_BGR2RGB))
+    
+    # ── Robustness Enhancement: Dynamic CLAHE for low-light & low-contrast rooms ──
+    # Convert to LAB color space to check the L (brightness) channel
+    lab = cv2.cvtColor(small_img, cv2.COLOR_BGR2LAB)
+    l_chan, a_chan, b_chan = cv2.split(lab)
+    mean_brightness = np.mean(l_chan)
+    std_contrast = np.std(l_chan)
+    
+    # If photo is dark (mean < 90) or low contrast (std < 35), apply adaptive CLAHE
+    if mean_brightness < 90.0 or std_contrast < 35.0:
+        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+        cl_l = clahe.apply(l_chan)
+        enhanced_lab = cv2.merge((cl_l, a_chan, b_chan))
+        enhanced_rgb = cv2.cvtColor(enhanced_lab, cv2.COLOR_LAB2RGB)
+        pil = Image.fromarray(enhanced_rgb)
+    else:
+        pil = Image.fromarray(cv2.cvtColor(small_img, cv2.COLOR_BGR2RGB))
+        
     inp   = {k: v.to(DEVICE) for k, v in processor(images=pil, return_tensors="pt").items()}
 
     with torch.inference_mode():
@@ -554,6 +597,13 @@ def _do_render(request: RenderRequest) -> dict:
 
                 # Scale mask up to original resolution
                 raw_mask = cv2.resize(clean_small, (w, h), interpolation=cv2.INTER_NEAREST)
+
+                # Sophisticated Floor boundary healing & dilation to tuck cleanly under baseboards
+                if surface_name == "floor":
+                    close_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+                    raw_mask = cv2.morphologyEx(raw_mask, cv2.MORPH_CLOSE, close_kernel)
+                    dilate_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+                    raw_mask = cv2.dilate(raw_mask, dilate_kernel, iterations=1)
 
                 num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(raw_mask, connectivity=8)
                 solid_mask = np.zeros_like(raw_mask)
@@ -719,6 +769,13 @@ def _do_scan(request: ScanRequest) -> dict:
 
     # Scale mask up to original resolution
     raw_mask = cv2.resize(clean_small, (w, h), interpolation=cv2.INTER_NEAREST)
+
+    # Sophisticated Floor boundary healing & dilation to tuck cleanly under baseboards
+    if surface_name == "floor":
+        close_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+        raw_mask = cv2.morphologyEx(raw_mask, cv2.MORPH_CLOSE, close_kernel)
+        dilate_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+        raw_mask = cv2.dilate(raw_mask, dilate_kernel, iterations=1)
 
     num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(raw_mask, connectivity=8)
     solid_mask = np.zeros_like(raw_mask)
