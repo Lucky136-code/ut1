@@ -121,10 +121,112 @@ class RenderRequest(BaseModel):
     tile_scale:          Optional[float]      = 1.0
     tile_rotation:       Optional[float]      = 0.0
     texture_opacity:     Optional[float]      = 1.0
+    custom_mask:         Optional[str]        = None
 
 class ScanRequest(BaseModel):
     room_image:          str
     room_type:           str                  = "hall"
+
+# ---------------------------------------------------------------------------
+# SURFACE DEFS
+# ---------------------------------------------------------------------------
+SURFACE_DEFS = {
+    "kitchen": {
+        "countertop": ["countertop", "table", "island", "desk"],
+        "cabinet":    ["cabinet", "cupboard", "drawer", "shelf"],
+        "floor":      ["floor", "carpet", "rug", "mat", "tatami", "parquet", "tile", "linoleum", "terrazzo", "ground", "stage", "platform"],
+    },
+    "bathroom": {
+        "wall":   ["wall", "tile"],
+        "floor":  ["floor", "carpet", "rug", "mat", "tatami", "parquet", "tile", "linoleum", "terrazzo", "ground", "stage", "platform"],
+        "vanity": ["countertop", "sink", "bathtub"],
+        "shower": ["shower", "glass"],
+    },
+    "hall": {
+        "floor": ["floor", "carpet", "rug", "mat", "tatami", "parquet", "tile", "linoleum", "terrazzo", "ground", "stage", "platform"],
+        "wall":  ["wall"],
+    },
+}
+
+# ---------------------------------------------------------------------------
+# 4.5 ADVANCED COLOR & OBSTACLE MASK REFINER (DUAL-TIER PIPELINE)
+# ---------------------------------------------------------------------------
+def refine_mask_with_cv(pred_map: np.ndarray, target_ids: list, model, small_img: np.ndarray, surface_name: str) -> np.ndarray:
+    """
+    Combines Segformer semantic IDs with OpenCV GrabCut color-similarity
+    and semantic obstacle subtraction. Prevents texture bleeding on beds/furniture
+    while auto-healing missing gaps and shadows in the floor.
+    """
+    h, w = small_img.shape[:2]
+    
+    # 1. Semantic Floor Seed Mask
+    raw_mask_small = np.isin(pred_map, target_ids).astype(np.uint8) * 255
+    if np.count_nonzero(raw_mask_small) < (w * h * 0.0001):
+        return np.zeros((h, w), dtype=np.uint8)
+
+    # 2. Hard Exclusion of Semantic Obstacles
+    obstacle_keywords = [
+        "bed", "blanket", "quilt", "pillow", "cushion", "sheet", "duvet",
+        "sofa", "couch", "armchair", "chair", "stool", "bench",
+        "cabinet", "wardrobe", "cupboard", "chest", "dresser", "drawer", "shelf",
+        "table", "desk", "countertop", "island", "vanity", "bathtub", "sink", "shower",
+        "plant", "pot", "vase", "book", "box", "apparel", "person", "human", "dog", "cat", "pet",
+        "television", "screen", "monitor"
+    ]
+    obstacle_ids = [
+        idx for idx, label in model.config.id2label.items()
+        if any(k in label.lower() for k in obstacle_keywords)
+    ]
+    obstacle_mask_small = np.isin(pred_map, obstacle_ids).astype(np.uint8) * 255
+    
+    # Subtract obstacles from the raw floor mask
+    raw_mask_small = np.where(obstacle_mask_small == 255, 0, raw_mask_small).astype(np.uint8)
+
+    # Ensure walls and ceiling are also marked as definite background
+    wall_ceiling_ids = [
+        idx for idx, label in model.config.id2label.items()
+        if "wall" in label.lower() or "ceiling" in label.lower()
+    ]
+    wall_ceiling_mask = np.isin(pred_map, wall_ceiling_ids).astype(np.uint8) * 255
+
+    # 3. For Floor Surfaces: GrabCut Seed Growth Refinement
+    if surface_name == "floor":
+        try:
+            # Initialize GrabCut mask
+            gc_mask = np.zeros((h, w), dtype=np.uint8) + cv2.GC_PR_BGD
+            
+            # Set definite background obstacles & walls
+            gc_mask[obstacle_mask_small == 255] = cv2.GC_BGD
+            gc_mask[wall_ceiling_mask == 255] = cv2.GC_BGD
+            
+            # Set probable foreground seeds from Segformer floor
+            gc_mask[raw_mask_small == 255] = cv2.GC_PR_FGD
+            
+            # Set a high-probability sure-foreground seed at the bottom-center of the screen
+            # (which is almost always the floor in any indoor room image)
+            bottom_center_h = int(h * 0.9)
+            bottom_center_w = int(w * 0.5)
+            if raw_mask_small[bottom_center_h, bottom_center_w] == 255:
+                cv2.rectangle(gc_mask, (bottom_center_w - 15, bottom_center_h - 15),
+                              (bottom_center_w + 15, bottom_center_h + 15), cv2.GC_FGD, -1)
+
+            # GrabCut auxiliary arrays
+            bgdModel = np.zeros((1, 65), np.float64)
+            fgdModel = np.zeros((1, 65), np.float64)
+            
+            # Run GrabCut for 3 iterations
+            cv2.grabCut(small_img, gc_mask, None, bgdModel, fgdModel, 3, cv2.GC_INIT_WITH_MASK)
+            
+            # Extract refined mask (GC_FGD or GC_PR_FGD)
+            refined_mask = np.where((gc_mask == cv2.GC_FGD) | (gc_mask == cv2.GC_PR_FGD), 255, 0).astype(np.uint8)
+            return refined_mask
+        except Exception as e:
+            print(f"GrabCut refinement failed ({e}), falling back to morphology.")
+
+    # Fallback/Default morphology path
+    k5 = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    clean_small = cv2.morphologyEx(raw_mask_small, cv2.MORPH_CLOSE, k5)
+    return clean_small
 
 # ---------------------------------------------------------------------------
 # 5.  UTILITIES
@@ -384,31 +486,24 @@ def _do_render(request: RenderRequest) -> dict:
         elif active_type == "bathroom": target_textures = {"wall":       request.marble_id}
         else:                           target_textures = {"floor":      request.marble_id}
 
-    surface_defs = {
-        "kitchen": {
-            "countertop": ["countertop", "table", "island"],
-            "cabinet":    ["cabinet", "cupboard", "drawer", "shelf"],
-        },
-        "bathroom": {
-            "wall":   ["wall"],
-            "floor":  ["floor", "carpet", "rug"],
-            "vanity": ["countertop", "sink", "bathtub"],
-            "shower": ["shower", "glass"],
-        },
-        "hall": {
-            "floor": ["floor", "carpet", "rug"],
-            "wall":  ["wall"],
-        },
-    }
-
     # Pre-compute lighting once with custom exposure and shadow settings
     room_gray = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
+    
+    # Blur the room gray map to extract smooth lighting/shadows without any high-frequency patterns of the old floor!
+    # A kernel size of ~3.5% of the image size is perfect to preserve baseboard shadows while washing out plank lines.
+    light_blur_k = max(15, int(min(w, h) * 0.035) | 1)
+    smooth_room_gray = cv2.GaussianBlur(room_gray, (light_blur_k, light_blur_k), 0)
     
     shadows_mix = request.shadow_intensity if request.shadow_intensity is not None else 1.0
     shadows_power = 0.85 * (2.0 - shadows_mix)
     shadows_power = max(0.1, min(3.0, shadows_power))
-    room_shadows   = np.power(room_gray, shadows_power)
+    room_shadows   = np.power(smooth_room_gray, shadows_power)
     room_gray_3d   = np.stack([room_shadows] * 3, axis=-1)
+    
+    # Blur the original image to wash out old floor grout lines/textures for a smooth reflection map.
+    # A kernel size of ~4.5% of the image size is perfect to wash out all details while keeping soft colors and light shapes.
+    ref_blur_k = max(21, int(min(w, h) * 0.045) | 1)
+    reflection_map = cv2.GaussianBlur(original_img, (ref_blur_k, ref_blur_k), 0).astype(np.float32)
     
     brightness = request.brightness_exposure if request.brightness_exposure is not None else 1.0
     light_mult     = (1.9 if active_type == "kitchen" else 1.75) * brightness
@@ -427,47 +522,64 @@ def _do_render(request: RenderRequest) -> dict:
             continue
 
         solid_mask = None
-        if use_cached_scan:
-            solid_mask = _seg_cache[request.scan_token]
-        else:
-            if pred_map is None:
-                continue
-            keywords   = surface_defs.get(active_type, {}).get(surface_name, [])
-            target_ids = [
-                idx for idx, label in model.config.id2label.items()
-                if any(k in label.lower() for k in keywords)
-            ]
-            if not target_ids:
-                continue
+        if request.custom_mask:
+            try:
+                custom_mask_img = base64_to_cv2(request.custom_mask)
+                if custom_mask_img is not None:
+                    if len(custom_mask_img.shape) == 3:
+                        solid_mask = cv2.cvtColor(custom_mask_img, cv2.COLOR_BGR2GRAY)
+                    else:
+                        solid_mask = custom_mask_img
+                    _, solid_mask = cv2.threshold(solid_mask, 127, 255, cv2.THRESH_BINARY)
+            except Exception as e:
+                print(f"Failed to load custom mask: {e}")
+                solid_mask = None
 
-            # Build mask at *small* resolution then scale up → saves morphology cost
-            raw_mask_small = np.isin(pred_map, target_ids).astype(np.uint8) * 255
-            if np.count_nonzero(raw_mask_small) < (small_w * small_h * 0.005):
-                continue
-
-            k9 = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
-            k5 = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-            clean_small = cv2.morphologyEx(raw_mask_small, cv2.MORPH_CLOSE, k9)
-            clean_small = cv2.morphologyEx(clean_small,   cv2.MORPH_OPEN,  k5)
-
-            # Scale mask up to original resolution
-            raw_mask = cv2.resize(clean_small, (w, h), interpolation=cv2.INTER_NEAREST)
-
-            num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(raw_mask, connectivity=8)
-            solid_mask = np.zeros_like(raw_mask)
-
-            for i in range(1, num_labels):
-                if stats[i, cv2.CC_STAT_AREA] < (w * h * 0.005):
+        if solid_mask is None:
+            if use_cached_scan:
+                solid_mask = _seg_cache[request.scan_token]
+            else:
+                if pred_map is None:
                     continue
-                if surface_name == "wall" and request.wall_coverage < 1.0:
-                    y_min    = stats[i, cv2.CC_STAT_TOP]
-                    h_obj    = stats[i, cv2.CC_STAT_HEIGHT]
-                    cutoff_y = int(y_min + h_obj * (1.0 - request.wall_coverage))
-                    temp     = (labels == i).astype(np.uint8) * 255
-                    temp[:cutoff_y] = 0
-                    solid_mask[temp == 255] = 255
-                else:
-                    solid_mask[labels == i] = 255
+                keywords   = SURFACE_DEFS.get(active_type, {}).get(surface_name, [])
+                target_ids = [
+                    idx for idx, label in model.config.id2label.items()
+                    if any(k in label.lower() for k in keywords)
+                ]
+                if not target_ids:
+                    continue
+
+                # Refine mask at small resolution using advanced semantic obstacle subtraction + GrabCut color seeds
+                clean_small = refine_mask_with_cv(pred_map, target_ids, model, small_img, surface_name)
+
+                # Scale mask up to original resolution
+                raw_mask = cv2.resize(clean_small, (w, h), interpolation=cv2.INTER_NEAREST)
+
+                num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(raw_mask, connectivity=8)
+                solid_mask = np.zeros_like(raw_mask)
+
+                for i in range(1, num_labels):
+                    if stats[i, cv2.CC_STAT_AREA] < (w * h * 0.0002):
+                        continue
+                    if surface_name == "wall" and request.wall_coverage < 1.0:
+                        y_min    = stats[i, cv2.CC_STAT_TOP]
+                        h_obj    = stats[i, cv2.CC_STAT_HEIGHT]
+                        cutoff_y = int(y_min + h_obj * (1.0 - request.wall_coverage))
+                        temp     = (labels == i).astype(np.uint8) * 255
+                        temp[:cutoff_y] = 0
+                        solid_mask[temp == 255] = 255
+                    else:
+                        solid_mask[labels == i] = 255
+
+                # Sophisticated Floor/Countertop Hole-Filling
+                contours, hierarchy = cv2.findContours(solid_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
+                if contours and hierarchy is not None:
+                    hierarchy = hierarchy[0]
+                    for idx, contour in enumerate(contours):
+                        if hierarchy[idx][3] != -1: # Children contours = inner holes
+                            area = cv2.contourArea(contour)
+                            if area < (w * h * 0.25): # Limit to 25% of image area to heal rugs/tables
+                                cv2.drawContours(solid_mask, [contour], -1, 255, -1)
 
         if solid_mask is None or np.sum(solid_mask) == 0:
             continue
@@ -503,18 +615,28 @@ def _do_render(request: RenderRequest) -> dict:
         marble_f  = warped_marble.astype(np.float32) / 255.0
         
         # Photorealistic Specular Highlight/Reflection Overlay Blending
-        # We blend the original bright highlights from original_img on top of the dark marble texture
+        # We blend soft room reflections and a crystalline white sheen on top of the marble
+        # instead of the raw original image, which prevents the old floor pattern from showing through.
         orig_f = original_img.astype(np.float32)
-        # Isolate highlights: bright spots in room_gray (cube of room_gray is a soft bright threshold)
-        highlights_intensity = np.power(room_gray, 3.0)
+        
+        # Isolate highlights: bright spots in smooth_room_gray (cube of smooth_room_gray is a soft bright threshold)
+        highlights_intensity = np.power(smooth_room_gray, 3.0)
         highlights_intensity_3d = np.stack([highlights_intensity] * 3, axis=-1)
         
         # Base shadow and exposure blend
         blended_f = np.clip(marble_f * room_gray_3d * light_mult, 0, 1) * 255.0
         
-        # Additive & overlay blend of specular reflections to replicate glossy polished marble
-        gloss_mix = 0.48 # elegant polished sheen reflection level
-        blended_f = np.clip(blended_f * (1.0 - gloss_mix * highlights_intensity_3d) + orig_f * gloss_mix * highlights_intensity_3d, 0, 255)
+        # Dynamically scale gloss mix based on shadow intensity (which maps to Matte/Satin/High Gloss in UI)
+        shadows_mix = request.shadow_intensity if request.shadow_intensity is not None else 1.0
+        # Matte (0.4) -> 0.02, Satin (1.0) -> 0.18, High Gloss (1.6) -> 0.35
+        gloss_mix = 0.02 + 0.33 * np.clip((shadows_mix - 0.4) / 1.2, 0.0, 1.0)
+        
+        # Specular light: 60% realistic blurred ambient room reflection and 40% pure white glare
+        # for a gorgeous polished crystalline sheen with zero old floor grout lines or texture showing!
+        specular_light = reflection_map * 0.6 + 255.0 * 0.4
+        
+        # Blend specular reflections
+        blended_f = np.clip(blended_f * (1.0 - gloss_mix * highlights_intensity_3d) + specular_light * gloss_mix * highlights_intensity_3d, 0, 255)
         
         # Procedural Ultra-Crisp Polished Crystalline Stone Micro-Grain
         # We tile a seamless 256x256 grain block at native resolution to give absolute razor-sharpness
@@ -572,23 +694,6 @@ def _do_scan(request: ScanRequest) -> dict:
     h, w = orig_h, orig_w
     active_type = request.room_type
 
-    surface_defs = {
-        "kitchen": {
-            "countertop": ["countertop", "table", "island"],
-            "cabinet":    ["cabinet", "cupboard", "drawer", "shelf"],
-        },
-        "bathroom": {
-            "wall":   ["wall"],
-            "floor":  ["floor", "carpet", "rug"],
-            "vanity": ["countertop", "sink", "bathtub"],
-            "shower": ["shower", "glass"],
-        },
-        "hall": {
-            "floor": ["floor", "carpet", "rug"],
-            "wall":  ["wall"],
-        },
-    }
-
     # Decide target surface name based on room type
     surface_name = "floor"
     if active_type == "kitchen":
@@ -596,7 +701,7 @@ def _do_scan(request: ScanRequest) -> dict:
     elif active_type == "bathroom":
         surface_name = "wall"
 
-    keywords = surface_defs.get(active_type, {}).get(surface_name, [])
+    keywords = SURFACE_DEFS.get(active_type, {}).get(surface_name, [])
     target_ids = [
         idx for idx, label in model.config.id2label.items()
         if any(k in label.lower() for k in keywords)
@@ -609,12 +714,8 @@ def _do_scan(request: ScanRequest) -> dict:
             if "floor" in label.lower() or "rug" in label.lower() or "carpet" in label.lower()
         ]
 
-    # Build mask
-    raw_mask_small = np.isin(pred_map, target_ids).astype(np.uint8) * 255
-    k9 = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
-    k5 = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-    clean_small = cv2.morphologyEx(raw_mask_small, cv2.MORPH_CLOSE, k9)
-    clean_small = cv2.morphologyEx(clean_small,   cv2.MORPH_OPEN,  k5)
+    # Refine mask at small resolution using advanced semantic obstacle subtraction + GrabCut color seeds
+    clean_small = refine_mask_with_cv(pred_map, target_ids, model, small_img, surface_name)
 
     # Scale mask up to original resolution
     raw_mask = cv2.resize(clean_small, (w, h), interpolation=cv2.INTER_NEAREST)
@@ -623,9 +724,19 @@ def _do_scan(request: ScanRequest) -> dict:
     solid_mask = np.zeros_like(raw_mask)
 
     for i in range(1, num_labels):
-        if stats[i, cv2.CC_STAT_AREA] < (w * h * 0.005):
+        if stats[i, cv2.CC_STAT_AREA] < (w * h * 0.0002):
             continue
         solid_mask[labels == i] = 255
+
+    # Sophisticated Floor/Countertop Hole-Filling
+    contours, hierarchy = cv2.findContours(solid_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
+    if contours and hierarchy is not None:
+        hierarchy = hierarchy[0]
+        for idx, contour in enumerate(contours):
+            if hierarchy[idx][3] != -1: # Children contours = inner holes
+                area = cv2.contourArea(contour)
+                if area < (w * h * 0.25): # Limit to 25% of image area to heal rugs/tables
+                    cv2.drawContours(solid_mask, [contour], -1, 255, -1)
 
     coverage_pct = round((np.count_nonzero(solid_mask) / (w * h)) * 100, 1)
 
