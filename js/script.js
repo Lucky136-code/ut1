@@ -13,32 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
             .to(preloader, { yPercent: -100, duration: 0.8, ease: "power3.inOut", delay: 0.2, onComplete: () => { if (preloader) preloader.style.display = 'none'; } });
     }
 
-    // === CUSTOM CURSOR ===
-    const cursor = document.getElementById('custom-cursor');
-    const follower = document.getElementById('cursor-follower');
-    if (cursor && follower && window.matchMedia("(hover: hover)").matches) {
-        let mx = 0, my = 0, fx = 0, fy = 0;
-        document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
-        function animateFollower() { fx += (mx - fx) * 0.12; fy += (my - fy) * 0.12; follower.style.left = fx + 'px'; follower.style.top = fy + 'px'; requestAnimationFrame(animateFollower); }
-        animateFollower();
-        document.querySelectorAll('a, button, .product-card, .bento-item, .cta-button').forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                document.body.classList.add('cursor-hover');
-                if (el.classList.contains('product-card')) {
-                    document.body.classList.add('cursor-view');
-                    follower.setAttribute('data-label', 'View');
-                } else if (el.tagName === 'A' || el.tagName === 'BUTTON' || el.classList.contains('cta-button')) {
-                    document.body.classList.add('cursor-view');
-                    follower.setAttribute('data-label', 'Click');
-                }
-            });
-            el.addEventListener('mouseleave', () => {
-                document.body.classList.remove('cursor-hover', 'cursor-view');
-                follower.removeAttribute('data-label');
-            });
-        });
-        document.body.style.cursor = 'none';
-    }
 
     gsap.registerPlugin(ScrollTrigger);
 
@@ -436,36 +410,51 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // === DYNAMIC NAV ===
-    const dynamicNav = document.getElementById('dynamic-nav');
-    const navItems = document.querySelectorAll('.nav-item');
-    const sections = ['collections', 'projects', 'how-we-work', 'about'].map(id => document.getElementById(id));
-    const navGlow = document.querySelector('.nav-glow');
-
-    ScrollTrigger.create({ trigger: ".collections-v3", start: "top 80%", onEnter: () => dynamicNav.classList.add('visible'), onLeaveBack: () => dynamicNav.classList.remove('visible') });
-
-    if (dynamicNav && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-        dynamicNav.addEventListener('mousemove', e => {
-            const r = dynamicNav.getBoundingClientRect();
-            const x = e.clientX - r.left, y = e.clientY - r.top;
-            const rx = ((y - r.height/2) / (r.height/2)) * -15, ry = ((x - r.width/2) / (r.width/2)) * 15;
-            dynamicNav.style.transform = `translateX(-50%) perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) scale3d(1.05,1.05,1.05)`;
-            navGlow.style.width = '120px'; navGlow.style.height = '120px'; navGlow.style.left = x+'px'; navGlow.style.top = y+'px';
-        });
-        dynamicNav.addEventListener('mouseleave', () => {
-            dynamicNav.style.transform = `translateX(-50%) perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)`;
-            navGlow.style.width = '0'; navGlow.style.height = '0';
+    // === HEADER & FLOATING CTA VISIBILITY ===
+    const mainHeader = document.querySelector('.main-header');
+    const floatingCta = document.querySelector('.floating-cta-bar');
+    if (floatingCta) {
+        ScrollTrigger.create({
+            trigger: "#hero-container",
+            start: "bottom top",
+            onEnter: () => {
+                if (mainHeader) mainHeader.classList.add('header-visible');
+                floatingCta.classList.add('cta-visible');
+            },
+            onLeaveBack: () => {
+                if (mainHeader) mainHeader.classList.remove('header-visible');
+                floatingCta.classList.remove('cta-visible');
+            }
         });
     }
 
+    // === SECTION OBSERVER & LINK SCROLLING ===
+    const headerLinks = document.querySelectorAll('.header-nav-link');
+    const sections = ['collections', 'projects', 'how-we-work', 'about'].map(id => document.getElementById(id));
+
     const sectionObs = new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) { const id = e.target.id; navItems.forEach(l => { if (!l.classList.contains('search-btn')) { l.classList.remove('active'); if (l.getAttribute('href') === '#'+id) l.classList.add('active'); } }); } });
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                const id = e.target.id;
+                headerLinks.forEach(l => {
+                    if (!l.classList.contains('search-btn')) {
+                        l.classList.remove('active');
+                        if (l.getAttribute('href') === '#'+id) l.classList.add('active');
+                    }
+                });
+            }
+        });
     }, { rootMargin: "-20% 0px -70% 0px" });
     sections.forEach(s => { if (s) sectionObs.observe(s); });
 
-    navItems.forEach(link => {
+    headerLinks.forEach(link => {
         if (!link.classList.contains('search-btn')) {
-            link.addEventListener('click', e => { e.preventDefault(); const t = document.querySelector(link.getAttribute('href')); if (t) lenis.scrollTo(t, { offset: -100, duration: 1.5 }); });
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const t = document.querySelector(targetId);
+                if (t) lenis.scrollTo(t, { offset: -100, duration: 1.5 });
+            });
         }
     });
 
