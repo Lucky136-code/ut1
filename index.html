@@ -37,9 +37,6 @@
         </div>
     </div>
 
-    <!-- Custom Cursor (Desktop) -->
-    <div id="custom-cursor" class="custom-cursor"></div>
-    <div id="cursor-follower" class="cursor-follower"></div>
 
     <!-- Film Grain Overlay -->
     <div class="grain-overlay"></div>
@@ -55,6 +52,13 @@
             <a href="#projects" class="header-nav-link">Portfolio</a>
             <a href="#how-we-work" class="header-nav-link">Process</a>
             <a href="#about" class="header-nav-link">About</a>
+            <button id="search-trigger" class="header-nav-link search-btn" aria-label="Search" style="background: transparent; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; margin-left: 45px; vertical-align: middle;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-secondary); transition: color 0.3s;">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
         </nav>
     </header>
 
@@ -150,41 +154,8 @@
         </div>
     </section>
 
-    <!-- Marquee Banner -->
-    <div class="marquee-section">
-        <div class="marquee-track">
-            <span>Premium Makrana Marble</span><span class="marquee-dot">◆</span>
-            <span>Italian Granite</span><span class="marquee-dot">◆</span>
-            <span>Handcrafted Elegance</span><span class="marquee-dot">◆</span>
-            <span>Pan-India Delivery</span><span class="marquee-dot">◆</span>
-            <span>30+ Years Legacy</span><span class="marquee-dot">◆</span>
-            <span>Premium Makrana Marble</span><span class="marquee-dot">◆</span>
-            <span>Italian Granite</span><span class="marquee-dot">◆</span>
-            <span>Handcrafted Elegance</span><span class="marquee-dot">◆</span>
-            <span>Pan-India Delivery</span><span class="marquee-dot">◆</span>
-            <span>30+ Years Legacy</span><span class="marquee-dot">◆</span>
-        </div>
-    </div>
 
-    <!-- 3D Interactive Floating Nav -->
-    <nav id="dynamic-nav" class="dynamic-nav">
-        <ul class="dynamic-nav-links">
-            <li><a href="#collections" class="nav-item">Collections</a></li>
-            <li><a href="#projects" class="nav-item">Our Projects</a></li>
-            <li><a href="#how-we-work" class="nav-item">How We Work</a></li>
-            <li><a href="#about" class="nav-item">About Us</a></li>
-            <li>
-                <button id="search-trigger" class="nav-item search-btn" aria-label="Search">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                </button>
-            </li>
-        </ul>
-        <div class="nav-glow"></div>
-    </nav>
+
 
     <!-- ===== ROOM VISUALIZER MODAL (AI-Powered) ===== -->
     <div id="viz-modal" class="viz-modal" role="dialog" aria-label="Room Visualizer" aria-hidden="true">
@@ -309,10 +280,12 @@
 
     <!-- Filtered Collections with Category Tabs -->
     <section id="collections" class="collections-v3">
+        <!-- Background video -->
+        <video class="collections-bg-video" autoplay muted loop playsinline aria-hidden="true">
+            <source src="assets/yes.mp4" type="video/mp4">
+        </video>
         <div class="col-header">
-            <p class="section-eyebrow">Our Collections</p>
-            <h2 class="section-title reveal-text">Explore the extraordinary.</h2>
-            <p class="section-description">From the earth's core to your curated space.</p>
+            <h2 class="section-title reveal-text" style="color: #000000 !important;">Our Collections</h2>
 
             <!-- Category Tabs -->
             <div class="col-tabs" id="col-tabs">
@@ -468,11 +441,8 @@
 
     <!-- Applications Bento Grid -->
     <section id="applications" class="applications-section">
-        <div class="huge-bg-text">FEATURED</div>
         <div class="section-header">
-            <p class="section-eyebrow">Applications</p>
-            <h2 class="section-title reveal-text">Limitless Applications.</h2>
-            <p class="section-description">Crafted for every corner of your life.</p>
+            <h2 class="section-title reveal-text" style="color: #000000 !important;">Crafted for every corner of your home</h2>
         </div>
         <div class="bento-grid">
             <div class="bento-item bento-large">
@@ -514,9 +484,7 @@
     <section id="projects" class="tunnel-section">
         <!-- Header scrolls in normally, then the pinned zone begins -->
         <div class="tunnel-header">
-            <p class="section-eyebrow">Portfolio</p>
-            <h2 class="section-title reveal-text">Our Projects.</h2>
-            <p class="section-description">Masterpieces realized around the globe.</p>
+            <h2 class="section-title reveal-text" style="color: #000000 !important;">Our Projects</h2>
         </div>
 
         <!-- Tall scroll space — the sticky panel anchors inside here -->
@@ -564,9 +532,7 @@
     <!-- How We Work Section -->
     <section id="how-we-work" class="video-presentation-section">
         <div class="section-header">
-            <p class="section-eyebrow">Process</p>
-            <h2 class="section-title reveal-text">The Process.</h2>
-            <p class="section-description">Watch the journey from raw stone to your home.</p>
+            <h2 class="section-title reveal-text" style="color: #000000 !important;">Watch the journey from the raw stone to your home</h2>
         </div>
 
         <div class="video-container">
@@ -795,66 +761,44 @@
         </div>
     </section>
 
-    <!-- About Us: Split Curtain Reveal -->
+    <!-- About Us: Full Viewport Split -->
     <section id="about" class="about-section">
-        <div class="about-curtain about-curtain--top"></div>
-        <div class="about-curtain about-curtain--bot"></div>
         <div class="about-container">
+            <!-- LEFT: Text Content -->
             <div class="about-content">
-                <p class="section-eyebrow">About Us</p>
                 <h2 class="section-title">A Legacy Written in Stone.</h2>
                 <p class="about-text">Since 1995, Uma Traders has established itself as a premier purveyor of luxury
                     natural stone. Operating from our central hub in Gorakhpur, we curate geological history. We source
                     the most pristine blocks from legendary quarries and meticulously craft them, shipping our
                     masterpiece marble and granite to every region across India to elevate your architectural vision.
                 </p>
-                <div class="about-stats">
-                    <div class="stat-item">
-                        <h3 class="odometer" data-count="30">0</h3>
-                        <p>Years Legacy</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>500<span class="stat-plus">+</span></h3>
-                        <p>Projects Delivered</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>Pan&#8209;India</h3>
-                        <p>Delivery Network</p>
-                    </div>
-                </div>
-                <div style="margin-top: 50px;">
+                <ul class="about-bullets">
+                    <li>30+ years of heritage in natural stone</li>
+                    <li>500+ luxury projects delivered across India</li>
+                    <li>Pan-India delivery network, zero damage guarantee</li>
+                    <li>Directly sourced from Makrana &amp; Italian quarries</li>
+                </ul>
+                <div style="margin-top: 40px;">
                     <a href="#contact" class="cta-button magnetic-btn">Start Your Project</a>
                 </div>
             </div>
-            <div class="about-map">
-                <div class="map-container">
-                    <div class="map-glow"></div>
-                    <!-- Immersive High-Contrast Vector India Map Image -->
-                    <img class="map-image" src="assets/indiamap.png" alt="Uma Traders India Distribution Network Map"
-                        style="width: 100%; height: auto; display: block; mix-blend-mode: multiply; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1); opacity: 0.93;">
-                    <a href="https://maps.google.com/?q=Uma+Traders,+Gorakhpur,+Uttar+Pradesh" target="_blank"
-                        class="map-pin" style="top: 38%; left: 54.5%;" aria-label="Uma Traders Gorakhpur">
-                        <div class="pin-pulse" style="background: rgba(197,168,128,0.5);"></div>
-                        <div class="pin-pulse pin-pulse-2" style="background: rgba(197,168,128,0.25);"></div>
-                        <div class="pin-icon-wrap"
-                            style="width: 24px; height: 30px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -85%) filter(drop-shadow(0 2px 5px rgba(0,0,0,0.15))); pointer-events: none; z-index: 6;">
-                            <svg viewBox="0 0 24 30" width="24" height="30" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M12 0C5.37 0 0 5.37 0 12c0 7.33 12 18 12 18s12-10.67 12-18c0-6.63-5.37-12-12-12z"
-                                    fill="#111111" />
-                                <circle cx="12" cy="12" r="3.5" fill="#c5a880" />
-                            </svg>
-                        </div>
-                        <div class="pin-label">Gorakhpur Hub</div>
-                    </a>
-                </div>
+            <!-- RIGHT: Video Visual -->
+            <div class="about-visual">
+                <video autoplay muted loop playsinline>
+                    <source src="assets/aboutus_compressed.mp4" type="video/mp4">
+                </video>
             </div>
         </div>
     </section>
 
+
     <!-- Footer -->
     <footer id="contact" class="footer">
+        <!-- Background video -->
+        <video class="footer-bg-video" autoplay muted loop playsinline aria-hidden="true">
+            <source src="assets/yess_compressed.mp4" type="video/mp4">
+        </video>
+        <div class="footer-bg-overlay"></div>
         <div class="footer-cta">
             <h2 class="footer-cta-title">Ready to transform your space?</h2>
             <p class="footer-cta-sub">Let's create something extraordinary together.</p>
