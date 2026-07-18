@@ -43,12 +43,23 @@ import asyncio
 import base64
 import gc
 import hashlib
+import logging
 import math
 import os
+import time
 import traceback
+from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
-from typing import Dict, Optional
+from typing import Dict, List, Optional
+
+# Structured logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S"
+)
+log = logging.getLogger("uma-engine")
 
 import cv2
 import numpy as np
@@ -76,8 +87,10 @@ MODEL_NAME = (
     else "nvidia/segformer-b5-finetuned-ade-640-640"
 )
 
-# Thread pool: keeps AI work off the async event loop
-_thread_pool = ThreadPoolExecutor(max_workers=2)
+# Thread pool: auto-scaled to CPU count, min 2, max 8
+_WORKERS = max(2, min(8, os.cpu_count() or 2))
+_thread_pool = ThreadPoolExecutor(max_workers=_WORKERS)
+log.info(f"Thread pool: {_WORKERS} workers")
 
 # ---------------------------------------------------------------------------
 # 2.  FASTAPI APP
@@ -105,11 +118,17 @@ print("AI Engine ready.")
 # ---------------------------------------------------------------------------
 # 4.  DATA MODELS
 # ---------------------------------------------------------------------------
+from pydantic import validator
+
+ALLOWED_PATTERNS = {"grid", "staggered", "diagonal", "bookmatch"}
+ALLOWED_ROOM_TYPES = {"hall", "kitchen", "bathroom", "living", "bedroom", "exterior"}
+MAX_B64_BYTES = 15 * 1024 * 1024   # 15 MB limit on base64 payload
+
 class RenderRequest(BaseModel):
     room_image:          str
     room_type:           str                  = "hall"
     surface_textures:    Dict[str, str]       = {}
-    wall_coverage:       float                = 1.0
+    wall_coverage:       float                = 1.0   # 0.01–1.0 (1% – 100%)
     floor_pattern:       str                  = "grid"
     marble_id:           Optional[str]        = None
     space_type:          Optional[str]        = None
@@ -122,35 +141,81 @@ class RenderRequest(BaseModel):
     tile_rotation:       Optional[float]      = 0.0
     texture_opacity:     Optional[float]      = 1.0
     custom_mask:         Optional[str]        = None
+    target_surface:      Optional[str]        = None  # override surface selection
+
+    @validator("room_image")
+    def check_image_size(cls, v):
+        payload = v.split(",")[1] if "," in v else v
+        if len(payload) > MAX_B64_BYTES:
+            raise ValueError("Image payload too large (max 15 MB).")
+        return v
+
+    @validator("wall_coverage")
+    def check_wall_coverage(cls, v):
+        return max(0.01, min(1.0, v))
+
+    @validator("floor_pattern")
+    def check_pattern(cls, v):
+        return v if v in ALLOWED_PATTERNS else "grid"
 
 class ScanRequest(BaseModel):
     room_image:          str
     room_type:           str                  = "hall"
+    target_surface:      Optional[str]        = None  # e.g. "wall", "floor", "sink"
+
+    @validator("room_image")
+    def check_image_size(cls, v):
+        payload = v.split(",")[1] if "," in v else v
+        if len(payload) > MAX_B64_BYTES:
+            raise ValueError("Image payload too large (max 15 MB).")
+        return v
 
 # ---------------------------------------------------------------------------
-# SURFACE DEFS
+# SURFACE DEFS — 7 target surface types across all room modes
 # ---------------------------------------------------------------------------
 SURFACE_DEFS = {
-    "exterior": {
-        "wall":  ["wall", "facade"],
-        "floor": ["floor", "ground"]
-    },
     "kitchen": {
-        "countertop": ["countertop", "table", "island", "desk"],
+        "countertop": ["countertop", "table", "island", "desk", "counter"],
         "cabinet":    ["cabinet", "cupboard", "drawer", "shelf"],
-        "floor":      ["floor", "carpet", "rug", "mat", "tatami", "parquet", "tile", "linoleum", "terrazzo", "ground", "stage", "platform"],
+        "floor":      ["floor", "carpet", "rug", "mat", "tatami", "parquet", "tile",
+                       "linoleum", "terrazzo", "ground", "stage", "platform"],
+        "wall":       ["wall", "tile", "backsplash"],
+        "sink":       ["sink", "basin"],
     },
     "bathroom": {
-        "wall":   ["wall", "tile"],
-        "floor":  ["floor", "carpet", "rug", "mat", "tatami", "parquet", "tile", "linoleum", "terrazzo", "ground", "stage", "platform"],
-        "vanity": ["countertop", "sink", "bathtub"],
-        "shower": ["shower", "glass"],
+        "wall":    ["wall", "tile"],
+        "floor":   ["floor", "carpet", "rug", "mat", "tatami", "parquet", "tile",
+                    "linoleum", "terrazzo", "ground", "stage", "platform"],
+        "vanity":  ["countertop", "vanity", "cabinet"],
+        "sink":    ["sink", "basin", "washbasin"],
+        "shower":  ["shower", "glass"],
     },
     "hall": {
-        "floor": ["floor", "carpet", "rug", "mat", "tatami", "parquet", "tile", "linoleum", "terrazzo", "ground", "stage", "platform"],
+        "floor": ["floor", "carpet", "rug", "mat", "tatami", "parquet", "tile",
+                  "linoleum", "terrazzo", "ground", "stage", "platform"],
+        "wall":  ["wall"],
+        "staircase": ["stairs", "step", "staircase"],
+    },
+    "living": {
+        "floor": ["floor", "carpet", "rug", "mat", "tatami", "parquet", "tile",
+                  "linoleum", "terrazzo", "ground"],
         "wall":  ["wall"],
     },
+    "bedroom": {
+        "floor": ["floor", "carpet", "rug", "mat", "tatami", "parquet", "tile",
+                  "linoleum", "terrazzo", "ground"],
+        "wall":  ["wall"],
+    },
+    "exterior": {
+        "wall":  ["wall", "facade", "building", "brick", "stone"],
+        "floor": ["floor", "ground", "pavement", "path", "road"],
+    },
 }
+
+# Surfaces that render as vertical planes (no floor perspective warp)
+WALL_SURFACES = {"wall", "shower", "vanity", "sink", "cabinet", "countertop", "staircase"}
+# Surfaces that render as flat top-down (countertop/sink — no warp at all)
+FLAT_TOP_SURFACES = {"sink", "vanity", "countertop"}
 
 # ---------------------------------------------------------------------------
 # 4.5 ADVANCED COLOR & OBSTACLE MASK REFINER (DUAL-TIER PIPELINE)
@@ -168,28 +233,40 @@ def refine_mask_with_cv(pred_map: np.ndarray, target_ids: list, model, small_img
     if np.count_nonzero(raw_mask_small) < (w * h * 0.0001):
         return np.zeros((h, w), dtype=np.uint8)
 
-    # 2. Hard Exclusion of Semantic Obstacles
-    obstacle_keywords = [
+    # 2. Hard vs Probable Exclusion of Semantic Obstacles
+    # Definite obstacles: objects that fully block the floor or are permanent room boundaries
+    definite_obstacle_keywords = [
         "bed", "blanket", "quilt", "pillow", "cushion", "sheet", "duvet",
-        "sofa", "couch", "armchair", "chair", "stool", "bench",
         "cabinet", "wardrobe", "cupboard", "chest", "dresser", "drawer", "shelf",
-        "table", "desk", "countertop", "island", "vanity", "bathtub", "sink", "shower",
+        "countertop", "island", "vanity", "bathtub", "sink", "shower",
         "plant", "pot", "vase", "book", "box", "apparel", "person", "human", "dog", "cat", "pet",
-        "television", "screen", "monitor"
+        "television", "screen", "monitor", "refrigerator", "fridge", "oven", "stove", "washer", "dryer", "dishwasher"
     ]
-    obstacle_ids = [
+    # Probable obstacles: furniture with legs or floor decor that we want to tile under/around if colors match
+    probable_obstacle_keywords = [
+        "sofa", "couch", "armchair", "chair", "stool", "bench", "seat", "ottoman", "pouffe", "footstool",
+        "table", "desk", "rug", "carpet", "mat", "tatami"
+    ]
+
+    definite_obstacle_ids = [
         idx for idx, label in model.config.id2label.items()
-        if any(k in label.lower() for k in obstacle_keywords)
+        if any(k in label.lower() for k in definite_obstacle_keywords)
     ]
-    obstacle_mask_small = np.isin(pred_map, obstacle_ids).astype(np.uint8) * 255
+    probable_obstacle_ids = [
+        idx for idx, label in model.config.id2label.items()
+        if any(k in label.lower() for k in probable_obstacle_keywords)
+    ]
+
+    definite_obstacle_mask = np.isin(pred_map, definite_obstacle_ids).astype(np.uint8) * 255
+    probable_obstacle_mask = np.isin(pred_map, probable_obstacle_ids).astype(np.uint8) * 255
     
-    # Subtract obstacles from the raw floor mask
-    raw_mask_small = np.where(obstacle_mask_small == 255, 0, raw_mask_small).astype(np.uint8)
+    # Subtract definite obstacles from the raw floor mask
+    raw_mask_small = np.where(definite_obstacle_mask == 255, 0, raw_mask_small).astype(np.uint8)
 
     # Ensure walls and ceiling are also marked as definite background
     wall_ceiling_ids = [
         idx for idx, label in model.config.id2label.items()
-        if "wall" in label.lower() or "ceiling" in label.lower()
+        if "wall" in label.lower() or "ceiling" in label.lower() or "sky" in label.lower()
     ]
     wall_ceiling_mask = np.isin(pred_map, wall_ceiling_ids).astype(np.uint8) * 255
 
@@ -200,19 +277,28 @@ def refine_mask_with_cv(pred_map: np.ndarray, target_ids: list, model, small_img
             gc_mask = np.zeros((h, w), dtype=np.uint8) + cv2.GC_PR_BGD
             
             # Set definite background obstacles & walls
-            gc_mask[obstacle_mask_small == 255] = cv2.GC_BGD
+            gc_mask[definite_obstacle_mask == 255] = cv2.GC_BGD
             gc_mask[wall_ceiling_mask == 255] = cv2.GC_BGD
+            
+            # Set probable background obstacles (so GrabCut can reclassify them to foreground if color matches)
+            gc_mask[probable_obstacle_mask == 255] = cv2.GC_PR_BGD
             
             # Set probable foreground seeds from Segformer floor
             gc_mask[raw_mask_small == 255] = cv2.GC_PR_FGD
+
+            # Generate definite foreground seeds by eroding the floor mask slightly (safe from boundary edges)
+            erode_k = max(3, int(min(w, h) * 0.04) | 1)
+            erode_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (erode_k, erode_k))
+            definite_fg = cv2.erode(raw_mask_small, erode_kernel, iterations=1)
+            gc_mask[definite_fg == 255] = cv2.GC_FGD
             
-            # Set a high-probability sure-foreground seed at the bottom-center of the screen
-            # (which is almost always the floor in any indoor room image)
-            bottom_center_h = int(h * 0.9)
-            bottom_center_w = int(w * 0.5)
-            if raw_mask_small[bottom_center_h, bottom_center_w] == 255:
-                cv2.rectangle(gc_mask, (bottom_center_w - 15, bottom_center_h - 15),
-                              (bottom_center_w + 15, bottom_center_h + 15), cv2.GC_FGD, -1)
+            # Fallback high-probability center-bottom seed if erosion cleared out too much
+            if np.sum(definite_fg) == 0:
+                bottom_center_h = int(h * 0.9)
+                bottom_center_w = int(w * 0.5)
+                if raw_mask_small[bottom_center_h, bottom_center_w] == 255:
+                    cv2.rectangle(gc_mask, (bottom_center_w - 15, bottom_center_h - 15),
+                                  (bottom_center_w + 15, bottom_center_h + 15), cv2.GC_FGD, -1)
 
             # GrabCut auxiliary arrays
             bgdModel = np.zeros((1, 65), np.float64)
@@ -439,10 +525,8 @@ def _cached_segmentation(img_hash: str, width: int, height: int) -> bytes:
     """
     raise NotImplementedError("Should never be called directly — see run_segmentation()")
 
-# We store the numpy array in a plain dict so we control eviction manually
-# (lru_cache doesn't play well with large numpy arrays as values).
-_seg_cache: Dict[str, np.ndarray] = {}
-_seg_cache_order = []  # insertion-order list of keys for LRU eviction
+# O(1) LRU cache using OrderedDict
+_seg_cache: OrderedDict = OrderedDict()
 
 def run_segmentation(small_img: np.ndarray, img_hash: str) -> np.ndarray:
     """
@@ -489,12 +573,11 @@ def run_segmentation(small_img: np.ndarray, img_hash: str) -> np.ndarray:
         torch.cuda.empty_cache()
     gc.collect()
 
-    # Cache with LRU eviction
+    # Cache with O(1) LRU eviction via OrderedDict
     _seg_cache[img_hash] = pred_map
-    _seg_cache_order.append(img_hash)
-    if len(_seg_cache_order) > SEG_CACHE_SIZE:
-        old = _seg_cache_order.pop(0)
-        _seg_cache.pop(old, None)
+    _seg_cache.move_to_end(img_hash)
+    if len(_seg_cache) > SEG_CACHE_SIZE:
+        _seg_cache.popitem(last=False)  # evict oldest
 
     return pred_map
 
@@ -502,6 +585,9 @@ def run_segmentation(small_img: np.ndarray, img_hash: str) -> np.ndarray:
 # 8.  CORE RENDER FUNCTION  (runs in thread pool, not on event loop)
 # ---------------------------------------------------------------------------
 def _do_render(request: RenderRequest) -> dict:
+    t_start = time.perf_counter()
+    active_surface = request.target_surface  # optional surface override
+    log.info(f"RENDER start | room={request.room_type} surface_textures={list(request.surface_textures.keys())} wall_cov={request.wall_coverage:.2f}")
     original_img = base64_to_cv2(request.room_image)
     if original_img is None:
         raise ValueError("Image decode failed.")
@@ -615,12 +701,19 @@ def _do_render(request: RenderRequest) -> dict:
                 for i in range(1, num_labels):
                     if stats[i, cv2.CC_STAT_AREA] < (w * h * 0.0002):
                         continue
-                    if surface_name == "wall" and request.wall_coverage < 1.0:
-                        y_min    = stats[i, cv2.CC_STAT_TOP]
-                        h_obj    = stats[i, cv2.CC_STAT_HEIGHT]
+                    if surface_name in WALL_SURFACES and request.wall_coverage < 1.0:
+                        # Bottom-up coverage: keep only the BOTTOM `wall_coverage`% of each wall region
+                        # This simulates wainscoting / dado / partial tiling from the floor upward
+                        y_min = stats[i, cv2.CC_STAT_TOP]
+                        h_obj = stats[i, cv2.CC_STAT_HEIGHT]
+                        # cutoff_y: rows above this are cleared (top portion of wall NOT covered)
                         cutoff_y = int(y_min + h_obj * (1.0 - request.wall_coverage))
-                        temp     = (labels == i).astype(np.uint8) * 255
-                        temp[:cutoff_y] = 0
+                        temp = (labels == i).astype(np.uint8) * 255
+                        temp[:cutoff_y] = 0   # erase top portion
+                        # Feather the cut edge for a natural look
+                        feather_k = max(3, int(h_obj * 0.015) | 1)
+                        temp = cv2.GaussianBlur(temp, (feather_k, feather_k), 0)
+                        _, temp = cv2.threshold(temp, 64, 255, cv2.THRESH_BINARY)
                         solid_mask[temp == 255] = 255
                     else:
                         solid_mask[labels == i] = 255
@@ -645,14 +738,13 @@ def _do_render(request: RenderRequest) -> dict:
         texture        = load_marble_texture(marble_id, tex_data_map.get(marble_id))
         
         scale_mult = request.tile_scale if request.tile_scale is not None else 1.0
-        tile_size_base = int((max(w, h) * 0.35 if surface_name == "floor" else max(w, h) * 0.8) * scale_mult)
-        rot_angle = request.tile_rotation if request.tile_rotation is not None else 0.0
+        rot_angle  = request.tile_rotation if request.tile_rotation is not None else 0.0
 
-        if surface_name == "floor" or (active_type == "hall" and surface_name != "wall"):
-            # Generate pattern at output size
+        if surface_name == "floor" or surface_name == "staircase":
+            # Floor / staircase: perspective warp for depth illusion
+            tile_size_base = int(max(w, h) * 0.35 * scale_mult)
             tiled_marble = generate_pattern(
-                texture, request.floor_pattern if surface_name == "floor" else "grid",
-                w, h, tile_size_base, tile_rotation=rot_angle
+                texture, request.floor_pattern, w, h, tile_size_base, tile_rotation=rot_angle
             )
             horizon_y = h * 0.45
             src_pts   = np.float32([[0, 0],    [w, 0],    [0, h],    [w, h]])
@@ -663,8 +755,36 @@ def _do_render(request: RenderRequest) -> dict:
             warped_marble = cv2.warpPerspective(
                 tiled_marble, cv2.getPerspectiveTransform(src_pts, dst_pts), (w, h)
             )
+        elif surface_name == "wall":
+            # Wall: vertical-plane perspective warp — tiles recede toward vanishing point
+            tile_size_base = int(max(w, h) * 0.25 * scale_mult)
+            tiled_marble = generate_pattern(
+                texture, request.floor_pattern, w, h, tile_size_base, tile_rotation=rot_angle
+            )
+            # Slight vertical keystone to simulate viewing a wall from eye-level
+            vp_squeeze = 0.07   # how much the top narrows vs the bottom
+            src_pts = np.float32([[0, 0], [w, 0], [0, h], [w, h]])
+            dst_pts = np.float32([
+                [w * vp_squeeze,     0],
+                [w * (1 - vp_squeeze), 0],
+                [0,                  h],
+                [w,                  h],
+            ])
+            warped_marble = cv2.warpPerspective(
+                tiled_marble, cv2.getPerspectiveTransform(src_pts, dst_pts), (w, h)
+            )
+        elif surface_name in FLAT_TOP_SURFACES:
+            # Sink / vanity / countertop: flat orthographic — no warp
+            tile_size_base = int(max(w, h) * 0.20 * scale_mult)
+            warped_marble = generate_pattern(
+                texture, "grid", w, h, tile_size_base, tile_rotation=rot_angle
+            )
         else:
-            warped_marble = generate_pattern(texture, "grid", w, h, tile_size_base, tile_rotation=rot_angle)
+            # Shower, cabinet, etc.: mild flat grid
+            tile_size_base = int(max(w, h) * 0.30 * scale_mult)
+            warped_marble = generate_pattern(
+                texture, "grid", w, h, tile_size_base, tile_rotation=rot_angle
+            )
 
         marble_f  = warped_marble.astype(np.float32) / 255.0
         
@@ -722,15 +842,20 @@ def _do_render(request: RenderRequest) -> dict:
     if np.sum(overall_mask) == 0:
         final_image_u8 = original_img
 
+    elapsed = round((time.perf_counter() - t_start) * 1000)
+    log.info(f"RENDER done  | {elapsed} ms")
     return {
         "final_image_url": cv2_to_base64(final_image_u8),
         "floor_mask_url":  mask_to_base64_png(overall_mask_u8),
+        "render_ms":       elapsed,
     }
 
 # ---------------------------------------------------------------------------
 # 8.5 CORE SCAN FUNCTION
 # ---------------------------------------------------------------------------
 def _do_scan(request: ScanRequest) -> dict:
+    t_start = time.perf_counter()
+    log.info(f"SCAN  start  | room={request.room_type} target_surface={request.target_surface}")
     original_img = base64_to_cv2(request.room_image)
     if original_img is None:
         raise ValueError("Image decode failed.")
@@ -748,12 +873,15 @@ def _do_scan(request: ScanRequest) -> dict:
     h, w = orig_h, orig_w
     active_type = request.room_type
 
-    # Decide target surface name based on room type
-    surface_name = "floor"
-    if active_type == "kitchen":
+    # Decide target surface: honour explicit override, else default by room
+    if request.target_surface and request.target_surface in SURFACE_DEFS.get(active_type, {}):
+        surface_name = request.target_surface
+    elif active_type == "kitchen":
         surface_name = "countertop"
     elif active_type == "bathroom":
         surface_name = "wall"
+    else:
+        surface_name = "floor"
 
     keywords = SURFACE_DEFS.get(active_type, {}).get(surface_name, [])
     target_ids = [
@@ -801,9 +929,12 @@ def _do_scan(request: ScanRequest) -> dict:
 
     coverage_pct = round((np.count_nonzero(solid_mask) / (w * h)) * 100, 1)
 
-    # Generate a unique scan token and cache the solid mask
+    # Generate a unique scan token and cache the solid mask using O(1) LRU
     scan_token = f"scan_{img_hash}_{active_type}_{surface_name}"
     _seg_cache[scan_token] = solid_mask
+    _seg_cache.move_to_end(scan_token)
+    if len(_seg_cache) > SEG_CACHE_SIZE:
+        _seg_cache.popitem(last=False)
 
     # Create scan overlay image: highlight detected floor with semi-transparent teal color (BGR: 220, 220, 0 for cyan/teal)
     overlay_img = original_img.copy()
@@ -813,11 +944,15 @@ def _do_scan(request: ScanRequest) -> dict:
     # Blend: overlay 45% cyan color where mask is active
     overlay_img[mask_3d] = cv2.addWeighted(original_img, 0.55, np.full_like(original_img, overlay_color), 0.45, 0)[mask_3d]
 
+    elapsed = round((time.perf_counter() - t_start) * 1000)
+    log.info(f"SCAN  done   | surface={surface_name} coverage={coverage_pct}% {elapsed} ms")
     return {
-        "scan_token": scan_token,
+        "scan_token":     scan_token,
+        "surface_name":   surface_name,
         "floor_mask_url": mask_to_base64_png(solid_mask),
         "scan_image_url": cv2_to_base64(overlay_img),
-        "coverage_pct": coverage_pct,
+        "coverage_pct":   coverage_pct,
+        "scan_ms":        elapsed,
     }
 
 # ---------------------------------------------------------------------------
@@ -860,11 +995,13 @@ async def render_scene(request: RenderRequest):
 @app.get("/health")
 async def health():
     return {
-        "status":       "ok",
-        "device":       DEVICE,
-        "model":        MODEL_NAME,
-        "seg_cache":    len(_seg_cache),
-        "cache_limit":  SEG_CACHE_SIZE,
+        "status":        "ok",
+        "device":        DEVICE,
+        "model":         MODEL_NAME,
+        "workers":       _WORKERS,
+        "seg_cache":     len(_seg_cache),
+        "cache_limit":   SEG_CACHE_SIZE,
+        "surfaces":      {rt: list(surfs.keys()) for rt, surfs in SURFACE_DEFS.items()},
     }
 
 # ---------------------------------------------------------------------------
