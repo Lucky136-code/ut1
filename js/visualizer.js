@@ -398,7 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 const texB64 = await urlToBase64(mat.texture || mat.img);
-                const surfaceMap = { hall: 'floor', kitchen: 'countertop', bathroom: 'wall', exterior: 'wall' };
+                const surfaceMap = { hall: 'floor', kitchen: 'countertop', bathroom: 'wall' };
                 const surface = surfaceMap[currentRoomType] || 'floor';
 
                 const body = {
@@ -1315,6 +1315,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function selectTool(toolId) {
             activeTool = toolId;
+// Routing improvements active
             [toolPointer, toolBrush, toolEraser, toolFill].forEach(btn => {
                 if (btn) btn.classList.toggle('active', btn.id === toolId);
             });
