@@ -1,4 +1,3 @@
-import logging
 """
 Uma Traders — Master Pattern Engine (Optimised)
 ================================================
@@ -132,6 +131,10 @@ class ScanRequest(BaseModel):
 # SURFACE DEFS
 # ---------------------------------------------------------------------------
 SURFACE_DEFS = {
+    "exterior": {
+        "wall":  ["wall", "facade"],
+        "floor": ["floor", "ground"]
+    },
     "kitchen": {
         "countertop": ["countertop", "table", "island", "desk"],
         "cabinet":    ["cabinet", "cupboard", "drawer", "shelf"],
