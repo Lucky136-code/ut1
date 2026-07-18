@@ -398,7 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 const texB64 = await urlToBase64(mat.texture || mat.img);
-                const surfaceMap = { hall: 'floor', kitchen: 'countertop', bathroom: 'wall' };
+                const surfaceMap = { hall: 'floor', kitchen: 'countertop', bathroom: 'wall', exterior: 'wall' };
                 const surface = surfaceMap[currentRoomType] || 'floor';
 
                 const body = {
