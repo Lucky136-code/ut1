@@ -1,3 +1,4 @@
+import logging
 """
 Uma Traders — Master Pattern Engine (Optimised)
 ================================================
