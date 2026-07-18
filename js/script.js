@@ -450,10 +450,12 @@ document.addEventListener("DOMContentLoaded", () => {
     headerLinks.forEach(link => {
         if (!link.classList.contains('search-btn')) {
             link.addEventListener('click', e => {
-                e.preventDefault();
                 const targetId = link.getAttribute('href');
-                const t = document.querySelector(targetId);
-                if (t) lenis.scrollTo(t, { offset: -100, duration: 1.5 });
+                if (targetId && targetId.startsWith('#')) {
+                    e.preventDefault();
+                    const t = document.querySelector(targetId);
+                    if (t) lenis.scrollTo(t, { offset: -100, duration: 1.5 });
+                }
             });
         }
     });
