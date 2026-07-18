@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membership Pricing | Uma Traders</title>
+    <meta name="description"
+        content="Choose between our Basic and Pro Membership plans. Start with a 7-day free trial and unlock premium stone design features.">
+    <meta name="author" content="Uma Traders">
+    <link rel="icon" type="image/jpeg" href="assets/logo.jpeg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Cinzel:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://use.typekit.net/auz8ulg.css">
+    <link rel="stylesheet" href="css/styles.css?v=5">
+
+    <style>
+        :root {
+            --bg-pricing: #f4f3ee;
+            --card-bg: #ffffff;
+            --accent-orange: #ff5021;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --font-heading: "campaign", "Archivo Black", sans-serif;
+            --font-body: "Inter", sans-serif;
+            --font-mono: 'Space Mono', monospace;
+        }
+
+        body.pricing-body {
+            background-color: var(--bg-pricing);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body.pricing-body::before {
+            display: none;
+            /* remove main background overlay */
+        }
+
+        /* Decorative Side Stripes matching the screenshot layout */
+        .side-stripe {
+            position: fixed;
+            top: 0;
+            width: 80px;
+            height: 100vh;
+            background-color: #eae9e5;
+            z-index: 1;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .side-stripe-left {
+            left: 0;
+            border-right: 1px solid #dcdbd7;
+        }
+
+        .side-stripe-right {
+            right: 0;
+            border-left: 1px solid #dcdbd7;
+        }
+
+        .orange-block {
+            width: 100%;
+            height: 40%;
+            background-color: var(--accent-orange);
+        }
+
+        @media (max-width: 1200px) {
+            .side-stripe {
+                display: none;
+            }
+        }
+
+        /* Premium Nav Header */
+        .pay-header {
+            position: relative;
+            z-index: 10;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(244, 243, 238, 0.85);
+            backdrop-filter: blur(10px);
+        }
+
+        .pay-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid #1a1a1a;
+            object-fit: cover;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .logo-circle:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .pay-brand-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-primary);
+        }
+
+        .pay-back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 8px 18px;
+            border-radius: 40px;
+        }
+
+        .pay-back-link:hover {
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        /* Container styling */
+        .pricing-container {
+            position: relative;
+            z-index: 5;
+            max-width: 1000px;
+            margin: 60px auto 100px;
+            padding: 0 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Header Title */
+        .pricing-main-title {
+            font-family: var(--font-heading);
+            font-size: clamp(2.4rem, 5.5vw, 4.4rem);
+            font-weight: 900;
+            line-height: 1.05;
+            color: var(--text-primary);
+            margin-bottom: 60px;
+            letter-spacing: -0.05em;
+        }
+
+        /* Cards Wrapper */
+        .pricing-cards-wrapper {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            justify-content: center;
+            align-items: stretch;
+        }
+
+        @media (max-width: 768px) {
+            .pricing-cards-wrapper {
+                flex-direction: column;
+                align-items: center;
+                gap: 40px;
+            }
+        }
+
+        /* Pricing Card Design */
+        .pricing-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 50px 45px;
+            width: 410px;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            text-align: left;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Diagonal Ribbon for Best Value */
+        .card-ribbon {
+            position: absolute;
+            top: 20px;
+            left: -32px;
+            width: 120px;
+            background: var(--accent-orange);
+            color: #ffffff;
+            text-align: center;
+            font-family: var(--font-body);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transform: rotate(-45deg);
+            padding: 5px 0;
+            z-index: 10;
+        }
+
+        .card-plan-name {
+            font-family: var(--font-heading);
+            font-size: 2.1rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            letter-spacing: -0.04em;
+        }
+
+        .card-price-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .card-price {
+            font-family: var(--font-heading);
+            font-size: 2.3rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            letter-spacing: -0.04em;
+        }
+
+        .card-price-period {
+            font-family: var(--font-body);
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            line-height: 1.25;
+            letter-spacing: 0.02em;
+        }
+
+        /* Plan Buttons */
+        .card-btn {
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: 50px;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border: none;
+            text-align: center;
+            outline: none;
+            margin-bottom: 40px;
+        }
+
+        .btn-starter {
+            background: #111111;
+            color: #ffffff;
+        }
+
+        .btn-starter:hover {
+            background: #252525;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-growth {
+            background: linear-gradient(135deg, #ff6c40, #ff4514);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(255, 80, 33, 0.15);
+        }
+
+        .btn-growth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 80, 33, 0.25);
+        }
+
+        /* Features List Section */
+        .card-features-section {
+            margin-top: auto;
+        }
+
+        .features-title {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .features-list li {
+            font-size: 0.85rem;
+            color: #4c4c4c;
+            font-weight: 500;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .features-list li::before {
+            content: "✓";
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        /* Checkout Modal Sheet */
+        .checkout-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .checkout-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .checkout-modal-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 480px;
+            width: 90%;
+            position: relative;
+            transform: translateY(30px);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .checkout-modal-overlay.active .checkout-modal-card {
+            transform: translateY(0);
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        .close-modal-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .modal-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Checkout Form Controls */
+        .pay-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            text-align: left;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            background: rgba(0, 0, 0, 0.015);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-orange);
+            background: rgba(255, 80, 33, 0.01);
+            box-shadow: 0 0 8px rgba(255, 80, 33, 0.12);
+        }
+
+        /* Price Breakdown Box */
+        .breakdown-box {
+            background: rgba(0, 0, 0, 0.01);
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 1px dashed rgba(0, 0, 0, 0.08);
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .breakdown-label {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .breakdown-val {
+            font-family: var(--font-body) !important;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .breakdown-row.total {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: 10px;
+            margin-top: 2px;
+            font-size: 1rem;
+        }
+
+        .breakdown-row.total .breakdown-label {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .breakdown-row.total .breakdown-val {
+            color: var(--accent-orange);
+            font-weight: 700;
+        }
+
+        .billing-cycle-info {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 400;
+        }
+
+        /* Dynamic Payment Submit Buttons */
+        .pay-submit-btn {
+            color: #ffffff;
+            border: none;
+            border-radius: 40px;
+            padding: 15px 30px;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .pay-submit-btn.btn-starter-theme {
+            background: #111111;
+        }
+
+        .pay-submit-btn.btn-starter-theme:hover {
+            background: #252525;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .pay-submit-btn.btn-growth-theme {
+            background: linear-gradient(135deg, #ff6c40, #ff4514);
+            box-shadow: 0 4px 15px rgba(255, 80, 33, 0.15);
+        }
+
+        .pay-submit-btn.btn-growth-theme:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 80, 33, 0.25);
+        }
+
+        .pay-submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            margin-top: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .secure-badge svg {
+            color: #48bb78;
+        }
+
+        /* Custom Success Modal overlay */
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .success-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .success-card {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 24px;
+            padding: 50px 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            transform: translateY(30px);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .success-overlay.active .success-card {
+            transform: translateY(0);
+        }
+
+        .success-icon-wrap {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 80, 33, 0.1);
+            border: 1px solid var(--accent-orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-orange);
+            font-size: 2.2rem;
+            margin: 0 auto 25px;
+            animation: popCircle 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes popCircle {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-title {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .success-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .success-close-btn {
+            background: #111111;
+            color: #ffffff;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 30px;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .success-close-btn:hover {
+            background: #252525;
+            transform: translateY(-2px);
+        }
+
+        .currency-symbol {
+            font-family: var(--font-body) !important;
+            font-weight: 700;
+            margin-right: 2px;
+        }
+
+        .trial-info-text {
+            font-family: var(--font-body);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: -30px;
+            margin-bottom: 35px;
+            letter-spacing: 0.01em;
+        }
+    </style>
+</head>
+
+<body class="pricing-body">
+    <!-- Side Stripes to match visual reference -->
+    <div class="side-stripe side-stripe-left">
+        <div class="orange-block"></div>
+    </div>
+    <div class="side-stripe side-stripe-right">
+        <div class="orange-block"></div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="pay-header">
+        <a href="index.html" class="pay-brand">
+            <img src="assets/logo.jpeg" class="logo-circle" alt="Uma Traders Logo">
+            <span class="pay-brand-title">Uma Traders</span>
+        </a>
+        <a href="index.html" class="pay-back-link">
+            ← Back to Home
+        </a>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="pricing-container">
+        <h1 class="pricing-main-title">Start free &<br>pay-as-you-go</h1>
+
+        <div class="pricing-cards-wrapper">
+            <!-- Basic Plan Card -->
+            <div class="pricing-card" id="card-starter">
+                <h2 class="card-plan-name">Basic Membership</h2>
+
+                <div class="card-price-container">
+                    <span class="card-price"><span class="currency-symbol">₹</span>8,999</span>
+                    <span class="card-price-period">per<br>month</span>
+                </div>
+
+                <button class="card-btn btn-starter" data-plan="basic">Sign up & Join Basic</button>
+                <div class="trial-info-text">7 Days Free Trial, then <span class="currency-symbol">₹</span>8,999/month</div>
+
+                <div class="card-features-section">
+                    <h3 class="features-title">What's included:</h3>
+                    <ul class="features-list">
+                        <li>Access to 2D stone library & textures</li>
+                        <li>Up to 100 AI Room Visualizer renders/mo</li>
+                        <li>Standard Makrana & Indian granite catalog</li>
+                        <li>Dedicated customer support line</li>
+                        <li>Visualizer pattern presets (Grid & Staggered)</li>
+                        <li>Specialist consulting session (30 mins)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Pro Membership Card -->
+            <div class="pricing-card" id="card-growth">
+                <!-- Diagonal orange Ribbon on top left -->
+                <div class="card-ribbon">Best value</div>
+
+                <h2 class="card-plan-name">Pro Membership</h2>
+
+                <div class="card-price-container">
+                    <span class="card-price"><span class="currency-symbol">₹</span>11,999</span>
+                    <span class="card-price-period">per<br>month</span>
+                </div>
+
+                <button class="card-btn btn-growth" data-plan="pro">Sign up & Join Pro</button>
+                <div class="trial-info-text">7 Days Free Trial, then <span class="currency-symbol">₹</span>11,999/month</div>
+
+                <div class="card-features-section">
+                    <h3 class="features-title">What's included:</h3>
+                    <ul class="features-list">
+                        <li>Unlimited AI Room Visualizer renders</li>
+                        <li>Full premium Italian Calacatta & Obsidian Noir catalogs</li>
+                        <li>Exclusive Bookmatch & Diagonal patterns</li>
+                        <li>Priority design consultation & site inspection</li>
+                        <li>Custom slab selection & quarry tracking</li>
+                        <li>Lifetime membership support & guidance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Checkout Modal Slide-up Sheet -->
+    <div class="checkout-modal-overlay" id="checkout-modal">
+        <div class="checkout-modal-card">
+            <button class="close-modal-btn" id="close-modal" aria-label="Close modal">✕</button>
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-plan-title">Set up Basic Membership</h2>
+                <p class="modal-subtitle">Authorize your card to activate the 7-day free trial</p>
+            </div>
+
+            <form class="pay-form" id="checkout-form">
+                <!-- Hidden inputs for active plan -->
+                <input type="hidden" id="selected-plan" value="basic">
+
+                <div class="form-group">
+                    <label class="form-label" for="client-name">Full Name</label>
+                    <input type="text" id="client-name" class="form-input" placeholder="e.g. Vikram Sharma" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="client-email">Email Address</label>
+                    <input type="email" id="client-email" class="form-input" placeholder="e.g. vikram@gmail.com"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="client-phone">Phone Number</label>
+                    <input type="tel" id="client-phone" class="form-input" placeholder="e.g. +919876543210" required>
+                </div>
+
+                <!-- Price Summary Breakdown -->
+                <div class="breakdown-box">
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">7-Day Trial Price</span>
+                        <span class="breakdown-val"><span class="currency-symbol">₹</span>0.00</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">Recurring Plan Cost</span>
+                        <span class="breakdown-val" id="breakdown-plan-price"><span class="currency-symbol">₹</span>8,999.00 / mo</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">Visualizer Usage</span>
+                        <span class="breakdown-val" id="breakdown-usage-price">Included (100 Renders)</span>
+                    </div>
+                    <div class="breakdown-row total">
+                        <span class="breakdown-label">Due Today</span>
+                        <span class="breakdown-val"><span class="currency-symbol">₹</span>0.00</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="pay-submit-btn btn-starter-theme" id="submit-btn">
+                    <span>Activate 7-Day Free Trial</span> ↗
+                </button>
+
+                <p class="billing-cycle-info" id="billing-cycle-text">
+                    You won't be charged today. Your recurring subscription of <strong
+                        id="summary-billing-rate"><span class="currency-symbol">₹</span>8,999/month</strong> will begin on <strong
+                        id="next-billing-date">...</strong>. You can cancel any time before then.
+                </p>
+
+                <div class="secure-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span>Razorpay Secured 256-bit SSL Connection</span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Confirmation Overlay -->
+    <div class="success-overlay" id="success-overlay">
+        <div class="success-card">
+            <div class="success-icon-wrap">
+                <span>✓</span>
+            </div>
+            <h2 class="success-title">Subscription Active</h2>
+            <p class="success-text" id="success-message">
+                Congratulations! Your 7-day free trial has been successfully registered. Our principal design consultant
+                will contact you via email and phone shortly.
+            </p>
+            <button class="success-close-btn" id="success-close">Go to Dashboard</button>
+        </div>
+    </div>
+
+    <!-- Razorpay Checkout Library -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="js/payment.js?v=1"></script>
+</body>
+
+</html>
