@@ -48,8 +48,7 @@ import os
 import traceback
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
-from typing import Dict, List, Optional
-from collections import OrderedDict
+from typing import Dict, Optional
 
 import cv2
 import numpy as np
@@ -78,8 +77,7 @@ MODEL_NAME = (
 )
 
 # Thread pool: keeps AI work off the async event loop
-_WORKERS = max(2, min(8, os.cpu_count() or 2))
-_thread_pool = ThreadPoolExecutor(max_workers=_WORKERS)
+_thread_pool = ThreadPoolExecutor(max_workers=2)
 
 # ---------------------------------------------------------------------------
 # 2.  FASTAPI APP
