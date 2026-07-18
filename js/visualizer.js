@@ -144,7 +144,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const btnRefine      = document.getElementById('btn-refine');
         const btnReset       = document.getElementById('btn-reset');
         const btnDownload    = document.getElementById('btn-download');
+        const btnFullscreen  = document.getElementById('btn-fullscreen');
         const laserScan      = document.getElementById('scan-laser');
+
+        // Fullscreen Lightbox Elements
+        const fullscreenOverlay = document.getElementById('viz-fullscreen-overlay');
+        const fullscreenImg     = document.getElementById('viz-fullscreen-img');
+        const fullscreenClose   = document.getElementById('viz-fullscreen-close');
         
         // Compare View Elements
         const compareWrap    = document.getElementById('compare-viewport-wrap');
@@ -207,27 +213,28 @@ document.addEventListener("DOMContentLoaded", () => {
         let isScanning     = false;
         let renderHistory  = []; // Array of render state snapshots
         let sliderTimer    = null; // Throttled sliders render loop timer
+        let roomImageNatW  = 0;
+        let roomImageNatH  = 0;
 
         // SVG circle gauge circumference
         const HUD_CIRCUMFERENCE = 213.6;
 
         // Initialize materials cards
         function initMaterialGrid() {
-            if (!grid) return;
-            grid.innerHTML = '';
+            const bottomTrack = document.getElementById('viz-material-bottom-track');
+            if (!bottomTrack) return;
+            bottomTrack.innerHTML = '';
             MATERIALS.forEach(mat => {
-                const card = document.createElement('div');
-                card.className = 'viz-mat-card';
-                card.dataset.cat = mat.cat;
-                card.dataset.id  = mat.id;
-                card.innerHTML = `
-                    <div class="viz-mat-thumb" style="background-image:url('${mat.img}')"></div>
-                    <div class="viz-mat-info">
-                        <span class="viz-mat-tag">${mat.cat}</span>
-                        <h4>${mat.name}</h4>
-                    </div>`;
-                card.addEventListener('click', () => selectMaterial(mat, card));
-                grid.appendChild(card);
+                const thumb = document.createElement('div');
+                thumb.className = 'viz-history-thumb';
+                thumb.dataset.id = mat.id;
+                thumb.style.backgroundImage = `url('${mat.img}')`;
+                thumb.title = mat.name;
+                
+                thumb.addEventListener('click', () => {
+                    selectMaterial(mat, thumb);
+                });
+                bottomTrack.appendChild(thumb);
             });
         }
 
@@ -328,6 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (btnCompare) btnCompare.disabled = false;
                 btnReset.disabled = false;
                 btnDownload.disabled = false;
+                if (btnFullscreen) btnFullscreen.disabled = false;
                 if (btnRefine) {
                     btnRefine.disabled = false;
                 }
@@ -354,7 +362,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error('Scan failed:', err);
                 updateHudGauge(12.0, 'ERROR', 'FAILED');
                 if (activeMetaPill) {
-                    activeMetaPill.textContent = 'Neural scanning failed. Check server status.';
+                    activeMetaPill.style.display = 'none';
                 }
             } finally {
                 isScanning = false;
@@ -440,14 +448,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     resultImg.style.display = 'block';
                 }
 
-                // CRITICAL: Hide the paint canvas overlay so the marble is visible!
-                // The canvas was sitting on top at z-index 9, blocking the rendered result.
-                const pcw = document.getElementById('paint-canvas-wrap');
-                if (pcw) pcw.style.display = 'none';
-                // Clear any saved source — the new render IS the latest result
-                _savedResultSrc = null;
-                // Switch to pointer tool (resets active tool state)
-                if (typeof selectTool === 'function') selectTool('tool-pointer');
+                // Update custom mask with the refined mask returned by the backend
+                if (data.floor_mask_url) {
+                    window._customMask = data.floor_mask_url;
+                }
+
+                // If they are actively refining, re-initialize the canvas to show the updated mask
+                if (activeTool !== 'tool-pointer') {
+                    initializePaintCanvas();
+                } else {
+                    const pcw = document.getElementById('paint-canvas-wrap');
+                    if (pcw) pcw.style.display = 'none';
+                }
                 
                 // Set layers for split slider comparison
                 if (compareImgOrig) compareImgOrig.src = roomImageB64;
@@ -489,23 +501,14 @@ document.addEventListener("DOMContentLoaded", () => {
         function selectMaterial(mat, cardEl) {
             selectedMat = mat;
             
-            // Highlight selected card
-            document.querySelectorAll('.viz-mat-card').forEach(c => c.classList.remove('selected'));
-            if (cardEl) cardEl.classList.add('selected');
-
-            // Render monolith detailed description metadata panel
-            if (slabThumb) {
-                slabThumb.style.backgroundImage = `url('${mat.img}')`;
-                slabThumb.classList.add('loaded');
-            }
-            if (selName) selName.textContent = mat.name;
-            if (monolithCat) monolithCat.textContent = mat.cat.toUpperCase();
-            if (monolithDesc) {
-                monolithDesc.innerHTML = `<strong>Taxonomy:</strong> ${mat.taxonomy}<br>
-                                          <strong>Origin:</strong> ${mat.origin}<br>
-                                          <strong>Hardness:</strong> ${mat.hardness}<br><br>
-                                          ${mat.desc}`;
-            }
+            // Highlight selected thumb
+            document.querySelectorAll('.viz-history-thumb').forEach(c => {
+                if (c.dataset.id === mat.id) {
+                    c.classList.add('active');
+                } else {
+                    c.classList.remove('active');
+                }
+            });
 
             // Execute render immediately if image exists
             if (roomImageB64) {
@@ -516,6 +519,15 @@ document.addEventListener("DOMContentLoaded", () => {
         // --- Room presets & Image Loading ---
         async function loadRoomImage(b64) {
             roomImageB64 = b64;
+            roomImageNatW = 0;
+            roomImageNatH = 0;
+            const imgForSize = new Image();
+            imgForSize.onload = function() {
+                roomImageNatW = imgForSize.naturalWidth;
+                roomImageNatH = imgForSize.naturalHeight;
+            };
+            imgForSize.src = b64;
+
             scanDone = false;
             scannedMaskB64 = null;
             window._scanToken = null;
@@ -537,6 +549,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (btnCompare) btnCompare.disabled = true;
             btnReset.disabled = false;
             btnDownload.disabled = true;
+            if (btnFullscreen) btnFullscreen.disabled = true;
             if (btnRefine) btnRefine.disabled = true;
             window._customMask = null;
 
@@ -595,6 +608,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function restoreSnapshot(snapshot, thumbIndex) {
             roomImageB64 = snapshot.roomImageB64;
+            roomImageNatW = 0;
+            roomImageNatH = 0;
+            const imgForSize = new Image();
+            imgForSize.onload = function() {
+                roomImageNatW = imgForSize.naturalWidth;
+                roomImageNatH = imgForSize.naturalHeight;
+            };
+            imgForSize.src = snapshot.roomImageB64;
             scannedMaskB64 = snapshot.scannedMaskB64;
             window._scanToken = snapshot.scanToken;
             scanDone = true;
@@ -620,8 +641,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll('.viz-pat').forEach(b => b.classList.toggle('active', b.dataset.pat === currentPattern));
 
             // Select card visual
-            const card = document.querySelector(`.viz-mat-card[data-id="${selectedMat.id}"]`);
-            selectMaterial(selectedMat, card);
+            selectMaterial(selectedMat);
 
             // Set main screen
             if (resultImg) {
@@ -635,6 +655,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (btnCompare) btnCompare.disabled = false;
             btnReset.disabled = false;
             btnDownload.disabled = false;
+            if (btnFullscreen) btnFullscreen.disabled = false;
 
             // Set active highlight on thumb
             document.querySelectorAll('.viz-history-thumb').forEach((t, i) => {
@@ -752,17 +773,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (btnCompare) btnCompare.disabled = true;
             btnReset.disabled = true;
             btnDownload.disabled = true;
+            if (btnFullscreen) btnFullscreen.disabled = true;
 
-            // Reset Monolith details widget
-            if (slabThumb) {
-                slabThumb.style.backgroundImage = '';
-                slabThumb.classList.remove('loaded');
-            }
-            if (selName) selName.textContent = '— Select a material —';
-            if (monolithCat) monolithCat.textContent = 'CLASSIFICATION';
-            if (monolithDesc) monolithDesc.textContent = 'Select a material card above to inspect physical stone attributes and query origin quarry telemetry.';
-
-            document.querySelectorAll('.viz-mat-card').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.viz-history-thumb').forEach(c => c.classList.remove('selected', 'active'));
             renderHistoryTrackUI();
 
             updatePipelineProgress(0);
@@ -1011,6 +1024,22 @@ document.addEventListener("DOMContentLoaded", () => {
         if (btnReset) btnReset.addEventListener('click', triggerReset);
         if (btnDownload) btnDownload.addEventListener('click', triggerDownload);
 
+        // --- Fullscreen Lightbox triggers ---
+        function openFullscreen() {
+            const activeImgSrc = isComparing ? compareImgRend.src : resultImg.src;
+            if (!activeImgSrc) return;
+            if (fullscreenImg) fullscreenImg.src = activeImgSrc;
+            if (fullscreenOverlay) fullscreenOverlay.style.display = 'flex';
+        }
+
+        function closeFullscreen() {
+            if (fullscreenOverlay) fullscreenOverlay.style.display = 'none';
+        }
+
+        if (btnFullscreen) btnFullscreen.addEventListener('click', openFullscreen);
+        if (fullscreenOverlay) fullscreenOverlay.addEventListener('click', closeFullscreen);
+        if (fullscreenClose) fullscreenClose.addEventListener('click', closeFullscreen);
+
         // --- Room preset and Pattern Alignment switchers ---
         document.querySelectorAll('.viz-rt').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -1201,12 +1230,12 @@ document.addEventListener("DOMContentLoaded", () => {
         // ─── Helper: compute the rendered content area of the result image ───
         // The image uses object-fit:contain, so we need its actual rendered rect
         function getImageContentRect() {
-            if (!resultImg || !resultImg.naturalWidth) return null;
+            const natW = roomImageNatW || (resultImg ? resultImg.naturalWidth : 0);
+            const natH = roomImageNatH || (resultImg ? resultImg.naturalHeight : 0);
+            if (!natW || !natH) return null;
             const viewport = document.getElementById('viz-viewport');
             if (!viewport) return null;
             const vRect = viewport.getBoundingClientRect();
-            const natW = resultImg.naturalWidth;
-            const natH = resultImg.naturalHeight;
             const scale = Math.min(vRect.width / natW, vRect.height / natH);
             const renderedW = natW * scale;
             const renderedH = natH * scale;
@@ -1235,30 +1264,25 @@ document.addEventListener("DOMContentLoaded", () => {
             // Align the canvas position first
             alignCanvasToImage();
 
+            const rect = getImageContentRect();
+            if (!rect) return;
+            paintMaskCanvas.width = rect.natW;
+            paintMaskCanvas.height = rect.natH;
+
             if (!maskSrc) {
                 // No mask yet — create an empty canvas at the image resolution
-                const rect = getImageContentRect();
-                if (!rect) return;
-                paintMaskCanvas.width = rect.natW;
-                paintMaskCanvas.height = rect.natH;
                 paintCtx.clearRect(0, 0, paintMaskCanvas.width, paintMaskCanvas.height);
                 return;
             }
 
             const img = new Image();
             img.onload = function() {
-                paintMaskCanvas.width = img.naturalWidth;
-                paintMaskCanvas.height = img.naturalHeight;
                 paintCtx.clearRect(0, 0, paintMaskCanvas.width, paintMaskCanvas.height);
 
-                // Draw the mask to a temp canvas, then convert to semi-transparent cyan
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = img.naturalWidth;
-                tempCanvas.height = img.naturalHeight;
-                const tempCtx = tempCanvas.getContext('2d');
-                tempCtx.drawImage(img, 0, 0);
+                // Draw mask directly to canvas (scale automatically if dimensions differ)
+                paintCtx.drawImage(img, 0, 0, paintMaskCanvas.width, paintMaskCanvas.height);
 
-                const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+                const imgData = paintCtx.getImageData(0, 0, paintMaskCanvas.width, paintMaskCanvas.height);
                 const data = imgData.data;
 
                 for (let i = 0; i < data.length; i += 4) {
@@ -1315,7 +1339,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function selectTool(toolId) {
             activeTool = toolId;
-// Routing improvements active
             [toolPointer, toolBrush, toolEraser, toolFill].forEach(btn => {
                 if (btn) btn.classList.toggle('active', btn.id === toolId);
             });
@@ -1323,19 +1346,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (toolId === 'tool-pointer') {
                 if (paintCanvasWrap) paintCanvasWrap.style.display = 'none';
                 if (brushCursor) brushCursor.style.display = 'none';
-                if (_savedResultSrc && resultImg) {
-                    resultImg.src = _savedResultSrc;
-                    _savedResultSrc = null;
-                }
             } else {
                 if (toolId === 'tool-brush') brushMode = 'draw';
                 else if (toolId === 'tool-eraser') brushMode = 'erase';
                 else if (toolId === 'tool-fill') brushMode = 'fill';
-                // Show clean room image underneath so there's no double-teal
-                if (resultImg && roomImageB64) {
-                    if (!_savedResultSrc) _savedResultSrc = resultImg.src;
-                    resultImg.src = roomImageB64;
-                }
+                
                 if (paintCanvasWrap) paintCanvasWrap.style.display = 'block';
                 if (toolId === 'tool-fill') {
                     // Fill mode: use crosshair cursor, hide brush circle
@@ -1681,10 +1696,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 if (paintCanvasWrap) paintCanvasWrap.style.display = 'block';
                 if (refineToolbar) refineToolbar.style.display = 'flex';
-                initializePaintCanvas();
                 
-                // Initialize default tool to Brush
-                brushMode = 'draw';
+                // Select default tool to Brush
+                selectTool('tool-brush');
+                
+                // Highlight Brush button in manual refine toolbar
                 if (btnBrushDraw) {
                     btnBrushDraw.style.background = '#1b3d33';
                     btnBrushDraw.style.color = 'white';
@@ -1695,58 +1711,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     btnBrushErase.style.color = '#333';
                     btnBrushErase.style.borderColor = '#d4d1cb';
                 }
-                
-                const img = new Image();
-                img.onload = function() {
-                    if (!paintMaskCanvas || !paintCtx) return;
-                    paintMaskCanvas.width = img.naturalWidth;
-                    paintMaskCanvas.height = img.naturalHeight;
-                    paintCtx.clearRect(0, 0, paintMaskCanvas.width, paintMaskCanvas.height);
-                    
-                    const tempCanvas = document.createElement('canvas');
-                    tempCanvas.width = img.naturalWidth;
-                    tempCanvas.height = img.naturalHeight;
-                    const tempCtx = tempCanvas.getContext('2d');
-                    tempCtx.drawImage(img, 0, 0);
-                    
-                    const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-                    const data = imgData.data;
-                    
-                    for (let i = 0; i < data.length; i += 4) {
-                        const r = data[i];
-                        const g = data[i+1];
-                        const b = data[i+2];
-                        const a = data[i+3];
-                        
-                        // Check if the pixel is white (floor mask) or already colored cyan
-                        const isWhite = (r > 127 && g > 127 && b > 127);
-                        const isCyan = (g > 200 && b > 200 && r < 50);
-                        
-                        if (isWhite || (isCyan && a > 0)) {
-                            // Set to glowing cyan: rgba(0, 240, 240, 0.45) -> alpha = 115
-                            data[i]     = 0;
-                            data[i+1]   = 240;
-                            data[i+2]   = 240;
-                            data[i+3]   = 115;
-                        } else {
-                            // Transparent background
-                            data[i]     = 0;
-                            data[i+1]   = 0;
-                            data[i+2]   = 0;
-                            data[i+3]   = 0;
-                        }
-                    }
-                    
-                    paintCtx.putImageData(imgData, 0, 0);
-                };
-                img.src = window._customMask || scannedMaskB64;
             });
         }
 
         if (btnRefineCancel) {
             btnRefineCancel.addEventListener('click', () => {
-                if (paintCanvasWrap) paintCanvasWrap.style.display = 'none';
                 if (refineToolbar) refineToolbar.style.display = 'none';
+                selectTool('tool-pointer');
             });
         }
 
@@ -1784,8 +1755,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const refinedMaskB64 = exportCanvas.toDataURL('image/png');
                 window._customMask = refinedMaskB64;
                 
-                if (paintCanvasWrap) paintCanvasWrap.style.display = 'none';
                 if (refineToolbar) refineToolbar.style.display = 'none';
+                selectTool('tool-pointer');
                 
                 if (selectedMat) {
                     executeRenderPipeline(selectedMat);
