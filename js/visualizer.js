@@ -11,93 +11,148 @@ document.addEventListener("DOMContentLoaded", () => {
         // Expanded Geology Monolith Telemetry Registry
         const MATERIALS = [
             { 
-                id: 'obsidian-noir',   
+                id: 'ashora-beige-marble',   
                 cat: 'marble',     
-                name: 'Obsidian Noir',   
-                img: 'assets/marble_dark_texture.png?v=15',
-                texture: 'assets/marble_dark_texture.png?v=15',
-                taxonomy: 'Volcanic Glass Silicate',
-                origin: 'Jalisco, Mexico',
-                hardness: '5.5 Mohs',
-                desc: 'Deep black canvas pierced by brilliant golden veins. A striking statement of modern luxury.'
+                name: 'Ashora Beige Marble',   
+                img: 'assets/ASHORA BEIGE.jpg',
+                texture: 'assets/ASHORA BEIGE.jpg',
+                taxonomy: 'Imported Natural Marble',
+                origin: 'Turkey / Iran',
+                hardness: '18 mm',
+                desc: 'Premium natural beige marble featuring soft white and grey veining. Turkey/Iran origin.'
             },
             { 
-                id: 'onyx-gold',   
+                id: 'blue-azul-marble',   
                 cat: 'marble',     
-                name: 'Onyx Gold',   
-                img: 'assets/onyx_gold.jpg?v=15',
-                texture: 'assets/onyx_gold.jpg?v=15',
-                taxonomy: 'Translucent Hydrated Calcite',
-                origin: 'Yazd, Iran',
-                hardness: '3.0 Mohs',
-                desc: 'Stunning translucent golden onyx characterized by thick amber clouds and crystalline quartz bands.'
+                name: 'Blue Azul Marble',   
+                img: 'assets/BLUE AZOL.png',
+                texture: 'assets/BLUE AZOL.png',
+                taxonomy: 'Imported Natural Marble (Italy)',
+                origin: 'Italy',
+                hardness: '18 mm',
+                desc: 'Stunning blue-grey natural marble with elegant white and grey veining. Premium Italian classic.'
             },
             { 
-                id: 'tiles-pattern',   
-                cat: 'granite',     
-                name: 'Geometric Mosaic',   
-                img: 'assets/tiles_pattern.jpg?v=15',
-                texture: 'assets/tiles_pattern.jpg?v=15',
-                taxonomy: 'Ornamental Inlaid Stone',
-                origin: 'Studio Custom Cut',
-                hardness: '4.5 Mohs',
-                desc: 'High-precision geometric inlaid pattern featuring alternating light calcite and dark slate lines.'
+                id: 'italy-dyna',   
+                cat: 'marble',     
+                name: 'Italy Dyna',   
+                img: 'assets/ITALY DYNA.jpg',
+                texture: 'assets/ITALY DYNA.jpg',
+                taxonomy: 'Imported Natural Marble',
+                origin: 'Turkey',
+                hardness: '18 mm',
+                desc: 'Premium beige marble featuring a soft cream background with elegant natural veining.'
             },
             { 
-                id: 'travertine-beige',   
-                cat: 'granite',     
-                name: 'Travertine Beige',   
-                img: 'assets/travertine_beige.jpg?v=15',
-                texture: 'assets/travertine_beige.jpg?v=15',
-                taxonomy: 'Banded Travertine Limestone',
-                origin: 'Tivoli, Italy',
-                hardness: '3.5 Mohs',
-                desc: 'Linear, porous banded travertine with natural warm beige tones. Adds a high-end organic modern vibe.'
+                id: 'sofita-beige-marble',   
+                cat: 'marble',     
+                name: 'Sofita Beige Marble',   
+                img: 'assets/SOFITA BEIGE.jpg',
+                texture: 'assets/SOFITA BEIGE.jpg',
+                taxonomy: 'Imported Natural Marble (Spain)',
+                origin: 'Spain',
+                hardness: '18 mm',
+                desc: 'Premium cream beige Spanish marble with fine brown natural veining.'
             },
             { 
-                id: 'travertine-cream',   
-                cat: 'granite',     
-                name: 'Travertine Cream',   
-                img: 'assets/travertine_cream.jpg?v=15',
-                texture: 'assets/travertine_cream.jpg?v=15',
-                taxonomy: 'Light Calcified Travertine',
-                origin: 'Pamukkale, Turkey',
-                hardness: '3.5 Mohs',
-                desc: 'Flawless soft cream linear banded travertine. Excellent for luxury minimalist flooring.'
+                id: 'orroman-marble',   
+                cat: 'marble',     
+                name: 'Orroman Marble',   
+                img: 'assets/ORROMAN.jpg',
+                texture: 'assets/ORROMAN.jpg',
+                taxonomy: 'Imported Natural Marble (Italy)',
+                origin: 'Italy',
+                hardness: '18 mm',
+                desc: 'Light cream beige Italian marble displaying a soft cloudy natural texture.'
             },
             { 
-                id: 'sample-5',   
-                cat: 'handicraft',     
-                name: 'Sample 5',   
-                img: 'https://images.unsplash.com/photo-1590483736622-39da8af75bba?auto=format&fit=crop&q=80&w=400',
-                texture: 'assets/statuario_pure.png?v=15',
-                taxonomy: 'Unassigned Sample',
-                origin: 'Agra School Artisan Lab',
-                hardness: '— Mohs',
-                desc: 'Artisanal masterpiece. Hand-polished Makrana accent piece designed by hereditary masters.'
+                id: 'neuton-grey',   
+                cat: 'marble',     
+                name: 'Neuton Grey',   
+                img: 'assets/NEUTON GREY.jpg',
+                texture: 'assets/NEUTON GREY.jpg',
+                taxonomy: 'Imported Natural Marble',
+                origin: 'Turkey',
+                hardness: '18 mm',
+                desc: 'Premium Turkish grey marble characterized by cloudy grey tones and natural veining.'
             },
             { 
-                id: 'sample-6',   
-                cat: 'handicraft',     
-                name: 'Sample 6',   
-                img: 'https://images.unsplash.com/photo-1590483736622-39da8af75bba?auto=format&fit=crop&q=80&w=400',
-                texture: 'assets/statuario_pure.png?v=15',
-                taxonomy: 'Unassigned Sample',
-                origin: 'Agra School Artisan Lab',
-                hardness: '— Mohs',
-                desc: 'Artisanal masterpiece. Hand-polished Makrana accent piece designed by hereditary masters.'
+                id: 'kapaman-crema-marble',   
+                cat: 'marble',     
+                name: 'Kapaman Crema Marble',   
+                img: 'assets/KAPAMAN CREMA.jpg',
+                texture: 'assets/KAPAMAN CREMA.jpg',
+                taxonomy: 'Imported Natural Marble',
+                origin: 'Turkey',
+                hardness: '18 mm',
+                desc: 'Sophisticated cream grey Turkish marble enhanced by soft white natural veining.'
             },
             { 
-                id: 'sample-7',   
-                cat: 'handicraft',     
-                name: 'Sample 7',   
-                img: 'https://images.unsplash.com/photo-1590483736622-39da8af75bba?auto=format&fit=crop&q=80&w=400',
-                texture: 'assets/statuario_pure.png?v=15',
-                taxonomy: 'Unassigned Sample',
-                origin: 'Agra School Artisan Lab',
-                hardness: '— Mohs',
-                desc: 'Artisanal masterpiece. Hand-polished Makrana accent piece designed by hereditary masters.'
+                id: 'grey-karaman-marble',   
+                cat: 'marble',     
+                name: 'Grey Karaman Marble',   
+                img: 'assets/GREY KARAMAN.jpg',
+                texture: 'assets/GREY KARAMAN.jpg',
+                taxonomy: 'Imported Natural Marble',
+                origin: 'Turkey',
+                hardness: '18 mm',
+                desc: 'Stunning grey and taupe marble showcasing fine white natural veining.'
             },
+            { 
+                id: 'botticino-beige-marble',   
+                cat: 'marble',     
+                name: 'Botticino Beige Marble',   
+                img: 'assets/BOTOCHINO BIEGE.jpg',
+                texture: 'assets/BOTOCHINO BIEGE.jpg',
+                taxonomy: 'Imported Natural Marble (Italy)',
+                origin: 'Italy',
+                hardness: '18 mm',
+                desc: 'Classic Italian beige marble presenting a fine fossilized texture and warm cream tones.'
+            },
+            { 
+                id: 'moon-star-marble',   
+                cat: 'marble',     
+                name: 'Moon Star Marble',   
+                img: 'assets/MOON STAR.jpg',
+                texture: 'assets/MOON STAR.jpg',
+                taxonomy: 'Imported Natural Marble (Italy)',
+                origin: 'Italy',
+                hardness: '18 mm',
+                desc: 'Luxurious white cream marble adorned with delicate gold and grey veining.'
+            },
+            { 
+                id: 'vanilla-cream-marble',   
+                cat: 'marble',     
+                name: 'Vanilla Cream Marble',   
+                img: 'assets/VANILLA CREME.jpg',
+                texture: 'assets/VANILLA CREME.jpg',
+                taxonomy: 'Imported Natural Marble (Spain)',
+                origin: 'Spain',
+                hardness: '18 mm',
+                desc: 'Elegant cream white Spanish marble displaying a soft, cloudy natural texture.'
+            },
+            { 
+                id: 'lawanto-marble',   
+                cat: 'marble',     
+                name: 'Lawanto Marble',   
+                img: 'assets/LAWANTO.jpg',
+                texture: 'assets/LAWANTO.jpg',
+                taxonomy: 'Imported Natural Marble (Italy)',
+                origin: 'Italy',
+                hardness: '18 mm',
+                desc: 'Rich cream/ivory background accented with beautiful fine brown natural veining.'
+            },
+            { 
+                id: 'bulgaria-grey-marble',   
+                cat: 'marble',     
+                name: 'Bulgaria Grey Marble',   
+                img: 'assets/BULGARIA GREY.jpg',
+                texture: 'assets/BULGARIA GREY.jpg',
+                taxonomy: 'Imported Natural Marble',
+                origin: 'Turkey',
+                hardness: '18 mm',
+                desc: 'Striking taupe grey Turkish marble showcasing fine white spider-web veining.'
+            }
         ];
 
         // Core UI DOM elements
@@ -510,10 +565,96 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
+            // Update Right Sidebar Information Panel
+            updateRightSidebar(mat);
+
             // Execute render immediately if image exists
             if (roomImageB64) {
                 executeRenderPipeline(mat);
             }
+        }
+
+        function updateRightSidebar(mat) {
+            const detailContainer = document.getElementById('viz-material-detail-card');
+            if (!detailContainer) return;
+            
+            detailContainer.innerHTML = `
+                <!-- Material Header with name & taxonomy -->
+                <div class="viz-panel-card" style="padding: 16px; gap: 12px; animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+                    <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--viz-accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
+                        Selected Slab
+                    </div>
+                    <h3 style="margin: 0; font-family: var(--font-heading); font-size: 1.1rem; line-height: 1.2; color: var(--viz-text-primary); letter-spacing: 0.02em;">
+                        ${mat.name}
+                    </h3>
+                    <div style="font-size: 0.72rem; color: var(--viz-text-secondary); display: flex; align-items: center; gap: 6px;">
+                        <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--viz-accent-teal);"></span>
+                        ${mat.taxonomy}
+                    </div>
+                </div>
+
+                <!-- Slab Preview image (Aspect ratio aligned) -->
+                <div class="viz-panel-card" style="padding: 0; overflow: hidden; border: 1px solid var(--viz-border);">
+                    <img src="${mat.img}" style="width: 100%; height: 160px; object-fit: cover; transition: transform 0.5s ease;" 
+                         alt="${mat.name} slab"
+                         onmouseover="this.style.transform='scale(1.05)'"
+                         onmouseout="this.style.transform='scale(1)'">
+                </div>
+
+                <!-- Technical Specification Table -->
+                <div class="viz-panel-card" style="padding: 16px; gap: 10px;">
+                    <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--viz-accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid var(--viz-border); padding-bottom: 6px;">
+                        Specifications
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.72rem;">
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.03); padding-bottom: 4px;">
+                            <span style="color: var(--viz-text-secondary);">Origin:</span>
+                            <span style="font-weight: 600; color: var(--viz-text-primary);">${mat.origin}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.03); padding-bottom: 4px;">
+                            <span style="color: var(--viz-text-secondary);">Thickness:</span>
+                            <span style="font-weight: 600; color: var(--viz-text-primary);">${mat.hardness}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.03); padding-bottom: 4px;">
+                            <span style="color: var(--viz-text-secondary);">Finish:</span>
+                            <span style="font-weight: 600; color: var(--viz-text-primary);">Polished (Glossy)</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.03); padding-bottom: 4px;">
+                            <span style="color: var(--viz-text-secondary);">Quality Grade:</span>
+                            <span style="font-weight: 600; color: var(--viz-accent-teal);">Premium / A Grade</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <span style="color: var(--viz-text-secondary); margin-bottom: 2px;">Applications:</span>
+                            <span style="font-weight: 500; color: var(--viz-text-primary); font-size: 0.65rem; line-height: 1.3;">Flooring, Wall Cladding, Countertops, Staircases, Living Rooms, Hotel Lobbies</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Story & Description -->
+                <div class="viz-panel-card" style="padding: 16px; gap: 8px;">
+                    <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--viz-accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
+                        Taxonomy Narrative
+                    </div>
+                    <p style="margin: 0; font-size: 0.72rem; line-height: 1.5; color: var(--viz-text-secondary); text-align: justify;">
+                        ${mat.desc}
+                    </p>
+                </div>
+
+                <!-- Call to action inquiries -->
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <a href="https://wa.me/919304277935?text=Hi%20Uma%20Traders,%20I%20am%20interested%20in%20the%20${encodeURIComponent(mat.name)}%20via%20your%20AI%20Visualizer." 
+                       target="_blank"
+                       style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; border: none; padding: 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);"
+                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(37, 211, 102, 0.35)';"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(37, 211, 102, 0.2)';">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.863-9.73.001-2.597-1.006-5.038-2.836-6.87-1.83-1.832-4.272-2.842-6.87-2.843-5.437 0-9.863 4.37-9.866 9.73-.001 1.762.48 3.487 1.395 5.017l-.951 3.472 3.585-.927zm12.062-7.532c-.329-.164-1.944-.959-2.244-1.069-.3-.11-.518-.164-.736.164-.218.329-.844 1.069-1.036 1.288-.192.218-.383.246-.712.082-.329-.164-1.389-.512-2.647-1.633-.978-.872-1.638-1.95-1.83-2.279-.192-.329-.02-.507.144-.671.148-.148.329-.383.493-.575.164-.192.218-.328.328-.547.11-.219.055-.411-.027-.575-.082-.164-.736-1.777-1.009-2.434-.265-.636-.53-.55-.736-.56-.19-.01-.41-.01-.628-.01-.218 0-.573.082-.873.411-.3.329-1.147 1.122-1.147 2.736 0 1.614 1.174 3.178 1.338 3.397.164.218 2.31 3.527 5.596 4.952.781.339 1.39.542 1.866.693.785.249 1.498.214 2.063.129.629-.095 1.944-.795 2.217-1.56.273-.767.273-1.423.191-1.56-.081-.137-.272-.218-.601-.382z"/>
+                        </svg>
+                        Inquire on WhatsApp
+                    </a>
+                </div>
+            `;
         }
 
         // --- Room presets & Image Loading ---
@@ -548,8 +689,8 @@ document.addEventListener("DOMContentLoaded", () => {
             deactivateCompareMode();
             if (btnCompare) btnCompare.disabled = true;
             btnReset.disabled = false;
-            btnDownload.disabled = true;
-            if (btnFullscreen) btnFullscreen.disabled = true;
+            btnDownload.disabled = false;
+            if (btnFullscreen) btnFullscreen.disabled = false;
             if (btnRefine) btnRefine.disabled = true;
             window._customMask = null;
 
@@ -1024,21 +1165,156 @@ document.addEventListener("DOMContentLoaded", () => {
         if (btnReset) btnReset.addEventListener('click', triggerReset);
         if (btnDownload) btnDownload.addEventListener('click', triggerDownload);
 
+
+
+        // --- Viewport Zoom & Pan ---
+        let currentZoom = 1;
+        let isDraggingViewport = false;
+        let dragStartX = 0, dragStartY = 0;
+        let translateX = 0, translateY = 0;
+        const viewportContainer = document.getElementById('viz-viewport');
+
+        function applyViewportTransform() {
+            const transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
+            if (resultImg) resultImg.style.transform = transform;
+            if (compareWrap) compareWrap.style.transform = transform;
+            const pcw = document.getElementById('paint-canvas-wrap');
+            if (pcw) pcw.style.transform = transform;
+        }
+
+        if (viewportContainer) {
+            viewportContainer.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const zoomDelta = e.deltaY * -0.002;
+                currentZoom = Math.min(Math.max(1, currentZoom + zoomDelta), 5); // 1x to 5x
+                
+                if (currentZoom === 1) {
+                    translateX = 0;
+                    translateY = 0;
+                }
+                
+                applyViewportTransform();
+            });
+
+            viewportContainer.addEventListener('mousedown', (e) => {
+                // Determine if a paint tool is active (pointer tool is not active)
+                const pointerBtn = document.getElementById('tool-pointer');
+                const isPainting = pointerBtn && !pointerBtn.classList.contains('active');
+                
+                const rect = getImageContentRect();
+                const overflows = rect && (rect.width > viewportContainer.clientWidth + 1 || rect.height > viewportContainer.clientHeight + 1);
+                
+                // Allow dragging if zoomed in or if cover image overflows AND (not painting OR middle/right mouse button)
+                if ((currentZoom > 1 || overflows) && (!isPainting || e.button === 1 || e.button === 2)) {
+                    isDraggingViewport = true;
+                    dragStartX = e.clientX - translateX;
+                    dragStartY = e.clientY - translateY;
+                    viewportContainer.style.cursor = 'grabbing';
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDraggingViewport) return;
+                translateX = e.clientX - dragStartX;
+                translateY = e.clientY - dragStartY;
+                applyViewportTransform();
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (isDraggingViewport) {
+                    isDraggingViewport = false;
+                    const rect = getImageContentRect();
+                    const overflows = rect && (rect.width > viewportContainer.clientWidth + 1 || rect.height > viewportContainer.clientHeight + 1);
+                    viewportContainer.style.cursor = (currentZoom > 1 || overflows) ? 'grab' : 'default';
+                }
+            });
+        }
+
         // --- Fullscreen Lightbox triggers ---
+        let fsZoom = 1;
+        let isDraggingFs = false;
+        let fsDragStartX = 0, fsDragStartY = 0;
+        let fsTranslateX = 0, fsTranslateY = 0;
+
+        function applyFullscreenTransform() {
+            if (fullscreenImg) {
+                fullscreenImg.style.transform = `translate(${fsTranslateX}px, ${fsTranslateY}px) scale(${fsZoom})`;
+            }
+        }
+
         function openFullscreen() {
             const activeImgSrc = isComparing ? compareImgRend.src : resultImg.src;
             if (!activeImgSrc) return;
-            if (fullscreenImg) fullscreenImg.src = activeImgSrc;
+            fsZoom = 1;
+            fsTranslateX = 0;
+            fsTranslateY = 0;
+            if (fullscreenImg) {
+                fullscreenImg.src = activeImgSrc;
+                fullscreenImg.style.transform = '';
+                fullscreenImg.style.cursor = 'default';
+            }
             if (fullscreenOverlay) fullscreenOverlay.style.display = 'flex';
         }
 
-        function closeFullscreen() {
+        function closeFullscreen(e) {
+            if (e && e.target !== fullscreenOverlay && e.target !== fullscreenClose) return;
             if (fullscreenOverlay) fullscreenOverlay.style.display = 'none';
+            fsZoom = 1;
+            fsTranslateX = 0;
+            fsTranslateY = 0;
+            if (fullscreenImg) {
+                fullscreenImg.style.transform = '';
+                fullscreenImg.style.cursor = 'default';
+            }
         }
 
         if (btnFullscreen) btnFullscreen.addEventListener('click', openFullscreen);
-        if (fullscreenOverlay) fullscreenOverlay.addEventListener('click', closeFullscreen);
+        if (fullscreenOverlay) {
+            fullscreenOverlay.addEventListener('click', closeFullscreen);
+            fullscreenOverlay.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const zoomDelta = e.deltaY * -0.002;
+                fsZoom = Math.min(Math.max(1, fsZoom + zoomDelta), 6); // 1x to 6x
+                
+                if (fsZoom === 1) {
+                    fsTranslateX = 0;
+                    fsTranslateY = 0;
+                }
+                applyFullscreenTransform();
+                if (fullscreenImg) {
+                    fullscreenImg.style.cursor = fsZoom > 1 ? 'grab' : 'default';
+                }
+            }, { passive: false });
+        }
         if (fullscreenClose) fullscreenClose.addEventListener('click', closeFullscreen);
+
+        if (fullscreenImg) {
+            fullscreenImg.addEventListener('mousedown', (e) => {
+                if (fsZoom > 1 && e.button === 0) {
+                    e.stopPropagation();
+                    isDraggingFs = true;
+                    fsDragStartX = e.clientX - fsTranslateX;
+                    fsDragStartY = e.clientY - fsTranslateY;
+                    fullscreenImg.style.cursor = 'grabbing';
+                }
+            });
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDraggingFs) return;
+            fsTranslateX = e.clientX - fsDragStartX;
+            fsTranslateY = e.clientY - fsDragStartY;
+            applyFullscreenTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isDraggingFs) {
+                isDraggingFs = false;
+                if (fullscreenImg) {
+                    fullscreenImg.style.cursor = fsZoom > 1 ? 'grab' : 'default';
+                }
+            }
+        });
 
         // --- Room preset and Pattern Alignment switchers ---
         document.querySelectorAll('.viz-rt').forEach(btn => {
@@ -1092,27 +1368,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        document.querySelectorAll('.viz-tone').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.viz-tone').forEach(b => b.classList.remove('active'));
-                const target = e.target.closest('.viz-segment-btn');
-                if (!target) return;
-                target.classList.add('active');
-                
-                const tone = target.dataset.tone;
-                if (tone === 'warm') {
-                    sliderExposure.value = 120; // warmer exposure
-                } else if (tone === 'cool') {
-                    sliderExposure.value = 85;  // cooler exposure
-                } else {
-                    sliderExposure.value = 100;
-                }
-                updateSliderLabels();
-                if (selectedMat && roomImageB64) {
-                    executeRenderPipeline(selectedMat);
-                }
-            });
-        });
+
 
         // --- Stone Class category tabs filter ---
         document.querySelectorAll('.viz-cat').forEach(btn => {
@@ -1228,7 +1484,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const popoverSizeLbl     = document.getElementById('popover-size-lbl');
 
         // ─── Helper: compute the rendered content area of the result image ───
-        // The image uses object-fit:contain, so we need its actual rendered rect
+        // The image uses object-fit:cover, so we need its actual rendered rect
         function getImageContentRect() {
             const natW = roomImageNatW || (resultImg ? resultImg.naturalWidth : 0);
             const natH = roomImageNatH || (resultImg ? resultImg.naturalHeight : 0);
@@ -1236,7 +1492,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const viewport = document.getElementById('viz-viewport');
             if (!viewport) return null;
             const vRect = viewport.getBoundingClientRect();
-            const scale = Math.min(vRect.width / natW, vRect.height / natH);
+            const scale = Math.max(vRect.width / natW, vRect.height / natH);
             const renderedW = natW * scale;
             const renderedH = natH * scale;
             const offsetX = (vRect.width - renderedW) / 2;
@@ -1398,26 +1654,34 @@ document.addEventListener("DOMContentLoaded", () => {
             const idx0 = (y0 * w + x0) * 4;
             const tR = pixels[idx0], tG = pixels[idx0+1], tB = pixels[idx0+2];
 
-            const tolerance = 45; // Euclidean RGB distance
+            // Tighter tolerance — only fill pixels with very similar color to the clicked spot
+            const tolerance = 22;
             const tolSq = tolerance * tolerance;
             const visited = new Uint8Array(w * h);
             const startPos = y0 * w + x0;
             const stack = [startPos];
             visited[startPos] = 1;
 
-            // Read current mask so we can add to it
+            // Read current mask so we can add to it without clearing existing paint
             const maskImgData = paintCtx.getImageData(0, 0, w, h);
             const mask = maskImgData.data;
             let filled = 0;
-            const maxFill = w * h * 0.6;
+
+            // Cap fill to 20% of the image to prevent runaway bleed across the whole scene
+            const maxFill = Math.floor(w * h * 0.20);
 
             while (stack.length > 0 && filled < maxFill) {
                 const pos = stack.pop();
                 const pi = pos * 4;
+
+                // Skip pixels already painted in the mask (alpha > 20)
+                if (mask[pi + 3] > 20) continue;
+
+                // Skip pixels whose color differs too much from the seed color
                 const dr = pixels[pi] - tR, dg = pixels[pi+1] - tG, db = pixels[pi+2] - tB;
                 if (dr*dr + dg*dg + db*db > tolSq) continue;
 
-                // Paint this pixel on the mask (matching scan overlay color)
+                // Paint this pixel on the mask with the scan overlay color (teal, 60% alpha)
                 mask[pi] = 40; mask[pi+1] = 220; mask[pi+2] = 180; mask[pi+3] = 153;
                 filled++;
 
@@ -1785,6 +2049,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Initialize materials on load
         initMaterialGrid();
+        if (MATERIALS.length > 0) {
+            selectMaterial(MATERIALS[0]);
+        }
         updateSliderLabels();
         updateIngestModalCloseState();
 
