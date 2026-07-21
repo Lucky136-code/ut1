@@ -218,108 +218,123 @@ WALL_SURFACES = {"wall", "shower", "vanity", "sink", "cabinet", "countertop", "s
 FLAT_TOP_SURFACES = {"sink", "vanity", "countertop"}
 
 # ---------------------------------------------------------------------------
-# 4.5 ADVANCED COLOR & OBSTACLE MASK REFINER (DUAL-TIER PIPELINE)
+# 4.5 ADVANCED MASK REFINER — No Dot-Spaces, No Bleeding
 # ---------------------------------------------------------------------------
 def refine_mask_with_cv(pred_map: np.ndarray, target_ids: list, model, small_img: np.ndarray, surface_name: str) -> np.ndarray:
     """
-    Combines Segformer semantic IDs with OpenCV GrabCut color-similarity
-    and semantic obstacle subtraction. Prevents texture bleeding on beds/furniture
-    while auto-healing missing gaps and shadows in the floor.
+    Two-surface pipeline (floor + wall).
+    1. GrabCut with semantic + geometric constraints  → stops bleeding.
+    2. Morphological close + flood-fill hole removal  → eliminates dot-spaces.
+    3. Re-subtract obstacle masks AFTER hole fill     → furniture stays clear.
     """
     h, w = small_img.shape[:2]
-    
-    # 1. Semantic Floor Seed Mask
     raw_mask_small = np.isin(pred_map, target_ids).astype(np.uint8) * 255
     if np.count_nonzero(raw_mask_small) < (w * h * 0.0001):
         return np.zeros((h, w), dtype=np.uint8)
 
-    # 2. Hard vs Probable Exclusion of Semantic Obstacles
-    # Definite obstacles: objects that fully block the floor or are permanent room boundaries
-    definite_obstacle_keywords = [
-        "bed", "blanket", "quilt", "pillow", "cushion", "sheet", "duvet",
-        "cabinet", "wardrobe", "cupboard", "chest", "dresser", "drawer", "shelf",
-        "countertop", "island", "vanity", "bathtub", "sink", "shower",
-        "plant", "pot", "vase", "book", "box", "apparel", "person", "human", "dog", "cat", "pet",
-        "television", "screen", "monitor", "refrigerator", "fridge", "oven", "stove", "washer", "dryer", "dishwasher"
-    ]
-    # Probable obstacles: furniture with legs or floor decor that we want to tile under/around if colors match
-    probable_obstacle_keywords = [
-        "sofa", "couch", "armchair", "chair", "stool", "bench", "seat", "ottoman", "pouffe", "footstool",
-        "table", "desk", "rug", "carpet", "mat", "tatami"
-    ]
+    # ── Build semantic obstacle / surface masks ───────────────────────────────
+    DEF_OBS  = ["bed","blanket","quilt","pillow","cushion","sheet","duvet",
+                "cabinet","wardrobe","cupboard","chest","dresser","drawer","shelf",
+                "countertop","island","vanity","bathtub","sink","shower","plant",
+                "pot","vase","book","box","apparel","person","human","dog","cat",
+                "pet","television","screen","monitor","refrigerator","fridge",
+                "oven","stove","washer","dryer","dishwasher"]
+    PROB_OBS = ["sofa","couch","armchair","chair","stool","bench","seat","ottoman",
+                "pouffe","footstool","table","desk","rug","carpet","mat","tatami"]
+    FL_KW    = ["floor","carpet","rug","mat","tatami","parquet","ground","linoleum","terrazzo"]
 
-    definite_obstacle_ids = [
-        idx for idx, label in model.config.id2label.items()
-        if any(k in label.lower() for k in definite_obstacle_keywords)
-    ]
-    probable_obstacle_ids = [
-        idx for idx, label in model.config.id2label.items()
-        if any(k in label.lower() for k in probable_obstacle_keywords)
-    ]
+    def _ids(kws): return [i for i,l in model.config.id2label.items() if any(k in l.lower() for k in kws)]
 
-    definite_obstacle_mask = np.isin(pred_map, definite_obstacle_ids).astype(np.uint8) * 255
-    probable_obstacle_mask = np.isin(pred_map, probable_obstacle_ids).astype(np.uint8) * 255
-    
-    # Subtract definite obstacles from the raw floor mask
-    raw_mask_small = np.where(definite_obstacle_mask == 255, 0, raw_mask_small).astype(np.uint8)
+    def_mask  = np.isin(pred_map, _ids(DEF_OBS )).astype(np.uint8) * 255
+    prob_mask = np.isin(pred_map, _ids(PROB_OBS)).astype(np.uint8) * 255
+    wc_mask   = np.isin(pred_map, [i for i,l in model.config.id2label.items()
+                                    if "wall" in l.lower() or "ceiling" in l.lower()
+                                    or "sky" in l.lower()]).astype(np.uint8) * 255
+    fl_mask   = np.isin(pred_map, _ids(FL_KW)).astype(np.uint8) * 255
 
-    # Ensure walls and ceiling are also marked as definite background
-    wall_ceiling_ids = [
-        idx for idx, label in model.config.id2label.items()
-        if "wall" in label.lower() or "ceiling" in label.lower() or "sky" in label.lower()
-    ]
-    wall_ceiling_mask = np.isin(pred_map, wall_ceiling_ids).astype(np.uint8) * 255
+    raw_mask_small = np.where(def_mask == 255, 0, raw_mask_small).astype(np.uint8)
 
-    # 3. For Floor Surfaces: GrabCut Seed Growth Refinement
+    floor_cut = int(h * 0.45)   # floor never in top 45 %
+    wall_cut  = int(h * 0.65)   # wall never in bottom 35 %
+    dn = cv2.bilateralFilter(small_img, 7, 50, 50)
+
+    # ── GrabCut wrapper ───────────────────────────────────────────────────────
+    def _gc(seed, hard_extra=(), top_row=0):
+        gc = np.full((h, w), cv2.GC_PR_BGD, dtype=np.uint8)
+        gc[def_mask == 255] = cv2.GC_BGD
+        gc[wc_mask  == 255] = cv2.GC_BGD
+        if top_row > 0:
+            gc[:top_row, :] = cv2.GC_BGD
+        for m in hard_extra:
+            gc[m == 255] = cv2.GC_BGD
+        gc[prob_mask == 255] = cv2.GC_PR_BGD
+        gc[seed      == 255] = cv2.GC_PR_FGD
+        ek = max(3, int(min(w,h)*0.04)|1)
+        fg = cv2.erode(seed, cv2.getStructuringElement(cv2.MORPH_RECT,(ek,ek)))
+        if np.count_nonzero(fg) == 0:
+            ys,xs = np.where(seed==255)
+            if len(ys):
+                cy,cx = int(np.mean(ys)), int(np.mean(xs))
+                cv2.rectangle(gc,(cx-6,cy-6),(cx+6,cy+6), cv2.GC_FGD,-1)
+        else:
+            gc[fg == 255] = cv2.GC_FGD
+        bgdM=np.zeros((1,65),np.float64); fgdM=np.zeros((1,65),np.float64)
+        cv2.grabCut(dn, gc, None, bgdM, fgdM, 3, cv2.GC_INIT_WITH_MASK)
+        return np.where((gc==cv2.GC_FGD)|(gc==cv2.GC_PR_FGD),255,0).astype(np.uint8)
+
+    # ── Flood-fill hole removal (imfill) ─────────────────────────────────────
+    def _fill_holes(mask):
+        ph,pw = mask.shape
+        pad = cv2.copyMakeBorder(mask,1,1,1,1,cv2.BORDER_CONSTANT,value=0)
+        fld = pad.copy()
+        cv2.floodFill(fld, np.zeros((ph+4,pw+4),np.uint8), (0,0), 128)
+        fld = fld[1:-1,1:-1]
+        return cv2.bitwise_or(mask, (fld==0).astype(np.uint8)*255)
+
+    def _solidify(mask, cpx=13):
+        k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(cpx,cpx))
+        return _fill_holes(cv2.morphologyEx(mask,cv2.MORPH_CLOSE,k))
+
+    # ══════════════════════════ FLOOR ═════════════════════════════════════════
     if surface_name == "floor":
+        seed = raw_mask_small.copy()
+        seed[:floor_cut,:] = 0
+        if np.count_nonzero(seed) < (w*h*0.005):
+            seed = raw_mask_small.copy(); seed[:int(h*0.30),:] = 0
         try:
-            # Initialize GrabCut mask
-            gc_mask = np.zeros((h, w), dtype=np.uint8) + cv2.GC_PR_BGD
-            
-            # Set definite background obstacles & walls
-            gc_mask[definite_obstacle_mask == 255] = cv2.GC_BGD
-            gc_mask[wall_ceiling_mask == 255] = cv2.GC_BGD
-            
-            # Set probable background obstacles (so GrabCut can reclassify them to foreground if color matches)
-            gc_mask[probable_obstacle_mask == 255] = cv2.GC_PR_BGD
-            
-            # Set probable foreground seeds from Segformer floor
-            gc_mask[raw_mask_small == 255] = cv2.GC_PR_FGD
-
-            # Generate definite foreground seeds by eroding the floor mask slightly (safe from boundary edges)
-            erode_k = max(3, int(min(w, h) * 0.04) | 1)
-            erode_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (erode_k, erode_k))
-            definite_fg = cv2.erode(raw_mask_small, erode_kernel, iterations=1)
-            gc_mask[definite_fg == 255] = cv2.GC_FGD
-            
-            # Fallback high-probability center-bottom seed if erosion cleared out too much
-            if np.sum(definite_fg) == 0:
-                bottom_center_h = int(h * 0.9)
-                bottom_center_w = int(w * 0.5)
-                if raw_mask_small[bottom_center_h, bottom_center_w] == 255:
-                    cv2.rectangle(gc_mask, (bottom_center_w - 15, bottom_center_h - 15),
-                                  (bottom_center_w + 15, bottom_center_h + 15), cv2.GC_FGD, -1)
-
-            # GrabCut auxiliary arrays
-            bgdModel = np.zeros((1, 65), np.float64)
-            fgdModel = np.zeros((1, 65), np.float64)
-            
-            # Bilateral filter to smooth low-end sensor noise while keeping structural boundary edges razor-sharp
-            denoised_img = cv2.bilateralFilter(small_img, 7, 50, 50)
-            
-            # Run GrabCut for 3 iterations using the edge-preserved denoised image
-            cv2.grabCut(denoised_img, gc_mask, None, bgdModel, fgdModel, 3, cv2.GC_INIT_WITH_MASK)
-            
-            # Extract refined mask (GC_FGD or GC_PR_FGD)
-            refined_mask = np.where((gc_mask == cv2.GC_FGD) | (gc_mask == cv2.GC_PR_FGD), 255, 0).astype(np.uint8)
-            return refined_mask
+            ref = _gc(seed, hard_extra=(wc_mask,), top_row=floor_cut)
+            ref[:floor_cut,:]=0; ref[wc_mask==255]=0; ref[def_mask==255]=0
+            filled = _solidify(ref, cpx=15)
+            filled[:floor_cut,:]=0; filled[wc_mask==255]=0; filled[def_mask==255]=0
+            return filled
         except Exception as e:
-            print(f"GrabCut refinement failed ({e}), falling back to morphology.")
+            print(f"Floor GrabCut failed ({e}), fallback.")
+            k5=cv2.getStructuringElement(cv2.MORPH_RECT,(5,5))
+            fb=_fill_holes(cv2.morphologyEx(seed,cv2.MORPH_CLOSE,k5))
+            fb[:floor_cut,:]=0; fb[wc_mask==255]=0; fb[def_mask==255]=0
+            return fb
 
-    # Fallback/Default morphology path
-    k5 = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-    clean_small = cv2.morphologyEx(raw_mask_small, cv2.MORPH_CLOSE, k5)
-    return clean_small
+    # ══════════════════════════ WALL ══════════════════════════════════════════
+    elif surface_name == "wall":
+        seed = raw_mask_small.copy()
+        seed[wall_cut:,:]=0; seed[:int(h*0.03),:]=0
+        seed[fl_mask==255]=0; seed[def_mask==255]=0
+        try:
+            ref = _gc(seed, hard_extra=(fl_mask,), top_row=0)
+            ref[wall_cut:,:]=0; ref[fl_mask==255]=0; ref[def_mask==255]=0
+            filled = _solidify(ref, cpx=11)
+            filled[wall_cut:,:]=0; filled[fl_mask==255]=0; filled[def_mask==255]=0
+            return filled
+        except Exception as e:
+            print(f"Wall GrabCut failed ({e}), fallback.")
+            k5=cv2.getStructuringElement(cv2.MORPH_RECT,(5,5))
+            fb=_fill_holes(cv2.morphologyEx(seed,cv2.MORPH_CLOSE,k5))
+            fb[wall_cut:,:]=0; fb[fl_mask==255]=0; fb[def_mask==255]=0
+            return fb
+
+    # ══════════════ Other surfaces (countertop, sink…) ════════════════════════
+    k5 = cv2.getStructuringElement(cv2.MORPH_RECT,(5,5))
+    return cv2.morphologyEx(raw_mask_small, cv2.MORPH_CLOSE, k5)
 
 # ---------------------------------------------------------------------------
 # 5.  UTILITIES
@@ -718,15 +733,15 @@ def _do_render(request: RenderRequest) -> dict:
                     else:
                         solid_mask[labels == i] = 255
 
-                # Sophisticated Floor/Countertop Hole-Filling
-                contours, hierarchy = cv2.findContours(solid_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
-                if contours and hierarchy is not None:
-                    hierarchy = hierarchy[0]
-                    for idx, contour in enumerate(contours):
-                        if hierarchy[idx][3] != -1: # Children contours = inner holes
-                            area = cv2.contourArea(contour)
-                            if area < (w * h * 0.25): # Limit to 25% of image area to heal rugs/tables
-                                cv2.drawContours(solid_mask, [contour], -1, 255, -1)
+                # ── Flood-fill hole removal: fill ALL internal holes in solid_mask ──
+                # Any background pixel not reachable from the image border = internal hole (chair leg, shadow gap)
+                _ph, _pw = solid_mask.shape
+                _pad = cv2.copyMakeBorder(solid_mask,1,1,1,1,cv2.BORDER_CONSTANT,value=0)
+                _fld = _pad.copy()
+                cv2.floodFill(_fld, np.zeros((_ph+4,_pw+4),np.uint8), (0,0), 128)
+                _fld = _fld[1:-1,1:-1]
+                solid_mask = cv2.bitwise_or(solid_mask, (_fld==0).astype(np.uint8)*255)
+
 
         if solid_mask is None or np.sum(solid_mask) == 0:
             continue
@@ -741,8 +756,8 @@ def _do_render(request: RenderRequest) -> dict:
         rot_angle  = request.tile_rotation if request.tile_rotation is not None else 0.0
 
         if surface_name == "floor" or surface_name == "staircase":
-            # Floor / staircase: perspective warp for depth illusion
-            tile_size_base = int(max(w, h) * 0.35 * scale_mult)
+            # Floor tile size: ~14% of image = ~6 tiles visible across the floor (natural 600×600mm look)
+            tile_size_base = int(max(w, h) * 0.14 * scale_mult)
             tiled_marble = generate_pattern(
                 texture, request.floor_pattern, w, h, tile_size_base, tile_rotation=rot_angle
             )
@@ -756,8 +771,8 @@ def _do_render(request: RenderRequest) -> dict:
                 tiled_marble, cv2.getPerspectiveTransform(src_pts, dst_pts), (w, h)
             )
         elif surface_name == "wall":
-            # Wall: vertical-plane perspective warp — tiles recede toward vanishing point
-            tile_size_base = int(max(w, h) * 0.25 * scale_mult)
+            # Wall tile size: ~16% of image = ~5 tiles visible across a wall (natural 600×300mm look)
+            tile_size_base = int(max(w, h) * 0.16 * scale_mult)
             tiled_marble = generate_pattern(
                 texture, request.floor_pattern, w, h, tile_size_base, tile_rotation=rot_angle
             )
@@ -775,13 +790,13 @@ def _do_render(request: RenderRequest) -> dict:
             )
         elif surface_name in FLAT_TOP_SURFACES:
             # Sink / vanity / countertop: flat orthographic — no warp
-            tile_size_base = int(max(w, h) * 0.20 * scale_mult)
+            tile_size_base = int(max(w, h) * 0.14 * scale_mult)
             warped_marble = generate_pattern(
                 texture, "grid", w, h, tile_size_base, tile_rotation=rot_angle
             )
         else:
             # Shower, cabinet, etc.: mild flat grid
-            tile_size_base = int(max(w, h) * 0.30 * scale_mult)
+            tile_size_base = int(max(w, h) * 0.18 * scale_mult)
             warped_marble = generate_pattern(
                 texture, "grid", w, h, tile_size_base, tile_rotation=rot_angle
             )
@@ -917,15 +932,13 @@ def _do_scan(request: ScanRequest) -> dict:
             continue
         solid_mask[labels == i] = 255
 
-    # Sophisticated Floor/Countertop Hole-Filling
-    contours, hierarchy = cv2.findContours(solid_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
-    if contours and hierarchy is not None:
-        hierarchy = hierarchy[0]
-        for idx, contour in enumerate(contours):
-            if hierarchy[idx][3] != -1: # Children contours = inner holes
-                area = cv2.contourArea(contour)
-                if area < (w * h * 0.25): # Limit to 25% of image area to heal rugs/tables
-                    cv2.drawContours(solid_mask, [contour], -1, 255, -1)
+    # ── Flood-fill hole removal: fills ALL internal holes (chair legs, shadow gaps, etc.) ──
+    _ph, _pw = solid_mask.shape
+    _pad = cv2.copyMakeBorder(solid_mask,1,1,1,1,cv2.BORDER_CONSTANT,value=0)
+    _fld = _pad.copy()
+    cv2.floodFill(_fld, np.zeros((_ph+4,_pw+4),np.uint8), (0,0), 128)
+    _fld = _fld[1:-1,1:-1]
+    solid_mask = cv2.bitwise_or(solid_mask, (_fld==0).astype(np.uint8)*255)
 
     coverage_pct = round((np.count_nonzero(solid_mask) / (w * h)) * 100, 1)
 
