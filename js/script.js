@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // === THREE.JS HERO ===
     const canvas = document.getElementById('hero-canvas');
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.015);
+    scene.fog = new THREE.FogExp2(0xffffff, 0.015);
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.z = 20;
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
@@ -83,18 +83,31 @@ document.addEventListener("DOMContentLoaded", () => {
     // gsap.set('.hero-text-overlay', { yPercent: -50 });
     gsap.set('.hero-text-overlay', { transform: 'none' });
 
-    const tl = gsap.timeline({ scrollTrigger: { trigger: ".hero-container", start: "top top", end: "bottom bottom", scrub: 0.5 } });
-    tl.to(slabGroup.position, { y: 0, z: 0, ease: "power1.inOut", duration: 0.3 }, 0)
+    const tl = gsap.timeline({
+        scrollTrigger: {
+            trigger: ".hero-container",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 0.1,
+            onLeave: () => {
+                const collections = document.getElementById('collections');
+                if (collections) {
+                    collections.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+    });
+    tl.to(slabGroup.position, { y: 0, x: -2.5, z: 2, ease: "power1.inOut", duration: 0.3 }, 0)
         .to(slabGroup.rotation, { x: 0, y: Math.PI * 1.2, z: 0.1, ease: "none", duration: 0.3 }, 0)
         .to(".scroll-indicator", { opacity: 0, duration: 0.05 }, 0.05)
         .fromTo(".sequence-1, .sequence-1-bg", { opacity: 1, scale: 1, filter: "blur(0px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", ease: "none", duration: 0.1 }, 0)
         .to(".sequence-1, .sequence-1-bg", { opacity: 0, scale: 1.1, filter: "blur(10px)", ease: "power2.in", duration: 0.1 }, 0.2)
-        .to(slabGroup.position, { z: 8, x: -2, ease: "power1.inOut", duration: 0.3 }, 0.35)
+        .to(slabGroup.position, { z: 5, x: -2.8, y: 0, ease: "power1.inOut", duration: 0.3 }, 0.35)
         .to(slabGroup.rotation, { y: Math.PI * 2.5, x: -0.2, z: -0.1, ease: "none", duration: 0.3 }, 0.35)
         .to(mat2, { opacity: 1, ease: "none", duration: 0.15 }, 0.425)
         .fromTo(".sequence-2, .sequence-2-bg", { opacity: 0, scale: 0.9, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", ease: "power2.out", duration: 0.1 }, 0.4)
         .to(".sequence-2, .sequence-2-bg", { opacity: 0, scale: 1.1, filter: "blur(10px)", ease: "power2.in", duration: 0.1 }, 0.55)
-        .to(slabGroup.position, { z: 12, x: 0, y: 1, ease: "power1.inOut", duration: 0.3 }, 0.7)
+        .to(slabGroup.position, { z: 5, x: -3.0, y: 0, ease: "power1.inOut", duration: 0.3 }, 0.7)
         .to(slabGroup.rotation, { y: Math.PI * 3.5, x: 0, z: 0, ease: "none", duration: 0.3 }, 0.7)
         .to(mat3, { opacity: 1, ease: "none", duration: 0.15 }, 0.775)
         .fromTo(".sequence-3, .sequence-3-bg", { opacity: 0, scale: 0.9, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", ease: "power2.out", duration: 0.1 }, 0.75)
@@ -430,7 +443,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // === SECTION OBSERVER & LINK SCROLLING ===
     const headerLinks = document.querySelectorAll('.header-nav-link');
-    const sections = ['collections', 'projects', 'how-we-work', 'about'].map(id => document.getElementById(id));
+    const sections = ['about'].map(id => document.getElementById(id)).filter(Boolean);
 
     const sectionObs = new IntersectionObserver(entries => {
         entries.forEach(e => {

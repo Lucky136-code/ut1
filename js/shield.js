@@ -1,7 +1,7 @@
 /**
  * ═══════════════════════════════════════════════════════════════
- *  UMA TRADERS — SHIELD.JS  ·  Anti-Theft & Source Protection
- *  © 2024–2026 Uma Traders. All rights reserved.
+ *  UMATRADERSS — SHIELD.JS  ·  Anti-Theft & Source Protection
+ *  © 2024–2026 UMATRADERSS. All rights reserved.
  *  Unauthorized copying, modification, or distribution of this
  *  website's source code is strictly prohibited.
  * ═══════════════════════════════════════════════════════════════
@@ -124,10 +124,10 @@
             'color:#ff4444; font-size:48px; font-weight:900; text-shadow:2px 2px 0 #000;'
         );
         console.log(
-            '%cThis website and all its source code, designs, and assets are the intellectual property of Uma Traders.\n' +
+            '%cThis website and all its source code, designs, and assets are the intellectual property of UMATRADERSS.\n' +
             'Unauthorized copying, modification, reverse engineering, or redistribution is strictly prohibited\n' +
             'and may result in legal action under the Copyright Act & IT Act.\n\n' +
-            '© 2024–2026 Uma Traders. All Rights Reserved.',
+            '© 2024–2026 UMATRADERSS. All Rights Reserved.',
             'color:#c5a880; font-size:14px; font-family:monospace; line-height:1.6;'
         );
         console.log(

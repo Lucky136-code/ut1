@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Razorpay Standard Checkout Options
             const razorpayOptions = {
                 "key": RAZORPAY_KEY_ID === "rzp_test_replace_with_your_own_key" ? "rzp_test_3m1tE7vE9Gz45a" : RAZORPAY_KEY_ID, 
-                "name": "Uma Traders",
+                "name": "UMATRADERSS",
                 "description": `${planName} - 7 Day Free Trial`,
                 "image": "assets/logo.jpeg",
                 "handler": function (response) {

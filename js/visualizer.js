@@ -461,8 +461,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 const texB64 = await urlToBase64(mat.texture || mat.img);
-                const surfaceMap = { hall: 'floor', kitchen: 'countertop', bathroom: 'wall' };
-                const surface = surfaceMap[currentRoomType] || 'floor';
+                const surfaceMap = { hall: 'floor', floor: 'floor', wall: 'wall', kitchen: 'kitchen', countertop: 'countertop', bathroom: 'bathroom' };
+                const surface = surfaceMap[currentRoomType] || currentRoomType || 'floor';
 
                 const body = {
                     room_image:          roomImageB64,
@@ -581,20 +581,20 @@ document.addEventListener("DOMContentLoaded", () => {
             detailContainer.innerHTML = `
                 <!-- Material Header with name & taxonomy -->
                 <div class="viz-panel-card" style="padding: 16px; gap: 12px; animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
-                    <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--viz-accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
+                    <div style="font-family: 'Inter', sans-serif; font-size: 0.7rem; color: #1a1a1a; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
                         Selected Slab
                     </div>
-                    <h3 style="margin: 0; font-family: var(--font-heading); font-size: 1.1rem; line-height: 1.2; color: var(--viz-text-primary); letter-spacing: 0.02em;">
+                    <h3 style="margin: 0; font-family: 'Inter', sans-serif; font-size: 1.15rem; font-weight: 700; line-height: 1.25; color: #111113; letter-spacing: -0.01em;">
                         ${mat.name}
                     </h3>
-                    <div style="font-size: 0.72rem; color: var(--viz-text-secondary); display: flex; align-items: center; gap: 6px;">
-                        <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--viz-accent-teal);"></span>
+                    <div style="font-size: 0.75rem; color: #55555d; font-family: 'Inter', sans-serif; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                        <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#0055ff;"></span>
                         ${mat.taxonomy}
                     </div>
                 </div>
 
                 <!-- Slab Preview image (Aspect ratio aligned) -->
-                <div class="viz-panel-card" style="padding: 0; overflow: hidden; border: 1px solid var(--viz-border);">
+                <div class="viz-panel-card" style="padding: 0; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.85); border-radius: 16px;">
                     <img src="${mat.img}" style="width: 100%; height: 160px; object-fit: cover; transition: transform 0.5s ease;" 
                          alt="${mat.name} slab"
                          onmouseover="this.style.transform='scale(1.05)'"
@@ -603,40 +603,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 <!-- Technical Specification Table -->
                 <div class="viz-panel-card" style="padding: 16px; gap: 10px;">
-                    <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--viz-accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid var(--viz-border); padding-bottom: 6px;">
+                    <div style="font-family: 'Inter', sans-serif; font-size: 0.7rem; color: #1a1a1a; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(0,0,0,0.06); padding-bottom: 6px;">
                         Specifications
                     </div>
                     
-                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.72rem;">
-                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.03); padding-bottom: 4px;">
-                            <span style="color: var(--viz-text-secondary);">Origin:</span>
-                            <span style="font-weight: 600; color: var(--viz-text-primary);">${mat.origin}</span>
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.78rem; font-family: 'Inter', sans-serif;">
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.04); padding-bottom: 4px;">
+                            <span style="color: #66666e; font-weight: 500;">Origin:</span>
+                            <span style="font-weight: 600; color: #111113;">${mat.origin}</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.03); padding-bottom: 4px;">
-                            <span style="color: var(--viz-text-secondary);">Thickness:</span>
-                            <span style="font-weight: 600; color: var(--viz-text-primary);">${mat.hardness}</span>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.04); padding-bottom: 4px;">
+                            <span style="color: #66666e; font-weight: 500;">Thickness:</span>
+                            <span style="font-weight: 600; color: #111113;">${mat.hardness}</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.03); padding-bottom: 4px;">
-                            <span style="color: var(--viz-text-secondary);">Finish:</span>
-                            <span style="font-weight: 600; color: var(--viz-text-primary);">Polished (Glossy)</span>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.04); padding-bottom: 4px;">
+                            <span style="color: #66666e; font-weight: 500;">Finish:</span>
+                            <span style="font-weight: 600; color: #111113;">Polished (Glossy)</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.03); padding-bottom: 4px;">
-                            <span style="color: var(--viz-text-secondary);">Quality Grade:</span>
-                            <span style="font-weight: 600; color: var(--viz-accent-teal);">Premium / A Grade</span>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.04); padding-bottom: 4px;">
+                            <span style="color: #66666e; font-weight: 500;">Quality Grade:</span>
+                            <span style="font-weight: 600; color: #0066ff;">Premium / A Grade</span>
                         </div>
-                        <div style="display: flex; flex-direction: column; gap: 2px;">
-                            <span style="color: var(--viz-text-secondary); margin-bottom: 2px;">Applications:</span>
-                            <span style="font-weight: 500; color: var(--viz-text-primary); font-size: 0.65rem; line-height: 1.3;">Flooring, Wall Cladding, Countertops, Staircases, Living Rooms, Hotel Lobbies</span>
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <span style="color: #66666e; font-weight: 500; margin-bottom: 2px;">Applications:</span>
+                            <span style="font-weight: 500; color: #333338; font-size: 0.72rem; line-height: 1.35;">Flooring, Wall Cladding, Countertops, Staircases, Living Rooms, Hotel Lobbies</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Story & Description -->
                 <div class="viz-panel-card" style="padding: 16px; gap: 8px;">
-                    <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--viz-accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
+                    <div style="font-family: 'Inter', sans-serif; font-size: 0.7rem; color: #1a1a1a; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
                         Taxonomy Narrative
                     </div>
-                    <p style="margin: 0; font-size: 0.72rem; line-height: 1.5; color: var(--viz-text-secondary); text-align: justify;">
+                    <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 0.78rem; line-height: 1.5; color: #44444a;">
                         ${mat.desc}
                     </p>
                 </div>
@@ -645,10 +645,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     <a href="https://wa.me/919304277935?text=Hi%20Uma%20Traders,%20I%20am%20interested%20in%20the%20${encodeURIComponent(mat.name)}%20via%20your%20AI%20Visualizer." 
                        target="_blank"
-                       style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; border: none; padding: 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);"
-                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(37, 211, 102, 0.35)';"
-                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(37, 211, 102, 0.2)';">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;">
+                       style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; border: none; padding: 12px 20px; border-radius: 9999px; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; text-decoration: none; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);"
+                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(37, 211, 102, 0.45)';"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(37, 211, 102, 0.3)';">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;">
                             <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.863-9.73.001-2.597-1.006-5.038-2.836-6.87-1.83-1.832-4.272-2.842-6.87-2.843-5.437 0-9.863 4.37-9.866 9.73-.001 1.762.48 3.487 1.395 5.017l-.951 3.472 3.585-.927zm12.062-7.532c-.329-.164-1.944-.959-2.244-1.069-.3-.11-.518-.164-.736.164-.218.329-.844 1.069-1.036 1.288-.192.218-.383.246-.712.082-.329-.164-1.389-.512-2.647-1.633-.978-.872-1.638-1.95-1.83-2.279-.192-.329-.02-.507.144-.671.148-.148.329-.383.493-.575.164-.192.218-.328.328-.547.11-.219.055-.411-.027-.575-.082-.164-.736-1.777-1.009-2.434-.265-.636-.53-.55-.736-.56-.19-.01-.41-.01-.628-.01-.218 0-.573.082-.873.411-.3.329-1.147 1.122-1.147 2.736 0 1.614 1.174 3.178 1.338 3.397.164.218 2.31 3.527 5.596 4.952.781.339 1.39.542 1.866.693.785.249 1.498.214 2.063.129.629-.095 1.944-.795 2.217-1.56.273-.767.273-1.423.191-1.56-.081-.137-.272-.218-.601-.382z"/>
                         </svg>
                         Inquire on WhatsApp
@@ -900,7 +900,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 resultImg.style.display = 'none';
                 resultImg.src = '';
             }
-            if (ingestModalBackdrop) ingestModalBackdrop.style.display = 'flex';
+            if (spaceSetupOverlay) spaceSetupOverlay.style.display = 'flex';
+            if (ingestModalBackdrop) ingestModalBackdrop.style.display = 'none';
             if (sidebarTabUpload) sidebarTabUpload.click();
             if (ingestBtnApply) {
                 ingestBtnApply.disabled = true;
@@ -1151,19 +1152,205 @@ document.addEventListener("DOMContentLoaded", () => {
         if (floatingChangeScene) {
             floatingChangeScene.addEventListener('click', (e) => {
                 e.stopPropagation();
-                if (fileInput) fileInput.value = ''; // Reset input to allow selecting same file again
-                if (ingestModalBackdrop) ingestModalBackdrop.style.display = 'flex';
-                if (sidebarTabUpload) sidebarTabUpload.click();
+                if (spaceSetupOverlay) spaceSetupOverlay.style.display = 'flex';
             });
         }
 
         if (fileInput) fileInput.addEventListener('change', handleFileSelection);
+
+        // --- Surface Custom Liquid Glass Dropdown Handler ---
+        const surfaceSelectWrap    = document.getElementById('surface-select-wrap');
+        const surfaceSelectTrigger = document.getElementById('surface-select-trigger');
+        const surfaceSelectValue   = document.getElementById('surface-select-value');
+
+        if (surfaceSelectTrigger && surfaceSelectWrap) {
+            surfaceSelectTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                surfaceSelectWrap.classList.toggle('open');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (surfaceSelectWrap && !surfaceSelectWrap.contains(e.target)) {
+                    surfaceSelectWrap.classList.remove('open');
+                }
+            });
+
+            document.querySelectorAll('.viz-glass-option').forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const val = opt.dataset.value;
+                    const label = opt.dataset.label;
+                    currentRoomType = val;
+
+                    if (surfaceSelectValue) surfaceSelectValue.textContent = label;
+                    
+                    document.querySelectorAll('.viz-glass-option').forEach(o => o.classList.remove('active'));
+                    opt.classList.add('active');
+
+                    if (surfaceSelectWrap) surfaceSelectWrap.classList.remove('open');
+
+                    if (roomImageB64) {
+                        triggerScan();
+                    }
+                });
+            });
+        }
+
+        // --- Tiling Alignment Custom Liquid Glass Dropdown Handler ---
+        const patternSelectWrap    = document.getElementById('pattern-select-wrap');
+        const patternSelectTrigger = document.getElementById('pattern-select-trigger');
+        const patternSelectValue   = document.getElementById('pattern-select-value');
+
+        if (patternSelectTrigger && patternSelectWrap) {
+            patternSelectTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                patternSelectWrap.classList.toggle('open');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (patternSelectWrap && !patternSelectWrap.contains(e.target)) {
+                    patternSelectWrap.classList.remove('open');
+                }
+            });
+
+            document.querySelectorAll('.viz-pattern-option').forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const val = opt.dataset.value;
+                    const label = opt.dataset.label;
+                    currentPattern = val;
+
+                    if (patternSelectValue) patternSelectValue.textContent = label;
+                    
+                    document.querySelectorAll('.viz-pattern-option').forEach(o => o.classList.remove('active'));
+                    opt.classList.add('active');
+
+                    if (patternSelectWrap) patternSelectWrap.classList.remove('open');
+
+                    if (selectedMat && roomImageB64) {
+                        executeRenderPipeline(selectedMat);
+                    }
+                });
+            });
+        }
+
+        // --- Polish Type Custom Liquid Glass Dropdown Handler ---
+        const glossSelectWrap    = document.getElementById('gloss-select-wrap');
+        const glossSelectTrigger = document.getElementById('gloss-select-trigger');
+        const glossSelectValue   = document.getElementById('gloss-select-value');
+
+        if (glossSelectTrigger && glossSelectWrap) {
+            glossSelectTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                glossSelectWrap.classList.toggle('open');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (glossSelectWrap && !glossSelectWrap.contains(e.target)) {
+                    glossSelectWrap.classList.remove('open');
+                }
+            });
+
+            document.querySelectorAll('.viz-gloss-option').forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const val = opt.dataset.value;
+                    const label = opt.dataset.label;
+
+                    if (glossSelectValue) glossSelectValue.textContent = label;
+                    
+                    document.querySelectorAll('.viz-gloss-option').forEach(o => o.classList.remove('active'));
+                    opt.classList.add('active');
+
+                    if (glossSelectWrap) glossSelectWrap.classList.remove('open');
+
+                    if (selectedMat && roomImageB64) {
+                        executeRenderPipeline(selectedMat);
+                    }
+                });
+            });
+        }
+
+        // --- Action Buttons: Reset, Download, Fullscreen ---
+        function triggerReset() {
+            if (!roomImageB64) return;
+            selectedMat = null;
+            scanDone = false;
+            window._customMask = null;
+            
+            if (resultImg) {
+                resultImg.src = roomImageB64;
+                resultImg.style.display = 'block';
+                resultImg.style.visibility = 'visible';
+            }
+            if (compareImgOrig) compareImgOrig.src = roomImageB64;
+            if (compareImgRend) compareImgRend.src = roomImageB64;
+
+            deactivateCompareMode();
+            resetSliders();
+            updatePipelineProgress(0);
+            updateHudGauge(0.0, 'RESET', 'STANDBY');
+            
+            document.querySelectorAll('.viz-history-thumb').forEach(c => c.classList.remove('selected', 'active'));
+        }
+
+        function triggerDownload() {
+            const activeSrc = isComparing ? (compareImgRend ? compareImgRend.src : '') : (resultImg ? resultImg.src : '');
+            const finalUrl = activeSrc || roomImageB64;
+            if (!finalUrl) return;
+
+            const a = document.createElement('a');
+            a.href = finalUrl;
+            a.download = `uma_traders_${currentRoomType}_design.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function triggerFullscreen() {
+            const activeSrc = (resultImg && resultImg.src && resultImg.style.display !== 'none') ? resultImg.src : roomImageB64;
+            const fullscreenOverlay = document.getElementById('viz-fullscreen-overlay');
+            const fullscreenImg     = document.getElementById('viz-fullscreen-img');
+
+            if (fullscreenOverlay && fullscreenImg && activeSrc) {
+                fullscreenImg.src = activeSrc;
+                fullscreenOverlay.classList.add('active');
+            }
+        }
+
+        function closeFullscreen() {
+            const fullscreenOverlay = document.getElementById('viz-fullscreen-overlay');
+            if (fullscreenOverlay) {
+                fullscreenOverlay.classList.remove('active');
+            }
+        }
+
+        const fullscreenCloseBtn = document.getElementById('viz-fullscreen-close');
+        if (fullscreenCloseBtn) {
+            fullscreenCloseBtn.addEventListener('click', closeFullscreen);
+        }
+
+        const fullscreenOverlayEl = document.getElementById('viz-fullscreen-overlay');
+        if (fullscreenOverlayEl) {
+            fullscreenOverlayEl.addEventListener('click', (e) => {
+                if (e.target === fullscreenOverlayEl) {
+                    closeFullscreen();
+                }
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeFullscreen();
+            }
+        });
 
         // --- Workspace Trigger Bindings ---
         if (btnScan) btnScan.addEventListener('click', triggerScan);
         if (btnCompare) btnCompare.addEventListener('click', toggleCompareView);
         if (btnReset) btnReset.addEventListener('click', triggerReset);
         if (btnDownload) btnDownload.addEventListener('click', triggerDownload);
+        if (btnFullscreen) btnFullscreen.addEventListener('click', triggerFullscreen);
 
 
 
@@ -1341,6 +1528,33 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         });
+
+        // --- Pro Mode Workspace Toggle ---
+        const btnTogglePro      = document.getElementById('btn-toggle-pro');
+        const proSettingsPanel  = document.getElementById('pro-settings-panel');
+        const proBadgeIndicator = document.getElementById('pro-badge-indicator');
+        const proToggleLabel    = document.getElementById('pro-toggle-label');
+
+        let isProMode = false;
+        if (btnTogglePro && proSettingsPanel) {
+            btnTogglePro.addEventListener('click', () => {
+                isProMode = !isProMode;
+                const pill = btnTogglePro.querySelector('.pro-toggle-pill');
+                if (isProMode) {
+                    proSettingsPanel.style.display = 'block';
+                    btnTogglePro.classList.add('active');
+                    if (proBadgeIndicator) proBadgeIndicator.style.display = 'inline-block';
+                    if (proToggleLabel) proToggleLabel.textContent = 'Pro Mode Enabled';
+                    if (pill) pill.textContent = 'ON';
+                } else {
+                    proSettingsPanel.style.display = 'none';
+                    btnTogglePro.classList.remove('active');
+                    if (proBadgeIndicator) proBadgeIndicator.style.display = 'none';
+                    if (proToggleLabel) proToggleLabel.textContent = 'Enable Pro Mode';
+                    if (pill) pill.textContent = 'OFF';
+                }
+            });
+        }
 
         // --- Custom Polished Gloss & Ambient Tone selector bindings ---
         document.querySelectorAll('.viz-gloss').forEach(btn => {
@@ -2054,6 +2268,494 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         updateSliderLabels();
         updateIngestModalCloseState();
+
+        // =============================================
+        // AUTHENTICATION SYSTEM ENGINE (SUPABASE READY)
+        // =============================================
+        const authModalOverlay   = document.getElementById('auth-modal-overlay');
+        const authNoticeBox      = document.getElementById('auth-notice-box');
+        const authNoticeText     = document.getElementById('auth-notice-text');
+        const authViewLogin      = document.getElementById('auth-view-login');
+        const authViewRegister   = document.getElementById('auth-view-register');
+        const btnShowRegister    = document.getElementById('btn-show-register');
+        const btnShowLogin       = document.getElementById('btn-show-login');
+        const formLogin          = document.getElementById('form-login');
+        const formRegister       = document.getElementById('form-register');
+        const userProfileBadge   = document.getElementById('user-profile-badge');
+        const userDisplayName    = document.getElementById('user-display-name');
+        const btnSignOut         = document.getElementById('btn-sign-out');
+
+        // Helper to show notice box in auth modal
+        function showAuthNotice(msg, type = 'error') {
+            if (!authNoticeBox || !authNoticeText) return;
+            authNoticeText.textContent = msg;
+            authNoticeBox.className = 'auth-notice-box ' + type;
+            authNoticeBox.style.display = 'block';
+        }
+
+        function hideAuthNotice() {
+            if (authNoticeBox) authNoticeBox.style.display = 'none';
+        }
+
+        // Switch to Registration View
+        function switchToRegister(presetIdentifier = '') {
+            hideAuthNotice();
+            if (authViewLogin) authViewLogin.style.display = 'none';
+            if (authViewRegister) authViewRegister.style.display = 'block';
+            if (presetIdentifier) {
+                const regEmail = document.getElementById('auth-reg-email');
+                const regPhone = document.getElementById('auth-reg-phone');
+                if (presetIdentifier.includes('@')) {
+                    if (regEmail) regEmail.value = presetIdentifier;
+                } else {
+                    if (regPhone) regPhone.value = presetIdentifier;
+                }
+            }
+        }
+
+        // Switch to Login View
+        function switchToLogin(presetIdentifier = '') {
+            hideAuthNotice();
+            if (authViewRegister) authViewRegister.style.display = 'none';
+            if (authViewLogin) authViewLogin.style.display = 'block';
+            if (presetIdentifier) {
+                const loginId = document.getElementById('auth-login-identifier');
+                if (loginId) loginId.value = presetIdentifier;
+            }
+        }
+
+        // User Registry Storage (local storage fallback until Supabase is linked)
+        function getUsersDB() {
+            try {
+                const raw = localStorage.getItem('umatraders_registered_users');
+                if (raw) return JSON.parse(raw);
+            } catch (e) {
+                console.error(e);
+            }
+            // Seed initial sample user
+            return [
+                {
+                    name: 'Andrew Thomas',
+                    email: 'andrew@example.com',
+                    phone: '+919876543210',
+                    password: 'password123'
+                }
+            ];
+        }
+
+        function saveUserToDB(userObj) {
+            const users = getUsersDB();
+            users.push(userObj);
+            localStorage.setItem('umatraders_registered_users', JSON.stringify(users));
+        }
+
+        // Session handling
+        function getActiveUserSession() {
+            try {
+                const raw = sessionStorage.getItem('uma_auth_active_user') || localStorage.getItem('uma_auth_active_user');
+                if (raw) return JSON.parse(raw);
+            } catch (e) {
+                console.error(e);
+            }
+            return null;
+        }
+
+        function setSessionUser(userObj) {
+            sessionStorage.setItem('uma_auth_active_user', JSON.stringify(userObj));
+        }
+
+        function clearSessionUser() {
+            sessionStorage.removeItem('uma_auth_active_user');
+            localStorage.removeItem('uma_auth_active_user');
+        }
+
+        const spaceSetupOverlay   = document.getElementById('space-setup-overlay');
+        const btnSpaceUpload      = document.getElementById('btn-space-upload');
+        const btnSpaceCamera      = document.getElementById('btn-space-camera');
+        const spaceSetupFileInput = document.getElementById('space-setup-file-input');
+
+        function applyAuthState() {
+            const activeUser = getActiveUserSession();
+            if (activeUser) {
+                // User is authenticated -> Hide auth modal immediately
+                if (authModalOverlay) {
+                    authModalOverlay.classList.add('hidden');
+                    authModalOverlay.style.display = 'none';
+                }
+                if (userProfileBadge && userDisplayName) {
+                    const nameParts = activeUser.name ? activeUser.name.split(' ') : ['Architect'];
+                    userDisplayName.textContent = nameParts[0];
+                    userProfileBadge.style.display = 'flex';
+                }
+                const btnChangeRoom = document.getElementById('btn-change-room');
+                if (btnChangeRoom) btnChangeRoom.style.display = 'inline-block';
+                if (btnChangeRoom && spaceSetupOverlay) {
+                    btnChangeRoom.onclick = () => { spaceSetupOverlay.style.display = 'flex'; };
+                }
+
+                // POST-LOGIN REQUIREMENT: Show Space Setup overlay if room photo not loaded yet
+                if (!roomImageB64 && spaceSetupOverlay) {
+                    spaceSetupOverlay.style.display = 'flex';
+                } else if (spaceSetupOverlay) {
+                    spaceSetupOverlay.style.display = 'none';
+                }
+            } else {
+                // User NOT authenticated -> Show auth modal locked on top
+                if (authModalOverlay) {
+                    authModalOverlay.style.display = 'flex';
+                    authModalOverlay.classList.remove('hidden');
+                }
+                if (spaceSetupOverlay) spaceSetupOverlay.style.display = 'none';
+                if (userProfileBadge) userProfileBadge.style.display = 'none';
+            }
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = (err) => reject(err);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function urlToBase64(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.naturalWidth || img.width || 800;
+                        canvas.height = img.naturalHeight || img.height || 600;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        resolve(canvas.toDataURL('image/png'));
+                    } catch (e) {
+                        resolve(url);
+                    }
+                };
+                img.onerror = () => resolve(url);
+                img.src = url;
+            });
+        }
+
+        // Helper to load room photo into visualizer canvas immediately
+        function loadRoomImage(b64) {
+            // HIDE SPACE SETUP OVERLAY INSTANTLY FIRST
+            if (spaceSetupOverlay) spaceSetupOverlay.style.display = 'none';
+
+            roomImageB64 = b64;
+            scanDone = false;
+            scannedMaskB64 = null;
+            window._customMask = null;
+            window._scanToken = null;
+
+            if (resultImg) {
+                resultImg.src = b64;
+                resultImg.style.display = 'block';
+                resultImg.style.visibility = 'visible';
+            }
+            if (compareImgOrig) compareImgOrig.src = b64;
+            if (compareImgRend) compareImgRend.src = b64;
+            if (uploadZoneWrap) uploadZoneWrap.style.display = 'none';
+
+            btnReset.disabled = false;
+            btnDownload.disabled = false;
+            if (btnFullscreen) btnFullscreen.disabled = false;
+            if (btnCompare) btnCompare.disabled = false;
+
+            triggerScan();
+        }
+
+        // Space Setup Upload File Handlers
+        if (btnSpaceUpload && spaceSetupFileInput) {
+            btnSpaceUpload.addEventListener('click', () => {
+                spaceSetupFileInput.click();
+            });
+
+            spaceSetupFileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                try {
+                    const b64 = await fileToBase64(file);
+                    loadRoomImage(b64);
+                } catch (err) {
+                    console.error('File load failed:', err);
+                }
+            });
+        }
+
+        // --- LIVE CAMERA CONTROLLER ---
+        const cameraModalOverlay = document.getElementById('camera-modal-overlay');
+        const cameraVideoFeed   = document.getElementById('camera-video-feed');
+        const btnCameraSnap     = document.getElementById('btn-camera-snap');
+        const btnCameraClose    = document.getElementById('btn-camera-close');
+        const cameraStatusText  = document.getElementById('camera-status-text');
+        const nativeCameraInput = document.getElementById('native-camera-input');
+        let activeVideoStream   = null;
+
+        async function startCameraFeed() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                if (nativeCameraInput) {
+                    nativeCameraInput.click();
+                } else if (spaceSetupFileInput) {
+                    spaceSetupFileInput.click();
+                }
+                return;
+            }
+
+            try {
+                if (cameraModalOverlay) cameraModalOverlay.style.display = 'flex';
+                if (cameraStatusText) cameraStatusText.textContent = 'Accessing camera feed...';
+
+                activeVideoStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: { ideal: 'environment' },
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    },
+                    audio: false
+                });
+
+                if (cameraVideoFeed) {
+                    cameraVideoFeed.srcObject = activeVideoStream;
+                    cameraVideoFeed.onloadedmetadata = () => {
+                        cameraVideoFeed.play();
+                        if (cameraStatusText) cameraStatusText.textContent = 'Camera active. Frame your room & tap shutter button.';
+                    };
+                }
+            } catch (err) {
+                console.warn('Camera stream error, falling back to file picker:', err);
+                stopCameraFeed();
+                if (nativeCameraInput) {
+                    nativeCameraInput.click();
+                } else if (spaceSetupFileInput) {
+                    spaceSetupFileInput.click();
+                }
+            }
+        }
+
+        function stopCameraFeed() {
+            if (activeVideoStream) {
+                activeVideoStream.getTracks().forEach(track => track.stop());
+                activeVideoStream = null;
+            }
+            if (cameraVideoFeed) cameraVideoFeed.srcObject = null;
+            if (cameraModalOverlay) cameraModalOverlay.style.display = 'none';
+        }
+
+        function captureCameraPhoto() {
+            if (!cameraVideoFeed || !activeVideoStream) return;
+
+            const canvas = document.createElement('canvas');
+            const vw = cameraVideoFeed.videoWidth || 1280;
+            const vh = cameraVideoFeed.videoHeight || 720;
+            canvas.width = vw;
+            canvas.height = vh;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(cameraVideoFeed, 0, 0, vw, vh);
+
+            const b64Photo = canvas.toDataURL('image/jpeg', 0.92);
+            stopCameraFeed();
+
+            loadRoomImage(b64Photo);
+        }
+
+        // Space Setup Camera Capture Trigger
+        if (btnSpaceCamera) {
+            btnSpaceCamera.addEventListener('click', () => startCameraFeed());
+        }
+        if (btnCameraSnap) {
+            btnCameraSnap.addEventListener('click', () => captureCameraPhoto());
+        }
+        if (btnCameraClose) {
+            btnCameraClose.addEventListener('click', () => stopCameraFeed());
+        }
+
+        if (nativeCameraInput) {
+            nativeCameraInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                try {
+                    const b64 = await fileToBase64(file);
+                    loadRoomImage(b64);
+                } catch (err) {
+                    console.error('Camera photo load error:', err);
+                }
+            });
+        }
+
+        // Space Preset Pills Handler
+        document.querySelectorAll('.space-preset-pill').forEach(pill => {
+            pill.addEventListener('click', async () => {
+                const preset = pill.dataset.preset || 'hall';
+                currentRoomType = preset;
+                
+                try {
+                    const defaultImgUrl = 'assets/room_tiles.png';
+                    const b64 = await urlToBase64(defaultImgUrl);
+                    loadRoomImage(b64);
+                } catch (err) {
+                    console.error('Failed to load sample scene:', err);
+                    loadRoomImage('assets/room_tiles.png');
+                }
+            });
+        });
+
+        // Event listeners for view toggles
+        if (btnShowRegister) {
+            btnShowRegister.addEventListener('click', () => switchToRegister());
+        }
+        if (btnShowLogin) {
+            btnShowLogin.addEventListener('click', () => switchToLogin());
+        }
+
+        // Login Action Function
+        function performLogin() {
+            hideAuthNotice();
+
+            const idInput  = document.getElementById('auth-login-identifier');
+            const passInput= document.getElementById('auth-login-password');
+            if (!idInput || !passInput) return;
+
+            const identifier = idInput.value.trim().toLowerCase();
+            const password   = passInput.value.trim();
+
+            if (!identifier || !password) {
+                showAuthNotice('Please fill in both phone/email and password.', 'error');
+                return;
+            }
+
+            const users = getUsersDB();
+            let found = users.find(u => 
+                (u.email && u.email.toLowerCase() === identifier) ||
+                (u.phone && u.phone.replace(/[\s\-\+\(\)]/g, '') === identifier.replace(/[\s\-\+\(\)]/g, ''))
+            );
+
+            if (!found) {
+                // AUTO-REGISTER ON THE FLY SO USER IS NEVER STUCK
+                const isEmail = identifier.includes('@');
+                const rawName = identifier.split('@')[0].replace(/[^a-zA-Z0-9]/g, ' ');
+                const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+                
+                found = {
+                    name: formattedName || 'Architect',
+                    phone: isEmail ? '+91 98765 43210' : identifier,
+                    email: isEmail ? identifier : `${identifier}@example.com`,
+                    password: password,
+                    createdAt: new Date().toISOString()
+                };
+                saveUserToDB(found);
+            } else if (found.password && found.password !== password) {
+                showAuthNotice('Incorrect password. Please try again.', 'error');
+                return;
+            }
+
+            // SUCCESSFUL LOGIN:
+            showAuthNotice(`Welcome, ${found.name}! Opening studio...`, 'success');
+            setSessionUser(found);
+            applyAuthState();
+        }
+
+        // Login Submit & Button Click
+        if (formLogin) {
+            formLogin.addEventListener('submit', (e) => {
+                e.preventDefault();
+                performLogin();
+            });
+        }
+        const btnLoginSubmit = document.getElementById('btn-login-submit');
+        if (btnLoginSubmit) {
+            btnLoginSubmit.addEventListener('click', (e) => {
+                e.preventDefault();
+                performLogin();
+            });
+        }
+
+        // Registration Action Function
+        function performRegistration() {
+            hideAuthNotice();
+
+            const nameVal = document.getElementById('auth-reg-name').value.trim();
+            const phoneVal= document.getElementById('auth-reg-phone').value.trim();
+            const emailVal= document.getElementById('auth-reg-email').value.trim();
+            const passVal = document.getElementById('auth-reg-password').value.trim();
+            const confVal = document.getElementById('auth-reg-confirm').value.trim();
+
+            if (!nameVal || !phoneVal || !emailVal || !passVal || !confVal) {
+                showAuthNotice('Please fill out all required fields.', 'error');
+                return;
+            }
+
+            if (passVal.length < 6) {
+                showAuthNotice('Password must be at least 6 characters.', 'error');
+                return;
+            }
+
+            if (passVal !== confVal) {
+                showAuthNotice('Passwords do not match. Please verify.', 'error');
+                return;
+            }
+
+            const users = getUsersDB();
+            const existing = users.find(u => 
+                (u.email && u.email.toLowerCase() === emailVal.toLowerCase()) ||
+                (u.phone && u.phone.replace(/[\s\-\+\(\)]/g, '') === phoneVal.replace(/[\s\-\+\(\)]/g, ''))
+            );
+
+            if (existing) {
+                showAuthNotice('An account with this email or phone already exists. Please sign in.', 'error');
+                return;
+            }
+
+            // REGISTER SUCCESS REQUIREMENT:
+            const newUser = {
+                name: nameVal,
+                phone: phoneVal,
+                email: emailVal,
+                password: passVal,
+                createdAt: new Date().toISOString()
+            };
+
+            saveUserToDB(newUser);
+
+            // Show success notice & redirect back to login page in same container
+            showAuthNotice('Registered successfully! Please sign in with your credentials.', 'success');
+
+            setTimeout(() => {
+                switchToLogin(emailVal || phoneVal);
+                showAuthNotice('Registered successfully! Please enter your password to sign in.', 'success');
+            }, 1200);
+        }
+
+        // Registration Submit & Button Click
+        if (formRegister) {
+            formRegister.addEventListener('submit', (e) => {
+                e.preventDefault();
+                performRegistration();
+            });
+        }
+        const btnRegSubmit = document.getElementById('btn-reg-submit');
+        if (btnRegSubmit) {
+            btnRegSubmit.addEventListener('click', (e) => {
+                e.preventDefault();
+                performRegistration();
+            });
+        }
+
+        // Sign Out Handler
+        if (btnSignOut) {
+            btnSignOut.addEventListener('click', () => {
+                clearSessionUser();
+                applyAuthState();
+                switchToLogin();
+            });
+        }
+
+        // Initialize Authentication State Check
+        applyAuthState();
 
     })();
 });

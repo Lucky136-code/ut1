@@ -2154,9 +2154,16 @@
                 Visualizer
             </div>
 
-            <a id="viz-close" href="index.html#collections" class="viz-exit-btn" aria-label="Exit Studio">
-                Exit Studio ↖
-            </a>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div id="user-profile-badge" class="viz-user-badge" style="display: none;">
+                    <span class="user-avatar-dot"></span>
+                    <span id="user-display-name">Architect</span>
+                    <button id="btn-sign-out" class="viz-signout-btn" type="button" title="Sign Out">Sign Out ⎋</button>
+                </div>
+                <a id="viz-close" href="index.html" class="viz-exit-btn" aria-label="Exit Studio">
+                    Exit Studio ↖
+                </a>
+            </div>
         </div>
 
         <!-- 3-Column Workstation Dashboard Layout -->
@@ -2169,30 +2176,67 @@
                 <div>
                     <div class="viz-panel-card">
 
-                        <!-- Space Selection -->
+                        <!-- Surface Selection (Custom Liquid Glass Dropdown) -->
                         <div class="viz-control-group">
-                            <span class="viz-control-label">Target Surface</span>
-                            <div class="viz-segment-row">
-                                <button class="viz-segment-btn active viz-rt" data-rt="hall"
-                                    style="flex: 1; cursor: default;">Floor</button>
+                            <span class="viz-control-label">Surface</span>
+                            <div class="viz-glass-select-wrap" id="surface-select-wrap">
+                                <div class="viz-glass-select-trigger" id="surface-select-trigger">
+                                    <span id="surface-select-value">Floor</span>
+                                    <svg class="viz-select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                                </div>
+                                <div class="viz-glass-select-dropdown" id="surface-select-dropdown">
+                                    <div class="viz-glass-option active" data-value="hall" data-label="Floor">Floor</div>
+                                    <div class="viz-glass-option" data-value="wall" data-label="Wall">Wall</div>
+                                    <div class="viz-glass-option" data-value="kitchen" data-label="Kitchen">Kitchen</div>
+                                    <div class="viz-glass-option" data-value="countertop" data-label="Kitchen Countertop">Kitchen Countertop</div>
+                                    <div class="viz-glass-option" data-value="bathroom" data-label="Bathroom">Bathroom</div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Repeat Pattern Selection -->
+                        <!-- Tiling Alignment Selection (Custom Liquid Glass Dropdown) -->
                         <div class="viz-control-group">
                             <span class="viz-control-label">Tiling Alignment</span>
-                            <div class="viz-segment-row viz-segment-row-2">
-                                <button class="viz-segment-btn active viz-pat" data-pat="grid">Grid</button>
-                                <button class="viz-segment-btn viz-pat" data-pat="diagonal">Diag</button>
+                            <div class="viz-glass-select-wrap" id="pattern-select-wrap">
+                                <div class="viz-glass-select-trigger" id="pattern-select-trigger">
+                                    <span id="pattern-select-value">Grid</span>
+                                    <svg class="viz-select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                                </div>
+                                <div class="viz-glass-select-dropdown" id="pattern-select-dropdown">
+                                    <div class="viz-glass-option viz-pattern-option active" data-value="grid" data-label="Grid">Grid</div>
+                                    <div class="viz-glass-option viz-pattern-option" data-value="brick" data-label="Brick">Brick</div>
+                                    <div class="viz-glass-option viz-pattern-option" data-value="checkered" data-label="Checkered">Checkered</div>
+                                    <div class="viz-glass-option viz-pattern-option" data-value="bookmatch" data-label="Bookmatch">Bookmatch</div>
+                                    <div class="viz-glass-option viz-pattern-option" data-value="vertical" data-label="Vertical">Vertical</div>
+                                </div>
                             </div>
+                        </div>
+
+                        <!-- Mode Selection: Standard vs Pro Mode -->
+                        <div class="viz-control-group" style="margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.06);">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                <span class="viz-control-label" style="margin: 0; font-weight: 700;">Workspace Mode</span>
+                                <span id="pro-badge-indicator" class="pro-mode-badge" style="display: none;">✦ PRO ACTIVE</span>
+                            </div>
+                            <button id="btn-toggle-pro" class="viz-pro-mode-toggle" type="button">
+                                <span style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="color: var(--viz-accent-gold, #c5a880);">✦</span>
+                                    <span id="pro-toggle-label">Enable Pro Mode</span>
+                                </span>
+                                <span class="pro-toggle-pill">OFF</span>
+                            </button>
                         </div>
 
                     </div>
                 </div>
 
-                <!-- AI graphics pipeline sliders -->
-                <div>
+                <!-- AI graphics pipeline sliders (Pro Mode Panel) -->
+                <div id="pro-settings-panel" class="pro-settings-panel" style="display: none;">
                     <div class="viz-panel-card" style="gap: 14px;">
+                        <div style="font-family: 'Inter', sans-serif; font-size: 0.72rem; color: #1a1a1a; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(0,0,0,0.06); padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                            <span>✦ Pro Mode Controls</span>
+                            <span style="font-size: 0.6rem; color: #666; font-weight: 600;">ADVANCED</span>
+                        </div>
 
                         <!-- Tile Rotation slider -->
                         <div class="viz-control-group">
@@ -2257,17 +2301,24 @@
                             <input type="range" class="viz-slider" id="slider-opacity" min="0" max="100" value="100">
                         </div>
 
-                        <!-- Surface Gloss Sheen -->
+                        <!-- Polish Type Selection (Custom Liquid Glass Dropdown) -->
                         <div class="viz-control-group">
-                            <span class="viz-control-label">Polished Surface Gloss</span>
-                            <div class="viz-segment-row">
-                                <button class="viz-segment-btn active viz-gloss" data-gloss="high">High Gloss</button>
-                                <button class="viz-segment-btn viz-gloss" data-gloss="satin">Satin</button>
-                                <button class="viz-segment-btn viz-gloss" data-gloss="matte">Matte</button>
+                            <span class="viz-control-label">Polish Type</span>
+                            <div class="viz-glass-select-wrap" id="gloss-select-wrap">
+                                <div class="viz-glass-select-trigger" id="gloss-select-trigger">
+                                    <span id="gloss-select-value">High Gloss (Polished)</span>
+                                    <svg class="viz-select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                                </div>
+                                <div class="viz-glass-select-dropdown" id="gloss-select-dropdown">
+                                    <div class="viz-glass-option viz-gloss-option active" data-value="high" data-label="High Gloss (Polished)">High Gloss (Polished)</div>
+                                    <div class="viz-glass-option viz-gloss-option" data-value="satin" data-label="Satin">Satin</div>
+                                    <div class="viz-glass-option viz-gloss-option" data-value="matte" data-label="Matte">Matte</div>
+                                    <div class="viz-glass-option viz-gloss-option" data-value="honed" data-label="Honed">Honed</div>
+                                    <div class="viz-glass-option viz-gloss-option" data-value="leathered" data-label="Leathered">Leathered</div>
+                                    <div class="viz-glass-option viz-gloss-option" data-value="lapato" data-label="Lapato (Semi-Polished)">Lapato (Semi-Polished)</div>
+                                </div>
                             </div>
                         </div>
-
-
 
                     </div>
                 </div>
@@ -2280,28 +2331,28 @@
                 <!-- Viewport Control Tray -->
                 <div class="viz-workspace-tray">
                     <div class="viz-tray-actions">
-                        <button class="viz-btn-primary" id="btn-scan" disabled>
+                        <button class="viz-btn-primary" id="btn-scan">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2.5">
                                 <circle cx="11" cy="11" r="8" />
                                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
                             </svg> Scan Surface
                         </button>
-                        <button class="viz-btn-secondary" id="btn-reset" disabled>
+                        <button class="viz-btn-secondary" id="btn-reset">
                             Reset Workspace
                         </button>
                     </div>
 
                     <div class="viz-tray-actions" style="gap: 12px; display: flex;">
-                        <button class="viz-tray-icon-btn" id="btn-download" title="Download Render Image" disabled>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <button class="viz-tray-icon-btn" id="btn-download" title="Download Render Image">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                                 <polyline points="7 10 12 15 17 10"/>
                                 <line x1="12" y1="15" x2="12" y2="3"/>
                             </svg>
                         </button>
-                        <button class="viz-tray-icon-btn" id="btn-fullscreen" title="View Fullscreen" disabled>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <button class="viz-tray-icon-btn" id="btn-fullscreen" title="View Fullscreen">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
                             </svg>
                         </button>
@@ -2527,94 +2578,206 @@
 
     </div>
 
-    <!-- Premium Light-Mode Scene Ingest Modal Overlay -->
-    <div class="viz-ingest-modal-backdrop" id="ingest-modal-backdrop" style="display: flex;">
-        <div class="viz-ingest-modal-card">
-            <!-- Modal Header -->
-            <div class="ingest-modal-header">
-                <h3 class="ingest-modal-title">Import Scene</h3>
-                <button class="ingest-modal-close" id="ingest-modal-close-btn">&times;</button>
-            </div>
 
-            <!-- Modal Body (Sidebar + Content Panel) -->
-            <div class="ingest-modal-body">
-                <!-- Left Sidebar Navigation -->
-                <div class="ingest-modal-sidebar">
-                    <button class="ingest-sidebar-tab active" id="sidebar-tab-upload" title="Upload from Device">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" style="margin-bottom: 4px;">
-                            <rect x="3" y="3" width="18" height="18" rx="2" />
-                            <circle cx="8.5" cy="8.5" r="1.5" />
-                            <polyline points="21 15 16 10 5 21" />
-                        </svg>
-                        <span>Upload File</span>
-                    </button>
-                    <button class="ingest-sidebar-tab" id="sidebar-tab-camera" title="Use Live Camera">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" style="margin-bottom: 4px;">
-                            <path
-                                d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                            <circle cx="12" cy="13" r="4" />
-                        </svg>
-                        <span>Use Camera</span>
-                    </button>
-                </div>
-
-                <!-- Center Panel Content -->
-                <div class="ingest-modal-content">
-                    <!-- Panel 1: Upload Dropzone -->
-                    <div class="ingest-content-panel active" id="panel-upload-zone">
-                        <div class="ingest-drag-zone" id="ingest-drag-area">
-                            <input type="file" id="viz-file-input" accept="image/*" style="display: none;">
-                            <div class="ingest-drag-icon">
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="1.5">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                    <polyline points="17 8 12 3 7 8" />
-                                    <line x1="12" y1="3" x2="12" y2="15" />
-                                </svg>
-                            </div>
-                            <h4 class="ingest-drag-title">Drag & drop your room scene photo</h4>
-                            <p class="ingest-drag-sub">Supports JPEG, PNG up to 10MB</p>
-                            <button class="ingest-action-btn" id="ingest-btn-browse">Browse files</button>
-                        </div>
-                    </div>
-
-                    <!-- Panel 2: Live Camera Viewer -->
-                    <div class="ingest-content-panel" id="panel-camera-zone">
-                        <div class="ingest-camera-viewport">
-                            <video id="camera-video" autoplay playsinline></video>
-                            <div class="camera-stream-fallback" id="camera-fallback" style="display: none;">
-                                <span class="fallback-spinner"></span>
-                                <p>Initializing camera stream...</p>
-                            </div>
-
-                            <!-- Shutter button overlay on stream -->
-                            <div class="ingest-shutter-container">
-                                <button class="ingest-shutter-btn" id="ingest-shutter-btn" title="Capture Image">
-                                    <span class="shutter-dot"></span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="ingest-modal-footer">
-                <span class="ingest-footer-status" id="ingest-status-text">Ready to import scene file</span>
-                <div class="ingest-footer-actions">
-                    <button class="ingest-btn-secondary" id="ingest-btn-cancel">Cancel</button>
-                    <button class="ingest-btn-primary" id="ingest-btn-apply" disabled>Apply Scene</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Fullscreen Lightbox Overlay -->
     <div id="viz-fullscreen-overlay" class="viz-fullscreen-overlay">
         <img id="viz-fullscreen-img" class="viz-fullscreen-img" alt="Fullscreen Rendered Result">
         <button id="viz-fullscreen-close" class="viz-fullscreen-close" aria-label="Close Fullscreen">&times;</button>
+    </div>
+
+    <!-- ===== POST-LOGIN SPACE SETUP OVERLAY (login01.png background) ===== -->
+    <div id="space-setup-overlay" class="space-setup-overlay" style="display: none;">
+        <div class="space-setup-container">
+            <h1 class="space-setup-headline">Give your space a new look! Upload and redesign</h1>
+            <p class="space-setup-subtext">Choose how you want to import your room scene to start visualising marble & tiles.</p>
+
+            <div class="space-setup-cards-grid">
+                <!-- Option 1: Upload File -->
+                <div class="space-setup-card" id="btn-space-upload">
+                    <div class="space-card-icon-wrap">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                    <span class="space-card-title">Upload your own space</span>
+                    <span class="space-card-desc">Select room photo from device (JPG, PNG)</span>
+                    <input type="file" id="space-setup-file-input" accept="image/jpeg,image/png,image/webp" style="display: none;">
+                </div>
+
+                <!-- Option 2: Take Live Photo -->
+                <div class="space-setup-card" id="btn-space-camera">
+                    <div class="space-card-icon-wrap">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                    </div>
+                    <span class="space-card-title">Take a live photo</span>
+                    <span class="space-card-desc">Capture your room directly using camera</span>
+                </div>
+            </div>
+
+            <!-- Sample Room Presets Fallback -->
+            <div class="space-presets-block">
+                <span class="space-presets-label">Don't have a photo right now? Try a sample scene:</span>
+                <div class="space-presets-pills">
+                    <button class="space-preset-pill" data-preset="hall">Living Room Floor</button>
+                    <button class="space-preset-pill" data-preset="wall">Bathroom Wall</button>
+                    <button class="space-preset-pill" data-preset="kitchen">Kitchen Countertop</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== LIVE CAMERA CAPTURE MODAL ===== -->
+    <div id="camera-modal-overlay" class="camera-modal-overlay" style="display: none;">
+        <div class="camera-modal-card">
+            <div class="camera-modal-header">
+                <div class="camera-modal-title">
+                    <span class="camera-live-dot"></span>
+                    <span>Live Room Viewfinder</span>
+                </div>
+                <button id="btn-camera-close" class="camera-close-btn" type="button" aria-label="Close Camera">&times;</button>
+            </div>
+
+            <div class="camera-viewport-wrap">
+                <video id="camera-video-feed" autoplay playsinline muted></video>
+                
+                <!-- Viewfinder overlays -->
+                <div class="camera-viewfinder-grid">
+                    <div class="vf-corner top-left"></div>
+                    <div class="vf-corner top-right"></div>
+                    <div class="vf-corner bottom-left"></div>
+                    <div class="vf-corner bottom-right"></div>
+                </div>
+                
+                <div id="camera-status-text" class="camera-status-overlay">Initializing camera feed...</div>
+            </div>
+
+            <div class="camera-modal-controls">
+                <button id="btn-camera-snap" class="camera-snap-btn" type="button" title="Capture Room Photo">
+                    <span class="snap-inner-circle"></span>
+                </button>
+            </div>
+            
+            <!-- Hidden native camera input fallback for mobile devices -->
+            <input type="file" id="native-camera-input" accept="image/*" capture="environment" style="display: none;">
+        </div>
+    </div>
+
+    <!-- ===== AUTHENTICATION GATEWAY MODAL (Login / Register) ===== -->
+    <div id="auth-modal-overlay" class="auth-modal-overlay">
+        <div class="auth-card-container">
+            <!-- LEFT: Architectural Image Visual Banner (using loginhq.png) -->
+            <div class="auth-banner-side" style="background-image: url('assets/loginhq.png');">
+                <div class="auth-banner-overlay"></div>
+                <div class="auth-banner-content">
+                    <p class="auth-banner-headline">Design your future, one blueprint at a time.</p>
+                    <p class="auth-banner-sub">Join a community of architects shaping tomorrow.</p>
+                    <span class="auth-banner-foot">Structure — Your gateway to architectural excellence.</span>
+                </div>
+            </div>
+
+            <!-- RIGHT: Form Panel (Switches between Login and Registration) -->
+            <div class="auth-form-side">
+
+                <!-- Notice / Notification Box -->
+                <div id="auth-notice-box" class="auth-notice-box" style="display: none;">
+                    <span id="auth-notice-text"></span>
+                </div>
+
+                <!-- LOGIN VIEW -->
+                <div id="auth-view-login" class="auth-view-panel">
+                    <div class="auth-header">
+                        <h2 class="auth-title">Welcome back</h2>
+                        <p class="auth-subtitle">Sign in to access UMATRADERSS AI Design Studio.</p>
+                    </div>
+
+                    <form id="form-login">
+                        <div class="auth-input-group">
+                            <label class="auth-label" for="auth-login-identifier">Phone number or email address *</label>
+                            <input type="text" id="auth-login-identifier" class="auth-input" placeholder="e.g. +91 98765 43210 or andrew@example.com" required autocomplete="username">
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label class="auth-label" for="auth-login-password">Password *</label>
+                            <input type="password" id="auth-login-password" class="auth-input" placeholder="••••••••••••" required autocomplete="current-password">
+                        </div>
+
+                        <button type="submit" id="btn-login-submit" class="auth-submit-btn">
+                            Sign In ↗
+                        </button>
+                    </form>
+
+                    <div class="auth-footer-toggle">
+                        <span>Don't have an account?</span>
+                        <button type="button" id="btn-show-register" class="auth-link-btn">Sign Up</button>
+                    </div>
+                </div>
+
+                <!-- REGISTRATION VIEW -->
+                <div id="auth-view-register" class="auth-view-panel" style="display: none;">
+                    <div class="auth-header">
+                        <h2 class="auth-title">Create your account</h2>
+                        <p class="auth-subtitle">Join a network of visionaries and unlock premium design resources tailored for you.</p>
+                    </div>
+
+                    <form id="form-register">
+                        <div class="auth-input-group">
+                            <label class="auth-label" for="auth-reg-name">Full name *</label>
+                            <input type="text" id="auth-reg-name" class="auth-input" placeholder="Andrew Thomas" required autocomplete="name">
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label class="auth-label" for="auth-reg-phone">Phone number *</label>
+                            <input type="tel" id="auth-reg-phone" class="auth-input" placeholder="e.g. +91 98765 43210" required autocomplete="tel">
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label class="auth-label" for="auth-reg-email">Email address *</label>
+                            <input type="email" id="auth-reg-email" class="auth-input" placeholder="e.g. andrew@example.com" required autocomplete="email">
+                        </div>
+
+                        <div class="auth-input-row">
+                            <div class="auth-input-group">
+                                <label class="auth-label" for="auth-reg-password">Password *</label>
+                                <input type="password" id="auth-reg-password" class="auth-input" placeholder="••••••••••••" required autocomplete="new-password">
+                            </div>
+                            <div class="auth-input-group">
+                                <label class="auth-label" for="auth-reg-confirm">Confirm password *</label>
+                                <input type="password" id="auth-reg-confirm" class="auth-input" placeholder="••••••••••••" required autocomplete="new-password">
+                            </div>
+                        </div>
+                        <p class="auth-field-hint">Password must be at least 6 characters.</p>
+
+                        <button type="submit" id="btn-reg-submit" class="auth-submit-btn">
+                            Create account
+                        </button>
+                    </form>
+
+                    <div class="auth-footer-toggle">
+                        <span>Already have an account?</span>
+                        <button type="button" id="btn-show-login" class="auth-link-btn">Sign In</button>
+                    </div>
+
+                    <p class="auth-terms-note">
+                        By creating an account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Image-Only Fullscreen Lightbox Overlay -->
+    <div id="viz-fullscreen-overlay" class="viz-fullscreen-modal-overlay">
+        <button id="viz-fullscreen-close" class="viz-fullscreen-close-btn" title="Close Fullscreen (Esc)">✕</button>
+        <div class="viz-fullscreen-img-card">
+            <img id="viz-fullscreen-img" src="" alt="Fullscreen Room Visualization">
+        </div>
     </div>
 
     <!-- Script loading -->
