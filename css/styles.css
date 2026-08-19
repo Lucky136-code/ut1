@@ -5100,3 +5100,69 @@ button.viz-segment-btn {
     color: #000000 !important;
     transform: scale(1.1) rotate(90deg) !important;
 }
+
+/* =============================================
+   HERO METADATA & ACTION BUTTONS STYLING
+   ============================================= */
+.hero-metadata-table {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    max-width: 480px !important;
+    margin-top: 10px !important;
+}
+
+.meta-row {
+    display: flex !important;
+    gap: 16px !important;
+    align-items: flex-start !important;
+}
+
+.meta-label {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    color: #66666e !important;
+    min-width: 65px !important;
+}
+
+.meta-value {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.92rem !important;
+    font-weight: 500 !important;
+    line-height: 1.55 !important;
+    color: #222226 !important;
+}
+
+.hero-actions {
+    display: flex !important;
+    gap: 14px !important;
+    margin-top: 16px !important;
+    flex-wrap: wrap !important;
+}
+
+.hero-link {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    color: #111113 !important;
+    text-decoration: none !important;
+    padding: 10px 22px !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border: 1.5px solid rgba(0, 0, 0, 0.12) !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.hero-link:hover {
+    background: #111113 !important;
+    color: #ffffff !important;
+    border-color: #111113 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+}
