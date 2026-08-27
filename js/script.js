@@ -149,81 +149,102 @@ document.addEventListener("DOMContentLoaded", () => {
         .to(".sequence-3, .sequence-3-bg", { opacity: 0, scale: 1.1, filter: "blur(10px)", ease: "power2.in", duration: 0.1 }, 0.9)
         .to(canvas, { opacity: 0, ease: "power1.in", duration: 0.1 }, 0.95);
 
-    // === REDESIGN YOUR SPACE — 4-STEP SCROLL STEPPER ===
-    const redesignSec = document.getElementById('redesign-steps');
-    if (redesignSec) {
-        const progressFill = document.getElementById('stepper-progress-fill');
-        const stepNodes = redesignSec.querySelectorAll('.step-node');
-        const stepCards = redesignSec.querySelectorAll('.step-card-item');
+    // === BOOK PAGE-TURNING ANIMATION ===
+    const bookSection = document.getElementById('redesign-steps');
+    if (bookSection) {
+        const turnPages = bookSection.querySelectorAll('.book-turn');
+        const stepDots = bookSection.querySelectorAll('.step-dot');
 
-        function updateStepState(stepIndex) {
-            stepNodes.forEach(node => {
-                const stepNum = parseInt(node.dataset.step, 10);
-                if (stepNum === stepIndex) {
-                    node.classList.add('active');
-                    node.classList.remove('completed');
-                } else if (stepNum < stepIndex) {
-                    node.classList.remove('active');
-                    node.classList.add('completed');
-                } else {
-                    node.classList.remove('active', 'completed');
+        // Turn page timing: 3 turns distributed across scroll progress
+        // Each turn takes ~25% of progress, with rest gaps between
+        const turnSegments = [
+            { start: 0.06, end: 0.30 },   // Turn 1: Step 1 → Step 2
+            { start: 0.37, end: 0.62 },   // Turn 2: Step 2 → Step 3
+            { start: 0.69, end: 0.94 }    // Turn 3: Step 3 → Step 4
+        ];
+
+        // Map data-turn to turn page elements
+        const turnMap = {};
+        turnPages.forEach(page => {
+            turnMap[page.dataset.turn] = page;
+        });
+
+        // Original z-indices (right side stacking: turn-1 on top)
+        const originalZ = { '1': 3, '2': 2, '3': 1 };
+        // Z-indices after flipping (left side stacking: most recently turned on top)
+        const flippedZ = { '1': 10, '2': 11, '3': 12 };
+
+        function updateBook(progress) {
+            // Process each turn page
+            for (let i = 0; i < 3; i++) {
+                const turnNum = String(i + 1);
+                const page = turnMap[turnNum];
+                if (!page) continue;
+
+                const seg = turnSegments[i];
+                const shadow = page.querySelector('.turn-shadow');
+
+                let turnProgress = 0;
+                if (progress >= seg.end) {
+                    turnProgress = 1;
+                } else if (progress > seg.start) {
+                    // Smooth easing for the turn
+                    const raw = (progress - seg.start) / (seg.end - seg.start);
+                    // Apply ease-in-out cubic for smoother flip feel
+                    turnProgress = raw < 0.5
+                        ? 4 * raw * raw * raw
+                        : 1 - Math.pow(-2 * raw + 2, 3) / 2;
                 }
-            });
 
-            stepCards.forEach(card => {
-                const cardNum = parseInt(card.dataset.stepCard, 10);
-                if (cardNum === stepIndex) {
-                    card.classList.add('active');
+                const rotation = turnProgress * -180;
+                page.style.transform = `rotateY(${rotation}deg)`;
+
+                // Z-index management: swap when page crosses midpoint
+                if (rotation < -90) {
+                    page.style.zIndex = flippedZ[turnNum];
                 } else {
-                    card.classList.remove('active');
+                    page.style.zIndex = originalZ[turnNum];
+                }
+
+                // Shadow intensity: strongest at -90deg (perpendicular)
+                if (shadow) {
+                    const shadowIntensity = Math.sin(Math.abs(rotation) * Math.PI / 180);
+                    shadow.style.opacity = shadowIntensity * 0.8;
+                }
+            }
+
+            // Update step indicator dots
+            let currentStep = 1;
+            if (progress >= 0.82) {
+                currentStep = 4;
+            } else if (progress >= 0.50) {
+                currentStep = 3;
+            } else if (progress >= 0.18) {
+                currentStep = 2;
+            }
+
+            stepDots.forEach(dot => {
+                const dotNum = parseInt(dot.dataset.dot, 10);
+                if (dotNum === currentStep) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
                 }
             });
         }
 
+        // Initialize book state
+        updateBook(0);
+
+        // ScrollTrigger for scroll-driven page turning
         ScrollTrigger.create({
-            trigger: redesignSec,
+            trigger: bookSection,
             start: "top top",
             end: "bottom bottom",
-            scrub: true,
+            scrub: 0.3,
             onUpdate: (self) => {
-                const progress = self.progress;
-                if (progressFill) {
-                    if (window.innerWidth > 900) {
-                        progressFill.style.height = (progress * 100) + '%';
-                        progressFill.style.width = '3px';
-                    } else {
-                        progressFill.style.width = (progress * 100) + '%';
-                        progressFill.style.height = '3px';
-                    }
-                }
-
-                let activeStep = 1;
-                if (progress >= 0.75) {
-                    activeStep = 4;
-                } else if (progress >= 0.5) {
-                    activeStep = 3;
-                } else if (progress >= 0.25) {
-                    activeStep = 2;
-                } else {
-                    activeStep = 1;
-                }
-
-                updateStepState(activeStep);
+                updateBook(self.progress);
             }
-        });
-
-        stepNodes.forEach(node => {
-            node.addEventListener('click', () => {
-                const targetStep = parseInt(node.dataset.step, 10);
-                updateStepState(targetStep);
-                const secTop = redesignSec.offsetTop;
-                const secHeight = redesignSec.offsetHeight - window.innerHeight;
-                const targetProgress = (targetStep - 1) / 3;
-                window.scrollTo({
-                    top: secTop + (secHeight * targetProgress),
-                    behavior: 'smooth'
-                });
-            });
         });
     }
 

@@ -16,7 +16,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&family=Space+Mono:wght@400;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=5">
+    <link rel="stylesheet" href="css/styles.css?v=7">
 
 
     <!-- Libraries for Million Dollar Experience -->
@@ -203,114 +203,123 @@
         </div>
     </section>
 
-    <!-- ===== REDESIGN YOUR SPACE: 4-STEP INTERACTIVE SCROLL STEPPER (VERTICAL LAYOUT) ===== -->
-    <section id="redesign-steps" class="redesign-section">
-        <div class="redesign-sticky">
-            <!-- Center Top Title -->
-            <div class="redesign-header">
-                <h2 class="redesign-title">Simple &amp; Easy Steps to Follow</h2>
-                <p class="redesign-subtitle">Transform your space in 4 simple steps</p>
-            </div>
+    <!-- ===== BOOK PAGE-TURNING STEPS SECTION ===== -->
+    <section id="redesign-steps" class="book-section">
+        <div class="book-sticky">
+            <h2 class="book-section-title">Simple &amp; Easy Steps to Follow</h2>
+            <p class="book-section-subtitle">Transform your space in 4 simple steps</p>
 
-            <!-- Split Container: Left Vertical Stepper + Center Large Step Image + Right Actions -->
-            <div class="redesign-body">
-                <!-- LEFT COLUMN: Vertical Stepper -->
-                <div class="redesign-stepper-wrap vertical">
-                    <div class="redesign-stepper-track vertical">
-                        <div class="stepper-progress-line vertical" id="stepper-progress-fill"></div>
+            <div class="book-scene">
+                <div class="book" id="book-main">
+                    <div class="book-spine"></div>
 
-                        <div class="step-node active" data-step="1">
-                            <div class="step-circle">
-                                <span class="step-num">1</span>
-                                <svg class="step-check" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="3" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
+                    <!-- Static base: Step 1 left (visible before any turn) -->
+                    <div class="book-page-static page-left" data-static-page="1">
+                        <div class="page-inner">
+                            <span class="page-watermark-num">01</span>
+                            <h3 class="page-left-title">Upload Space</h3>
+                            <div class="page-img-wrap">
+                                <img src="assets/step1.png" alt="Step 1: Upload Space" class="page-step-img">
                             </div>
-                            <span class="step-label">Upload Space</span>
                         </div>
+                    </div>
+                    <!-- Static base: Step 4 right (visible after all turns) -->
+                    <div class="book-page-static page-right" data-static-page="4">
+                        <div class="page-inner page-inner-right">
+                            <span class="page-desc-label">Step Four</span>
+                            <h4 class="page-desc-heading">Craft &amp; Deliver</h4>
+                            <p class="page-desc-text">Once you've finalized your selection, we handle everything — from precise slab cutting and quality inspection to white-glove delivery and professional installation at your doorstep.</p>
+                            <div class="page-accent-line"></div>
+                        </div>
+                    </div>
 
-                        <div class="step-node" data-step="2">
-                            <div class="step-circle">
-                                <span class="step-num">2</span>
-                                <svg class="step-check" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="3" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
+                    <!-- Turn 3: front=Step3 Right, back=Step4 Left -->
+                    <div class="book-turn" data-turn="3">
+                        <div class="turn-face turn-front">
+                            <div class="page-inner page-inner-right">
+                                <span class="page-desc-label">Step Three</span>
+                                <h4 class="page-desc-heading">AI Visualizer</h4>
+                                <p class="page-desc-text">Watch your room transform in real-time as our AI engine renders your chosen stone with photorealistic accuracy. See exactly how each slab will look — no guesswork, no surprises.</p>
+                                <div class="page-accent-line"></div>
                             </div>
-                            <span class="step-label">Choose Stone</span>
                         </div>
-
-                        <div class="step-node" data-step="3">
-                            <div class="step-circle">
-                                <span class="step-num">3</span>
-                                <svg class="step-check" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="3" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
+                        <div class="turn-face turn-back">
+                            <div class="page-inner">
+                                <span class="page-watermark-num">04</span>
+                                <h3 class="page-left-title">Craft &amp; Deliver</h3>
+                                <div class="page-img-wrap">
+                                    <img src="assets/step4.png" alt="Step 4: Craft and Deliver" class="page-step-img">
+                                </div>
                             </div>
-                            <span class="step-label">AI Visualizer</span>
                         </div>
+                        <div class="turn-shadow"></div>
+                    </div>
 
-                        <div class="step-node" data-step="4">
-                            <div class="step-circle">
-                                <span class="step-num">4</span>
-                                <svg class="step-check" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="3" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
+                    <!-- Turn 2: front=Step2 Right, back=Step3 Left -->
+                    <div class="book-turn" data-turn="2">
+                        <div class="turn-face turn-front">
+                            <div class="page-inner page-inner-right">
+                                <span class="page-desc-label">Step Two</span>
+                                <h4 class="page-desc-heading">Choose Stone</h4>
+                                <p class="page-desc-text">Browse our curated collection of premium Italian marbles, exotic granites, and natural stones. Filter by color, origin, pattern, and finish to find the perfect match for your design vision.</p>
+                                <div class="page-accent-line"></div>
                             </div>
-                            <span class="step-label">Craft & Deliver</span>
                         </div>
-                    </div>
-                </div>
-
-                <!-- CENTER COLUMN: Large Step Image Showcase -->
-                <div class="redesign-stage">
-                    <!-- STEP 1 CONTENT -->
-                    <div class="step-card-item active" data-step-card="1">
-                        <div class="step-full-img-wrap">
-                            <img src="assets/step1.png" alt="Step 1: Upload Space" class="step-full-img">
+                        <div class="turn-face turn-back">
+                            <div class="page-inner">
+                                <span class="page-watermark-num">03</span>
+                                <h3 class="page-left-title">AI Visualizer</h3>
+                                <div class="page-img-wrap">
+                                    <img src="assets/step3.png" alt="Step 3: AI Visualizer" class="page-step-img">
+                                </div>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- STEP 2 CONTENT -->
-                    <div class="step-card-item" data-step-card="2">
-                        <div class="step-full-img-wrap">
-                            <img src="assets/step2.png" alt="Step 2: Choose Stone" class="step-full-img">
-                        </div>
+                        <div class="turn-shadow"></div>
                     </div>
 
-                    <!-- STEP 3 CONTENT -->
-                    <div class="step-card-item" data-step-card="3">
-                        <div class="step-full-img-wrap">
-                            <img src="assets/step3.png" alt="Step 3: AI Visualizer" class="step-full-img">
+                    <!-- Turn 1: front=Step1 Right, back=Step2 Left -->
+                    <div class="book-turn" data-turn="1">
+                        <div class="turn-face turn-front">
+                            <div class="page-inner page-inner-right">
+                                <span class="page-desc-label">Step One</span>
+                                <h4 class="page-desc-heading">Upload Space</h4>
+                                <p class="page-desc-text">Upload a photo of your room — whether it's a hall, kitchen, or bathroom. Our AI instantly maps the geometry, surfaces, and lighting of your space, creating a precise digital twin ready for visualization.</p>
+                                <div class="page-accent-line"></div>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- STEP 4 CONTENT -->
-                    <div class="step-card-item" data-step-card="4">
-                        <div class="step-full-img-wrap">
-                            <img src="assets/step4.png" alt="Step 4: Craft & Deliver" class="step-full-img">
+                        <div class="turn-face turn-back">
+                            <div class="page-inner">
+                                <span class="page-watermark-num">02</span>
+                                <h3 class="page-left-title">Choose Stone</h3>
+                                <div class="page-img-wrap">
+                                    <img src="assets/step2.png" alt="Step 2: Choose Stone" class="page-step-img">
+                                </div>
+                            </div>
                         </div>
+                        <div class="turn-shadow"></div>
                     </div>
-                </div>
-
-                <!-- RIGHT COLUMN: Action Pill Buttons (Aligned in Right Center) -->
-                <div class="redesign-actions-right">
-                    <a href="javascript:void(0)" class="glass-action-btn glass-btn-blue ai-viz-hover-btn"
-                        data-hover-text="🔒 Coming Soon">
-                        <span class="btn-text">✦ AI Visualizer</span>
-                    </a>
-                    <a href="tel:9304277935" class="glass-action-btn glass-btn-peach">
-                        <span class="btn-text">📞 Call Us</span>
-                    </a>
                 </div>
             </div>
+
+            <!-- Step Indicator -->
+            <div class="book-step-indicator">
+                <div class="step-dot active" data-dot="1"><span>01</span></div>
+                <div class="step-dot" data-dot="2"><span>02</span></div>
+                <div class="step-dot" data-dot="3"><span>03</span></div>
+                <div class="step-dot" data-dot="4"><span>04</span></div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="book-actions">
+                <a href="javascript:void(0)" class="glass-action-btn glass-btn-blue ai-viz-hover-btn"
+                    data-hover-text="🔒 Coming Soon">
+                    <span class="btn-text">✦ AI Visualizer</span>
+                </a>
+                <a href="tel:9304277935" class="glass-action-btn glass-btn-peach">
+                    <span class="btn-text">📞 Call Us</span>
+                </a>
+            </div>
+      
         </div>
     </section>
 
