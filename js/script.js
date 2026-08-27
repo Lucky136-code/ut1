@@ -666,5 +666,53 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // === FLOATING GLASS NAV BAR & ACTIVE SECTION TRACKING ===
+    const floatingNav = document.getElementById('floating-glass-nav');
+    const sectionsToTrack = [
+        { id: 'redesign-steps', navEl: document.querySelector('.glass-nav-item[data-section="redesign-steps"]') },
+        { id: 'about', navEl: document.querySelector('.glass-nav-item[data-section="about"]') },
+        { id: 'faq', navEl: document.querySelector('.glass-nav-item[data-section="faq"]') },
+        { id: 'contact', navEl: document.querySelector('.glass-nav-item[data-section="contact"]') }
+    ];
+
+    if (floatingNav) {
+        ScrollTrigger.create({
+            trigger: "#ai-feature-showcase",
+            start: "top 60%",
+            onEnter: () => floatingNav.classList.add('nav-visible'),
+            onLeaveBack: () => floatingNav.classList.remove('nav-visible')
+        });
+
+        sectionsToTrack.forEach(item => {
+            const sec = document.getElementById(item.id);
+            if (sec && item.navEl) {
+                ScrollTrigger.create({
+                    trigger: sec,
+                    start: "top 40%",
+                    end: "bottom 40%",
+                    onToggle: (self) => {
+                        if (self.isActive) {
+                            sectionsToTrack.forEach(s => s.navEl && s.navEl.classList.remove('active'));
+                            item.navEl.classList.add('active');
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    // === FAQ ACCORDION INTERACTION ===
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.addEventListener('click', () => {
+            const item = q.parentElement;
+            const isOpen = item.classList.contains('active');
+            document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+            if (!isOpen) {
+                item.classList.add('active');
+            }
+        });
+    });
+
 });
+
 
