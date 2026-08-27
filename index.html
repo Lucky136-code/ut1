@@ -103,7 +103,9 @@
                     </div>
                     <div class="hero-actions">
                         <a href="#collections" class="hero-link">Request Information ↗</a>
-                        <a href="visualizer.html" class="hero-link" style="text-decoration:none;">Launch AI Visualizer ↗</a>
+                        <a href="javascript:void(0)" class="hero-link ai-viz-hover-btn" data-hover-text="🔒 Coming Soon" style="text-decoration:none;">
+                            <span class="btn-text">Launch AI Visualizer</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -148,6 +150,132 @@
         <div class="scroll-indicator">
             <div class="scroll-line"></div>
             <span class="scroll-text">Scroll</span>
+        </div>
+    </section>
+
+    <!-- ===== AI VISUALIZER FEATURE SHOWCASE SECTION (PAGE 2) ===== -->
+    <section id="ai-feature-showcase" class="ai-showcase-section">
+        <!-- Top Center Main Heading (Matching Screenshot 2) -->
+        <div class="ai-showcase-top-header">
+            <h2 class="ai-showcase-main-title">Your Space, Your Stone, Your Vision!</h2>
+        </div>
+
+        <div class="ai-showcase-container">
+            <!-- Left Column: Clean Editorial Explanation & Request Consultancy -->
+            <div class="ai-showcase-content">
+                <h3 class="ai-showcase-subhead">Redesign your space in real-time 3D</h3>
+                <p class="ai-showcase-desc">
+                    Experience your room transformed with authentic Makrana marble and premium granites. Our proprietary AI spatial engine gives you real-time 3D device visualization, automated slab quantity calculations, and exact tile block cost estimation to eliminate guesswork and waste.
+                </p>
+
+                <!-- Bottom Action Box: Request Consultancy (3D Frosted Glass Pill) -->
+                <div class="ai-showcase-cta">
+                    <a href="https://wa.me/919336366388?text=Hello%20Uma%20Traders%2C%20I%20would%20like%20to%20request%20a%20stone%20consultancy%20for%20my%20space." target="_blank" class="glass-action-btn glass-btn-peach showcase-consult-btn">
+                        <span>📞 Request Consultancy</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Column: Visual Sample Presentation -->
+            <div class="ai-showcase-visual">
+                <div class="visusample-card-wrap">
+                    <img src="assets/visusample.png" alt="Uma Traders AI Visualizer Demo Interface" class="visusample-img">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== REDESIGN YOUR SPACE: 4-STEP INTERACTIVE SCROLL STEPPER (VERTICAL LAYOUT) ===== -->
+    <section id="redesign-steps" class="redesign-section">
+        <div class="redesign-sticky">
+            <!-- Center Top Title -->
+            <div class="redesign-header">
+                <h2 class="redesign-title">Simple &amp; Easy Steps to Follow</h2>
+                <p class="redesign-subtitle">Transform your space in 4 simple steps</p>
+            </div>
+
+            <!-- Split Container: Left Vertical Stepper + Center Large Step Image + Right Actions -->
+            <div class="redesign-body">
+                <!-- LEFT COLUMN: Vertical Stepper -->
+                <div class="redesign-stepper-wrap vertical">
+                    <div class="redesign-stepper-track vertical">
+                        <div class="stepper-progress-line vertical" id="stepper-progress-fill"></div>
+                        
+                        <div class="step-node active" data-step="1">
+                            <div class="step-circle">
+                                <span class="step-num">1</span>
+                                <svg class="step-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <span class="step-label">Upload Space</span>
+                        </div>
+
+                        <div class="step-node" data-step="2">
+                            <div class="step-circle">
+                                <span class="step-num">2</span>
+                                <svg class="step-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <span class="step-label">Choose Stone</span>
+                        </div>
+
+                        <div class="step-node" data-step="3">
+                            <div class="step-circle">
+                                <span class="step-num">3</span>
+                                <svg class="step-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <span class="step-label">AI Visualizer</span>
+                        </div>
+
+                        <div class="step-node" data-step="4">
+                            <div class="step-circle">
+                                <span class="step-num">4</span>
+                                <svg class="step-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <span class="step-label">Craft & Deliver</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CENTER COLUMN: Large Step Image Showcase -->
+                <div class="redesign-stage">
+                    <!-- STEP 1 CONTENT -->
+                    <div class="step-card-item active" data-step-card="1">
+                        <div class="step-full-img-wrap">
+                            <img src="assets/step1.png" alt="Step 1: Upload Space" class="step-full-img">
+                        </div>
+                    </div>
+
+                    <!-- STEP 2 CONTENT -->
+                    <div class="step-card-item" data-step-card="2">
+                        <div class="step-full-img-wrap">
+                            <img src="assets/step2.png" alt="Step 2: Choose Stone" class="step-full-img">
+                        </div>
+                    </div>
+
+                    <!-- STEP 3 CONTENT -->
+                    <div class="step-card-item" data-step-card="3">
+                        <div class="step-full-img-wrap">
+                            <img src="assets/step3.png" alt="Step 3: AI Visualizer" class="step-full-img">
+                        </div>
+                    </div>
+
+                    <!-- STEP 4 CONTENT -->
+                    <div class="step-card-item" data-step-card="4">
+                        <div class="step-full-img-wrap">
+                            <img src="assets/step4.png" alt="Step 4: Craft & Deliver" class="step-full-img">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Action Pill Buttons (Aligned in Right Center) -->
+                <div class="redesign-actions-right">
+                    <a href="javascript:void(0)" class="glass-action-btn glass-btn-blue ai-viz-hover-btn" data-hover-text="🔒 Coming Soon">
+                        <span class="btn-text">✦ AI Visualizer</span>
+                    </a>
+                    <a href="tel:9304277935" class="glass-action-btn glass-btn-peach">
+                        <span class="btn-text">📞 Call Us</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -351,21 +479,6 @@
             <p>&copy; 2026 UMATRADERSS. All Rights Reserved.</p>
         </div>
     </footer>
-
-    <!-- Fixed Floating Center Bottom CTA Bar -->
-    <div class="floating-cta-bar">
-        <a href="visualizer.html" class="floating-cta-btn floating-cta-viz">
-            <span class="btn-icon">✦</span> AI Visualizer
-        </a>
-        <a href="tel:9304277935" class="floating-cta-btn floating-cta-call">
-            <span class="btn-icon">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;">
-                    <path
-                        d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.57a1 1 0 00-1.01.24l-2.2 2.2a15.045 15.045 0 01-6.59-6.59l2.2-2.2c.28-.28.36-.67.25-1.02A11.36 11.36 0 018.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c-.01-.55-.46-1-1.01-1z" />
-                </svg>
-            </span> Call Us
-        </a>
-    </div>
 
     <script src="js/script.js?v=4"></script>
     <script src="js/shield.js?v=1"></script>

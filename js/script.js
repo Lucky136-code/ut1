@@ -114,6 +114,84 @@ document.addEventListener("DOMContentLoaded", () => {
         .to(".sequence-3, .sequence-3-bg", { opacity: 0, scale: 1.1, filter: "blur(10px)", ease: "power2.in", duration: 0.1 }, 0.9)
         .to(canvas, { opacity: 0, ease: "power1.in", duration: 0.1 }, 0.95);
 
+    // === REDESIGN YOUR SPACE — 4-STEP SCROLL STEPPER ===
+    const redesignSec = document.getElementById('redesign-steps');
+    if (redesignSec) {
+        const progressFill = document.getElementById('stepper-progress-fill');
+        const stepNodes = redesignSec.querySelectorAll('.step-node');
+        const stepCards = redesignSec.querySelectorAll('.step-card-item');
+
+        function updateStepState(stepIndex) {
+            stepNodes.forEach(node => {
+                const stepNum = parseInt(node.dataset.step, 10);
+                if (stepNum === stepIndex) {
+                    node.classList.add('active');
+                    node.classList.remove('completed');
+                } else if (stepNum < stepIndex) {
+                    node.classList.remove('active');
+                    node.classList.add('completed');
+                } else {
+                    node.classList.remove('active', 'completed');
+                }
+            });
+
+            stepCards.forEach(card => {
+                const cardNum = parseInt(card.dataset.stepCard, 10);
+                if (cardNum === stepIndex) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+        }
+
+        ScrollTrigger.create({
+            trigger: redesignSec,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: true,
+            onUpdate: (self) => {
+                const progress = self.progress;
+                if (progressFill) {
+                    if (window.innerWidth > 900) {
+                        progressFill.style.height = (progress * 100) + '%';
+                        progressFill.style.width = '3px';
+                    } else {
+                        progressFill.style.width = (progress * 100) + '%';
+                        progressFill.style.height = '3px';
+                    }
+                }
+
+                let activeStep = 1;
+                if (progress >= 0.75) {
+                    activeStep = 4;
+                } else if (progress >= 0.5) {
+                    activeStep = 3;
+                } else if (progress >= 0.25) {
+                    activeStep = 2;
+                } else {
+                    activeStep = 1;
+                }
+
+                updateStepState(activeStep);
+            }
+        });
+
+        stepNodes.forEach(node => {
+            node.addEventListener('click', () => {
+                const targetStep = parseInt(node.dataset.step, 10);
+                updateStepState(targetStep);
+                const secTop = redesignSec.offsetTop;
+                const secHeight = redesignSec.offsetHeight - window.innerHeight;
+                const targetProgress = (targetStep - 1) / 3;
+                window.scrollTo({
+                    top: secTop + (secHeight * targetProgress),
+                    behavior: 'smooth'
+                });
+            });
+        });
+    }
+
     // === SPLIT TEXT REVEAL & SCROLL ANIMATIONS ===
     document.querySelectorAll('.reveal-text').forEach(el => {
         const text = el.innerText;
@@ -533,6 +611,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (footerCta) {
         gsap.from(footerCta, { scrollTrigger: { trigger: footerCta, start: "top 85%" }, y: 60, opacity: 0, duration: 1.5, ease: "power3.out" });
     }
+
+    // === AI VISUALIZER HOVER BUTTON HANDLER ===
+    document.querySelectorAll('.ai-viz-hover-btn').forEach(btn => {
+        btn.addEventListener('click', e => e.preventDefault());
+    });
 
 
 });
