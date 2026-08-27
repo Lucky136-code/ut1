@@ -676,8 +676,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
 
     if (floatingNav) {
+        // Taskbar ONLY appears starting from #redesign-steps (Steps page). On 2nd page (#ai-feature-showcase) it shows no signs.
         ScrollTrigger.create({
-            trigger: "#ai-feature-showcase",
+            trigger: "#redesign-steps",
             start: "top 60%",
             onEnter: () => floatingNav.classList.add('nav-visible'),
             onLeaveBack: () => floatingNav.classList.remove('nav-visible')
@@ -701,15 +702,20 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // === FAQ ACCORDION INTERACTION ===
-    document.querySelectorAll('.faq-question').forEach(q => {
-        q.addEventListener('click', () => {
-            const item = q.parentElement;
-            const isOpen = item.classList.contains('active');
-            document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
-            if (!isOpen) {
-                item.classList.add('active');
-            }
+    // === FAQ CARD CLICK & MOUSELEAVE AUTO-CLOSE INTERACTION ===
+    document.querySelectorAll('.faq-card').forEach(card => {
+        const header = card.querySelector('.faq-card-header');
+        if (header) {
+            header.addEventListener('click', () => {
+                const isOpen = card.classList.contains('open');
+                document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
+                if (!isOpen) {
+                    card.classList.add('open');
+                }
+            });
+        }
+        card.addEventListener('mouseleave', () => {
+            card.classList.remove('open');
         });
     });
 
