@@ -5454,14 +5454,14 @@ button.viz-segment-btn {
     filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.10));
 }
 
-/* Right Page: Description Label ("STEP ONE / TWO / THREE / FOUR") - Hero Section Accent Color */
+/* Right Page: Description Label ("STEP ONE / TWO / THREE / FOUR") - Pencil Lead Graphite Color */
 .page-desc-label {
     font-family: 'Plus Jakarta Sans', sans-serif !important;
     font-size: 0.78rem !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     letter-spacing: 0.22em !important;
-    color: var(--accent-gold, #c5a880) !important;
+    color: #71717a !important;
     margin: 0;
 }
 
@@ -5491,7 +5491,7 @@ button.viz-segment-btn {
 .page-accent-line {
     width: 44px;
     height: 3px;
-    background: linear-gradient(90deg, var(--accent-gold, #c5a880), #e2e8f0);
+    background: linear-gradient(90deg, #71717a, #e2e8f0);
     border-radius: 3px;
     margin-top: 4px;
 }
