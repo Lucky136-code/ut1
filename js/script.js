@@ -670,8 +670,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const floatingNav = document.getElementById('floating-glass-nav');
     const sectionsToTrack = [
         { id: 'redesign-steps', navEl: document.querySelector('.glass-nav-item[data-section="redesign-steps"]') },
-        { id: 'about', navEl: document.querySelector('.glass-nav-item[data-section="about"]') },
-        { id: 'faq', navEl: document.querySelector('.glass-nav-item[data-section="faq"]') },
         { id: 'contact', navEl: document.querySelector('.glass-nav-item[data-section="contact"]') }
     ];
 
@@ -683,6 +681,23 @@ document.addEventListener("DOMContentLoaded", () => {
             onEnter: () => floatingNav.classList.add('nav-visible'),
             onLeaveBack: () => floatingNav.classList.remove('nav-visible')
         });
+
+        // Dynamic dark background mode on last page (#contact)
+        const contactSec = document.getElementById('contact');
+        if (contactSec) {
+            ScrollTrigger.create({
+                trigger: contactSec,
+                start: "top 50%",
+                end: "bottom bottom",
+                onToggle: (self) => {
+                    if (self.isActive) {
+                        floatingNav.classList.add('nav-dark-mode');
+                    } else {
+                        floatingNav.classList.remove('nav-dark-mode');
+                    }
+                }
+            });
+        }
 
         sectionsToTrack.forEach(item => {
             const sec = document.getElementById(item.id);
@@ -701,23 +716,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-    // === FAQ CARD CLICK & MOUSELEAVE AUTO-CLOSE INTERACTION ===
-    document.querySelectorAll('.faq-card').forEach(card => {
-        const header = card.querySelector('.faq-card-header');
-        if (header) {
-            header.addEventListener('click', () => {
-                const isOpen = card.classList.contains('open');
-                document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
-                if (!isOpen) {
-                    card.classList.add('open');
-                }
-            });
-        }
-        card.addEventListener('mouseleave', () => {
-            card.classList.remove('open');
-        });
-    });
 
 });
 
