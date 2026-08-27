@@ -1,5 +1,5 @@
 """
-Uma Traders — Master Pattern Engine (Optimised)
+Uma Traderss — Master Pattern Engine (Optimised)
 ================================================
 Key changes vs original
 ------------------------
@@ -95,7 +95,7 @@ log.info(f"Thread pool: {_WORKERS} workers")
 # ---------------------------------------------------------------------------
 # 2.  FASTAPI APP
 # ---------------------------------------------------------------------------
-app = FastAPI(title="Uma Traders Master Pattern Engine")
+app = FastAPI(title="Uma Traderss Master Pattern Engine")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

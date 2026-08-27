@@ -86,7 +86,7 @@ h3 {
 /* 3D Hero Section */
 .hero-container {
     position: relative;
-    height: 120vh;
+    height: 280vh;
     background: #000;
 }
 
@@ -117,11 +117,20 @@ h3 {
     width: 100%;
     text-align: center;
     z-index: 3;
-    pointer-events: none;
+    pointer-events: none !important;
     opacity: 0;
     /* Hidden by default, controlled by GSAP */
     padding: 0 20px;
     will-change: transform, opacity;
+}
+
+.hero-text-overlay * {
+    pointer-events: none !important;
+}
+
+.hero-text-overlay.active-sequence,
+.hero-text-overlay.active-sequence * {
+    pointer-events: auto !important;
 }
 
 .hero-title {
@@ -2629,7 +2638,7 @@ h3 {
 }
 
 /* ===========================================================================
-   UMA TRADERS — ELITE MINIMALIST LIGHT-MODE EDITORIAL SYSTEM
+   UMA TRADERSS — ELITE MINIMALIST LIGHT-MODE EDITORIAL SYSTEM
    (Inspired by Waterworks, Dribbble & Figma Professional Design Layouts)
    =========================================================================== */
 

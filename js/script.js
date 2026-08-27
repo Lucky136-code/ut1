@@ -1,19 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // === PRELOADER ===
-    const preloader = document.getElementById('preloader');
-    if (sessionStorage.getItem('preloader_shown')) {
-        if (preloader) preloader.style.display = 'none';
-    } else {
-        sessionStorage.setItem('preloader_shown', 'true');
-        const preloaderTl = gsap.timeline();
-        preloaderTl
-            .to('.preloader-logo', { opacity: 1, duration: 0.8, ease: "power2.out" })
-            .to('.preloader-tagline', { opacity: 1, duration: 0.6 }, "-=0.3")
-            .to('.preloader-progress', { width: '100%', duration: 1.5, ease: "power2.inOut" }, "-=0.5")
-            .to(preloader, { yPercent: -100, duration: 0.8, ease: "power3.inOut", delay: 0.2, onComplete: () => { if (preloader) preloader.style.display = 'none'; } });
-    }
-
-
     gsap.registerPlugin(ScrollTrigger);
 
     // === LENIS SMOOTH SCROLL ===
@@ -21,6 +6,36 @@ document.addEventListener("DOMContentLoaded", () => {
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(time => lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0, 0);
+
+    // === PRELOADER ===
+    const preloader = document.getElementById('preloader');
+    if (sessionStorage.getItem('preloader_shown')) {
+        if (preloader) preloader.style.display = 'none';
+        setTimeout(() => { ScrollTrigger.refresh(true); }, 100);
+    } else {
+        sessionStorage.setItem('preloader_shown', 'true');
+        window.scrollTo(0, 0);
+        lenis.stop(); // Lock scrolling while preloader is active
+
+        const preloaderTl = gsap.timeline();
+        preloaderTl
+            .to('.preloader-logo', { opacity: 1, duration: 0.8, ease: "power2.out" })
+            .to('.preloader-tagline', { opacity: 1, duration: 0.6 }, "-=0.3")
+            .to('.preloader-progress', { width: '100%', duration: 1.5, ease: "power2.inOut" }, "-=0.5")
+            .to(preloader, { 
+                yPercent: -100, 
+                duration: 0.8, 
+                ease: "power3.inOut", 
+                delay: 0.2, 
+                onComplete: () => { 
+                    if (preloader) preloader.style.display = 'none';
+                    lenis.start(); // Re-enable scrolling after preloader exits
+                    window.scrollTo(0, 0);
+                    ScrollTrigger.refresh(true);
+                    gsap.set('.sequence-1, .sequence-1-bg', { opacity: 1, scale: 1, filter: "blur(0px)" });
+                } 
+            });
+    }
 
     // === THREE.JS HERO ===
     const canvas = document.getElementById('hero-canvas');
@@ -65,9 +80,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const pl1 = new THREE.PointLight(0xffeedd, 2, 50); pl1.position.set(-10, 5, 10); scene.add(pl1);
     const pl2 = new THREE.PointLight(0xaaccff, 2.5, 50); pl2.position.set(10, -5, -5); scene.add(pl2);
 
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+    function updateCanvasSize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    window.addEventListener('resize', updateCanvasSize);
+    window.addEventListener('load', () => {
+        updateCanvasSize();
+        ScrollTrigger.refresh(true);
     });
 
     let isHeroVisible = true;
@@ -79,9 +100,19 @@ document.addEventListener("DOMContentLoaded", () => {
     // === HERO SCROLL ANIMATION ===
     slabGroup.position.set(0, -2.5, -5);
     slabGroup.rotation.set(0.15, 0.4, 0.05);
-    // Comment out vertical shift as our grid is absolute fullscreen 100vh
-    // gsap.set('.hero-text-overlay', { yPercent: -50 });
     gsap.set('.hero-text-overlay', { transform: 'none' });
+    gsap.set('.sequence-1, .sequence-1-bg', { opacity: 1, scale: 1, filter: "blur(0px)" });
+
+    function setActiveSequence(seqNumber) {
+        document.querySelectorAll('.hero-text-overlay').forEach((el, index) => {
+            if (index + 1 === seqNumber) {
+                el.classList.add('active-sequence');
+            } else {
+                el.classList.remove('active-sequence');
+            }
+        });
+    }
+    setActiveSequence(1);
 
     const tl = gsap.timeline({
         scrollTrigger: {
@@ -89,10 +120,14 @@ document.addEventListener("DOMContentLoaded", () => {
             start: "top top",
             end: "bottom bottom",
             scrub: 0.1,
-            onLeave: () => {
-                const collections = document.getElementById('collections');
-                if (collections) {
-                    collections.scrollIntoView({ behavior: 'smooth' });
+            onUpdate: (self) => {
+                const p = self.progress;
+                if (p < 0.3) {
+                    setActiveSequence(1);
+                } else if (p >= 0.3 && p < 0.65) {
+                    setActiveSequence(2);
+                } else {
+                    setActiveSequence(3);
                 }
             }
         }
@@ -103,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .fromTo(".sequence-1, .sequence-1-bg", { opacity: 1, scale: 1, filter: "blur(0px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", ease: "none", duration: 0.1 }, 0)
         .to(".sequence-1, .sequence-1-bg", { opacity: 0, scale: 1.1, filter: "blur(10px)", ease: "power2.in", duration: 0.1 }, 0.2)
         .to(slabGroup.position, { z: 5, x: -2.8, y: 0, ease: "power1.inOut", duration: 0.3 }, 0.35)
-        .to(slabGroup.rotation, { y: Math.PI * 2.5, x: -0.2, z: -0.1, ease: "none", duration: 0.3 }, 0.35)
+        .to(slabGroup.rotation, { y: Math.PI * 3.5, x: -0.2, z: -0.1, ease: "none", duration: 0.3 }, 0.35)
         .to(mat2, { opacity: 1, ease: "none", duration: 0.15 }, 0.425)
         .fromTo(".sequence-2, .sequence-2-bg", { opacity: 0, scale: 0.9, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", ease: "power2.out", duration: 0.1 }, 0.4)
         .to(".sequence-2, .sequence-2-bg", { opacity: 0, scale: 1.1, filter: "blur(10px)", ease: "power2.in", duration: 0.1 }, 0.55)
@@ -617,5 +652,19 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener('click', e => e.preventDefault());
     });
 
+    // === SMOOTH ANCHOR NAVIGATION WITH LENIS ===
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const targetId = this.getAttribute('href');
+            if (targetId && targetId !== '#') {
+                const targetEl = document.querySelector(targetId);
+                if (targetEl) {
+                    e.preventDefault();
+                    lenis.scrollTo(targetEl, { duration: 1.2 });
+                }
+            }
+        });
+    });
 
 });
+

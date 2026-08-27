@@ -643,7 +643,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 <!-- Call to action inquiries -->
                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <a href="https://wa.me/919304277935?text=Hi%20Uma%20Traders,%20I%20am%20interested%20in%20the%20${encodeURIComponent(mat.name)}%20via%20your%20AI%20Visualizer." 
+                    <a href="https://wa.me/917852040620?text=Hi%20Uma%20Traderss,%20I%20am%20interested%20in%20the%20${encodeURIComponent(mat.name)}%20via%20your%20AI%20Visualizer." 
                        target="_blank"
                        style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; border: none; padding: 12px 20px; border-radius: 9999px; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; text-decoration: none; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);"
                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(37, 211, 102, 0.45)';"
