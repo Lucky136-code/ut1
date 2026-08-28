@@ -23,6 +23,10 @@
 }
 
 /* Lenis smooth scrolling requirement */
+html {
+    background-color: #050505 !important;
+}
+
 html.lenis {
     height: auto;
 }
@@ -41,7 +45,7 @@ html.lenis {
 
 body {
     font-family: var(--font-body);
-    background-color: var(--bg-color);
+    background-color: #050505 !important;
     color: var(--text-color);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
@@ -985,13 +989,21 @@ h3 {
     border-color: #ffffff !important;
 }
 
-/* Footer */
+/* Footer (100% Seamless Dark Background - No White Section Below) */
 .footer {
-    padding: 80px 40px 40px;
-    background-color: #050505;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 100vh;
+    margin: 0 !important;
+    padding: 70px 5% 40px !important;
+    background-color: #050505 !important;
     position: relative;
     z-index: 10;
     overflow: hidden;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
 }
 
 /* Footer background video */
@@ -1011,9 +1023,9 @@ h3 {
     inset: 0;
     background: linear-gradient(
         to bottom,
-        rgba(5, 5, 5, 0.78) 0%,
-        rgba(5, 5, 5, 0.60) 40%,
-        rgba(5, 5, 5, 0.82) 100%
+        rgba(5, 5, 5, 0.88) 0%,
+        rgba(5, 5, 5, 0.72) 40%,
+        rgba(5, 5, 5, 0.92) 100%
     );
     z-index: 1;
     pointer-events: none;
@@ -1030,38 +1042,50 @@ h3 {
     margin: 0 auto;
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
-    gap: 40px;
+    gap: 50px;
     padding-bottom: 60px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .footer-brand h2 {
-    font-size: 2rem;
-    letter-spacing: 0.1em;
-    margin-bottom: 10px;
-    background: linear-gradient(135deg, #ffffff 0%, #b0b0b0 60%, #808080 100%);
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 1.8rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em !important;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    text-transform: none !important;
 }
 
 .footer-brand p {
-    color: var(--text-secondary);
-    font-size: 1rem;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    color: #94a3b8 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
 }
 
 .footer-links h3 {
-    color: #fff;
-    font-size: 1.2rem;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    color: #ffffff !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
     margin-bottom: 20px;
+    letter-spacing: -0.01em !important;
+    text-transform: none !important;
 }
 
 .footer-links p, .footer-links a {
-    color: var(--text-secondary);
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    color: #94a3b8 !important;
     text-decoration: none;
     margin-bottom: 12px;
     display: block;
-    font-size: 0.95rem;
+    font-size: 0.95rem !important;
     transition: all 0.3s ease;
+    text-transform: none !important;
 }
 
 .footer-links a:hover {
@@ -1073,8 +1097,9 @@ h3 {
 .footer-bottom {
     text-align: center;
     padding-top: 30px;
-    color: #666;
-    font-size: 0.85rem;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    color: #64748b !important;
+    font-size: 0.88rem !important;
 }
 
 /* Dynamic 3D Navbar */
@@ -1381,10 +1406,37 @@ h3 {
 .testimonial-author h4 { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 4px; }
 .testimonial-author p { font-size: 0.8rem; color: #888; font-weight: 300; }
 
-/* Footer CTA */
-.footer-cta { text-align: center; padding: 100px 20px 80px; max-width: 800px; margin: 0 auto; }
-.footer-cta-title { font-family: 'Outfit', sans-serif; font-size: clamp(2.5rem,5vw,4rem); font-weight: 700; margin-bottom: 20px; background: linear-gradient(180deg,#fff 0%,#666 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.footer-cta-sub { color: #888; font-size: 1.2rem; margin-bottom: 40px; font-weight: 300; letter-spacing: 0.05em; }
+/* Footer CTA (High-End Plus Jakarta Sans Typography) */
+.footer-cta {
+    text-align: center;
+    padding: 30px 20px 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.footer-cta-title {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: clamp(2.4rem, 4.8vw, 4.2rem) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.03em !important;
+    line-height: 1.15 !important;
+    margin-bottom: 20px !important;
+    background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 60%, #94a3b8 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    text-transform: none !important;
+}
+
+.footer-cta-sub {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    color: #94a3b8 !important;
+    font-size: clamp(1rem, 1.3vw, 1.25rem) !important;
+    margin-bottom: 40px !important;
+    font-weight: 400 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+}
 
 /* Playfair Display editorial font for luxury section titles */
 .section-title, .hero-title { 
@@ -5259,22 +5311,22 @@ button.viz-segment-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 70px 24px 20px;
+    justify-content: flex-start;
+    padding: 85px 24px 35px !important;
     box-sizing: border-box;
     overflow: hidden;
-    gap: 16px;
+    gap: 8px;
     background: #ffffff !important;
 }
 
-/* Section Title - Matching Page 2 Plus Jakarta Sans Font & Style */
+/* Section Title - Lowered & Clear from Fixed Header */
 .book-section-title {
     font-family: 'Plus Jakarta Sans', sans-serif !important;
-    font-size: clamp(2rem, 3.2vw, 2.8rem) !important;
+    font-size: clamp(1.7rem, 2.8vw, 2.5rem) !important;
     font-weight: 700 !important;
     color: #0f172a !important;
     text-align: center;
-    margin: 0;
+    margin: 0 !important;
     letter-spacing: -0.03em !important;
     line-height: 1.2 !important;
     text-transform: none !important;
@@ -5282,10 +5334,10 @@ button.viz-segment-btn {
 
 .book-section-subtitle {
     font-family: 'Plus Jakarta Sans', sans-serif !important;
-    font-size: clamp(0.95rem, 1.4vw, 1.15rem) !important;
+    font-size: clamp(0.88rem, 1.2vw, 1.05rem) !important;
     color: #64748b !important;
     text-align: center;
-    margin: 0 0 8px;
+    margin: 0 0 6px 0 !important;
     font-weight: 400 !important;
     text-transform: none !important;
 }
@@ -5296,7 +5348,7 @@ button.viz-segment-btn {
     perspective-origin: 50% 50%;
     width: 100%;
     max-width: 1080px;
-    margin: 0 auto;
+    margin: 4px auto 0 !important;
     flex-shrink: 0;
 }
 
@@ -5304,9 +5356,9 @@ button.viz-segment-btn {
 .book {
     position: relative;
     width: 100%;
-    aspect-ratio: 1.85 / 1;
-    max-height: calc(100vh - 280px);
-    min-height: 340px;
+    aspect-ratio: 1.82 / 1;
+    max-height: calc(100vh - 290px);
+    min-height: 320px;
     transform-style: preserve-3d;
     border-radius: 8px;
     background: #ffffff !important;
@@ -5433,25 +5485,26 @@ button.viz-segment-btn {
 /* Left Page: Step Image - ENLARGED & PROMINENT */
 .page-img-wrap {
     width: 100%;
-    max-width: 440px;
+    max-width: 520px;
     flex: 1;
     min-height: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1;
-    margin-top: 6px;
-    padding: 4px;
+    margin-top: 2px;
+    padding: 0;
     box-sizing: border-box;
 }
 
 .page-step-img {
     width: 100%;
     height: 100%;
-    max-height: 330px;
+    max-height: 400px;
     object-fit: contain;
     border-radius: 12px;
-    filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.10));
+    transform: scale(1.12);
+    filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.12));
 }
 
 /* Right Page: Description Label ("STEP ONE / TWO / THREE / FOUR") - Pencil Lead Graphite Color */
@@ -5561,13 +5614,9 @@ button.viz-segment-btn {
     -webkit-backface-visibility: hidden;
 }
 
-/* ---- Step Indicator Dots ---- */
+/* ---- Step Indicator Dots (Removed as requested) ---- */
 .book-step-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 4px;
+    display: none !important;
 }
 
 .step-dot {
@@ -5603,22 +5652,60 @@ button.viz-segment-btn {
     color: #ffffff;
 }
 
-/* ---- Action Buttons Below Book ---- */
+/* ---- 3D Iridescent Frosted Glassmorphism Action Buttons (Global) ---- */
 .book-actions {
     display: flex;
-    gap: 14px;
+    gap: 16px;
     align-items: center;
     justify-content: center;
-    margin-top: 2px;
+    margin-top: 6px !important;
+    z-index: 20;
 }
 
-.book-actions .glass-action-btn {
-    padding: 10px 22px;
-    font-size: 0.85rem;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: 1.5px solid rgba(180, 160, 130, 0.3) !important;
-    box-shadow: 0 6px 20px rgba(50, 30, 10, 0.06), inset 0 1px 2px rgba(255, 255, 255, 0.8) !important;
-    color: #1a1a2e !important;
+.glass-action-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 12px 28px !important;
+    border-radius: 9999px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    text-decoration: none !important;
+    box-sizing: border-box !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    cursor: pointer !important;
+}
+
+/* 3D Soft Ice-Blue / Cyan Frosted Glass Capsule */
+.glass-btn-blue {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(224, 242, 254, 0.92) 100%) !important;
+    color: #0284c7 !important;
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25), 0 12px 30px rgba(56, 189, 248, 0.20), inset 0 2px 5px rgba(255, 255, 255, 1) !important;
+}
+
+.glass-btn-blue:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(207, 237, 254, 0.98) 100%) !important;
+    color: #0284c7 !important;
+    transform: translateY(-3px) scale(1.04) !important;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.25), 0 16px 40px rgba(2, 132, 199, 0.30), inset 0 2px 6px rgba(255, 255, 255, 1) !important;
+}
+
+/* 3D Soft Warm Peach / Rose Frosted Glass Capsule */
+.glass-btn-peach {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 241, 242, 0.92) 100%) !important;
+    color: #e11d48 !important;
+    box-shadow: 0 0 0 1px rgba(251, 113, 133, 0.25), 0 12px 30px rgba(251, 113, 133, 0.20), inset 0 2px 5px rgba(255, 255, 255, 1) !important;
+}
+
+.glass-btn-peach:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(254, 226, 226, 0.98) 100%) !important;
+    color: #e11d48 !important;
+    transform: translateY(-3px) scale(1.04) !important;
+    box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.25), 0 16px 40px rgba(225, 29, 72, 0.28), inset 0 2px 6px rgba(255, 255, 255, 1) !important;
 }
 
 /* ---- Responsive ---- */
@@ -6365,5 +6452,621 @@ button.viz-segment-btn {
     .glass-nav-item {
         padding: 6px 12px;
         font-size: 0.78rem;
+    }
+}
+
+/* =============================================
+   ABOUT US SECTIONS (2 Distinct Full Pages)
+   ============================================= */
+
+/* PAGE 1: About Us & Our Story */
+.about-page-1 {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: #ffffff !important;
+    padding: 100px 0 80px;
+    color: #0f172a;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* Top Hero Banner: Centered Title & Subtitle */
+.about-hero {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto 75px;
+    padding: 0 4%;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.about-hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.about-hero-title {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: clamp(2.8rem, 4.8vw, 4rem) !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    text-align: center !important;
+    margin: 0 0 22px 0 !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.03em !important;
+    text-transform: none !important;
+}
+
+.about-hero-sub {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: clamp(1.05rem, 1.4vw, 1.25rem) !important;
+    color: #475569 !important;
+    line-height: 1.7 !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+    max-width: 720px;
+    text-transform: none !important;
+}
+
+/* Our Story Grid (3 Columns with vertical dividers) */
+.about-story-wrap {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 4%;
+    box-sizing: border-box;
+}
+
+.about-story-main-title {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: clamp(2.2rem, 3.5vw, 3rem) !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    text-align: center;
+    margin: 0 0 45px 0 !important;
+    letter-spacing: -0.03em !important;
+    text-transform: none !important;
+}
+
+.about-story-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 40px 0;
+}
+
+.about-story-col {
+    padding: 0 36px;
+    border-right: 1px solid #cbd5e1;
+    box-sizing: border-box;
+}
+
+.about-story-col:last-child {
+    border-right: none;
+}
+
+.about-story-heading {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 1.3rem !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    margin: 0 0 18px 0 !important;
+    letter-spacing: -0.02em !important;
+    text-transform: none !important;
+}
+
+.about-story-text {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.95rem !important;
+    color: #64748b !important;
+    line-height: 1.7 !important;
+    margin: 0 !important;
+    text-transform: none !important;
+}
+
+
+/* PAGE 2: Meet Our Team Section (Dedicated Full Page) */
+.about-page-2 {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: #f8fafc !important;
+    padding: 100px 0;
+    color: #0f172a;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #e2e8f0;
+    z-index: 10;
+}
+
+.about-team-wrap {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 4%;
+    box-sizing: border-box;
+}
+
+.about-team-title {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: clamp(2.4rem, 4vw, 3.4rem) !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    text-align: center;
+    margin: 0 0 60px 0 !important;
+    letter-spacing: -0.03em !important;
+    text-transform: none !important;
+}
+
+.about-team-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.team-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 50px 36px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.05);
+}
+
+.team-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.10);
+    border-color: #cbd5e1;
+}
+
+.team-avatar-wrap {
+    margin-bottom: 24px;
+}
+
+.team-avatar-img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    border: 3.5px solid #e2e8f0;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+    transition: transform 0.35s ease, border-color 0.35s ease;
+}
+
+.team-card:hover .team-avatar-img {
+    transform: scale(1.04);
+    border-color: #cbd5e1;
+}
+
+.team-avatar-placeholder {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 2.6rem !important;
+    font-weight: 800 !important;
+    color: #ffffff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.avatar-prateek {
+    background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+    border: 3.5px solid #e2e8f0;
+}
+
+.avatar-lucky {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    border: 3.5px solid #e0f2fe;
+}
+
+.team-name {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 1.55rem !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    margin: 0 0 6px 0 !important;
+    letter-spacing: -0.02em !important;
+    text-transform: none !important;
+}
+
+.team-role {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    color: #94a3b8 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.14em !important;
+    margin: 0 0 22px 0 !important;
+}
+
+.team-bio {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.96rem !important;
+    color: #64748b !important;
+    line-height: 1.68 !important;
+    margin: 0 0 28px 0 !important;
+    flex: 1;
+    text-transform: none !important;
+}
+
+.team-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.team-read-more {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.94rem !important;
+    font-weight: 600 !important;
+    color: #f59e0b !important;
+    letter-spacing: 0.02em;
+}
+
+.team-linkedin-icon {
+    color: #0077b5;
+    transition: transform 0.3s ease;
+}
+
+.team-link:hover .team-read-more {
+    color: #d97706 !important;
+}
+
+.team-link:hover .team-linkedin-icon {
+    transform: scale(1.18);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .about-hero {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+    .about-story-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 20px 0;
+    }
+    .about-story-col {
+        padding: 0 0 20px 0;
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .about-story-col:last-child {
+        border-bottom: none;
+    }
+    .about-team-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        max-width: 400px;
+    }
+}
+
+/* =============================================
+   FAQ SECTION (Matching Clean Accordion Design)
+   ============================================= */
+
+.faq-section {
+    position: relative;
+    width: 100%;
+    background: #ffffff !important;
+    padding: 80px 0 60px;
+    color: #0f172a;
+    box-sizing: border-box;
+    z-index: 10;
+    border-top: 1px solid #e2e8f0;
+}
+
+.faq-container {
+    width: 100%;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 4%;
+    box-sizing: border-box;
+}
+
+.faq-header {
+    text-align: center;
+    margin-bottom: 55px;
+}
+
+.faq-title {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: clamp(2.4rem, 4vw, 3.4rem) !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    margin: 0 0 16px 0 !important;
+    letter-spacing: -0.03em !important;
+    text-transform: none !important;
+}
+
+.faq-title span {
+    color: #64748b;
+    font-weight: 400;
+}
+
+.faq-subtitle {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: clamp(0.98rem, 1.3vw, 1.15rem) !important;
+    color: #64748b !important;
+    margin: 0 auto !important;
+    max-width: 620px;
+    line-height: 1.6 !important;
+    text-transform: none !important;
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.faq-item {
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    border: 1px solid transparent;
+}
+
+.faq-item.active {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.03);
+}
+
+.faq-question {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 28px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    outline: none;
+    transition: color 0.25s ease;
+}
+
+.faq-question span:first-child {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 1.05rem !important;
+    font-weight: 600 !important;
+    color: #0f172a !important;
+    letter-spacing: -0.01em !important;
+    line-height: 1.4 !important;
+    text-transform: none !important;
+}
+
+.faq-icon {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 1.4rem !important;
+    font-weight: 400 !important;
+    color: #64748b !important;
+    margin-left: 16px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.faq-item.active .faq-question span:first-child {
+    color: #0f172a !important;
+}
+
+.faq-item.active .faq-icon {
+    color: #0f172a !important;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.4s ease;
+    padding: 0 28px;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 300px;
+    padding: 0 28px 24px 28px;
+}
+
+.faq-answer p {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.95rem !important;
+    color: #64748b !important;
+    line-height: 1.7 !important;
+    margin: 0 !important;
+    text-transform: none !important;
+}
+
+/* =============================================
+/* =============================================
+   PERMANENT FOOTER & ROOT BOTTOM BASE FIX (#141414)
+   ============================================= */
+
+html, body, .lenis, .lenis-content {
+    background-color: #141414 !important;
+}
+
+footer, .footer, .mini-footer, #contact {
+    background-color: #141414 !important;
+    margin-bottom: 0 !important;
+}
+
+/* =============================================
+   COMPACT FOOTER (Matching Reference Design)
+   ============================================= */
+
+.mini-footer {
+    position: relative;
+    width: 100% !important;
+    background: #141414 !important;
+    color: #ffffff;
+    padding: 55px 0 40px;
+    box-sizing: border-box;
+    z-index: 10;
+    border-top: 1px solid #262626;
+}
+
+.mini-footer-container {
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 5%;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1.4fr;
+    gap: 40px;
+    align-items: start;
+    box-sizing: border-box;
+}
+
+.mini-footer-brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.mini-brand-title {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 1.45rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    letter-spacing: -0.01em !important;
+    margin: 0 0 4px 0 !important;
+    text-transform: none !important;
+}
+
+.mini-brand-subtitle {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    color: #f59e0b !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    display: block;
+}
+
+.mini-copyright {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.82rem !important;
+    color: #737373 !important;
+    margin: 28px 0 0 0 !important;
+    line-height: 1.4 !important;
+}
+
+.mini-nav-links {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mini-nav-links a {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.88rem !important;
+    color: #a3a3a3 !important;
+    text-decoration: none !important;
+    transition: color 0.25s ease, transform 0.25s ease;
+    display: inline-block;
+}
+
+.mini-nav-links a:hover {
+    color: #ffffff !important;
+    transform: translateX(4px);
+}
+
+.mini-contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.mini-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.88rem !important;
+    color: #d4d4d4 !important;
+}
+
+.mini-contact-icon {
+    width: 16px;
+    height: 16px;
+    stroke: #f59e0b;
+    flex-shrink: 0;
+}
+
+.mini-contact-item a {
+    color: #d4d4d4 !important;
+    text-decoration: none !important;
+    transition: color 0.25s ease;
+}
+
+.mini-contact-item a:hover {
+    color: #ffffff !important;
+}
+
+.mini-social-boxes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mini-social-box {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #d97706;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    text-decoration: none;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+.mini-social-box svg {
+    width: 17px;
+    height: 17px;
+    stroke: #ffffff;
+}
+
+.mini-social-box:hover {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 850px) {
+    .mini-footer-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
     }
 }

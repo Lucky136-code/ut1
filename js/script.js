@@ -145,9 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .to(slabGroup.position, { z: 5, x: -3.0, y: 0, ease: "power1.inOut", duration: 0.3 }, 0.7)
         .to(slabGroup.rotation, { y: Math.PI * 3.5, x: 0, z: 0, ease: "none", duration: 0.3 }, 0.7)
         .to(mat3, { opacity: 1, ease: "none", duration: 0.15 }, 0.775)
-        .fromTo(".sequence-3, .sequence-3-bg", { opacity: 0, scale: 0.9, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", ease: "power2.out", duration: 0.1 }, 0.75)
-        .to(".sequence-3, .sequence-3-bg", { opacity: 0, scale: 1.1, filter: "blur(10px)", ease: "power2.in", duration: 0.1 }, 0.9)
-        .to(canvas, { opacity: 0, ease: "power1.in", duration: 0.1 }, 0.95);
+        .fromTo(".sequence-3, .sequence-3-bg", { opacity: 0, scale: 0.9, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", ease: "power2.out", duration: 0.25 }, 0.75);
 
     // === BOOK PAGE-TURNING ANIMATION ===
     const bookSection = document.getElementById('redesign-steps');
@@ -691,6 +689,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const floatingNav = document.getElementById('floating-glass-nav');
     const sectionsToTrack = [
         { id: 'redesign-steps', navEl: document.querySelector('.glass-nav-item[data-section="redesign-steps"]') },
+        { id: 'about', navEl: document.querySelector('.glass-nav-item[data-section="about"]') },
+        { id: 'team', navEl: document.querySelector('.glass-nav-item[data-section="about"]') },
+        { id: 'faq', navEl: document.querySelector('.glass-nav-item[data-section="faq"]') },
         { id: 'contact', navEl: document.querySelector('.glass-nav-item[data-section="contact"]') }
     ];
 
@@ -737,6 +738,40 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // === FAQ ACCORDION INTERACTIVENESS ===
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const questionBtn = item.querySelector('.faq-question');
+        if (questionBtn) {
+            questionBtn.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                
+                // Close other items
+                faqItems.forEach(otherItem => {
+                    otherItem.classList.remove('active');
+                    const otherBtn = otherItem.querySelector('.faq-question');
+                    const otherIcon = otherItem.querySelector('.faq-icon');
+                    if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+                    if (otherIcon) otherIcon.textContent = '+';
+                });
+
+                if (!isActive) {
+                    item.classList.add('active');
+                    questionBtn.setAttribute('aria-expanded', 'true');
+                    const icon = item.querySelector('.faq-icon');
+                    if (icon) icon.textContent = '−';
+                }
+            });
+        }
+    });
+
+    // Refresh ScrollTrigger after DOM load to ensure clean height calculation
+    setTimeout(() => {
+        if (typeof ScrollTrigger !== 'undefined') {
+            ScrollTrigger.refresh();
+        }
+    }, 500);
 
 });
 
