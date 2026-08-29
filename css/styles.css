@@ -5441,7 +5441,7 @@ button.viz-segment-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 24px 24px;
     box-sizing: border-box;
     text-align: center;
@@ -5499,13 +5499,15 @@ button.viz-segment-btn {
 }
 
 .page-step-img {
-    width: 100%;
-    height: 100%;
-    max-height: 400px;
+    max-width: 100%;
+    max-height: min(100%, 400px);
+    width: auto;
+    height: auto;
     object-fit: contain;
     border-radius: 12px;
-    transform: scale(1.12);
+    transform: scale(1.05);
     filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.12));
+    transition: transform 0.3s ease;
 }
 
 /* Right Page: Description Label ("STEP ONE / TWO / THREE / FOUR") - Pencil Lead Graphite Color */
@@ -5742,7 +5744,8 @@ button.viz-segment-btn {
         font-size: clamp(0.85rem, 1.3vw, 1.1rem);
     }
     .page-step-img {
-        max-height: 220px;
+        max-height: min(100%, 220px);
+        transform: scale(1.04);
     }
     .page-desc-heading {
         font-size: clamp(0.95rem, 1.4vw, 1.2rem);
@@ -5781,8 +5784,9 @@ button.viz-segment-btn {
         gap: 6px;
     }
     .page-step-img {
-        max-height: 110px;
+        max-height: min(100%, 110px);
         border-radius: 6px;
+        transform: scale(1.02);
     }
     .page-watermark-num {
         font-size: 1.8rem;
@@ -7537,7 +7541,7 @@ body {
     }
 
     .page-step-img {
-        max-height: 115px !important;
+        max-height: min(100%, 115px) !important;
         border-radius: 6px !important;
         transform: scale(1.02) !important;
     }
