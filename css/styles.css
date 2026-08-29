@@ -7437,6 +7437,12 @@ body {
     }
 }
 
+/* Mobile-only steps & visualizer teaser styles default hiding on desktop */
+.mobile-steps-container,
+.mobile-visualizer-teaser {
+    display: none;
+}
+
 /* Phones (<599px) Overrides — 3D Animations Intact */
 @media (max-width: 599px) {
     .hero-editorial-title {
@@ -7454,157 +7460,186 @@ body {
         justify-content: center !important;
     }
 
-    /* 3D Book Page-Turning Animation on Phone */
+    /* 3D Book Page-Turning Animation on Phone Override - Simplified to Stacked Layout */
+    .book-scene {
+        display: none !important;
+    }
+
     .book-section {
         height: auto !important;
-        min-height: 100vh !important;
+        min-height: auto !important;
+        background: #ffffff !important;
+        padding: 80px 0 60px 0 !important;
     }
 
     .book-sticky {
-        padding: 70px 10px 16px !important;
-        gap: 8px !important;
+        position: relative !important;
+        top: auto !important;
+        height: auto !important;
+        min-height: auto !important;
+        padding: 0 20px !important;
+        gap: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .book-section-title {
-        font-size: clamp(1.35rem, 4.5vw, 1.8rem) !important;
+        font-size: clamp(1.6rem, 6vw, 2.2rem) !important;
+        margin-bottom: 8px !important;
     }
 
     .book-section-subtitle {
-        font-size: clamp(0.72rem, 2.8vw, 0.88rem) !important;
+        font-size: 0.9rem !important;
+        margin-bottom: 30px !important;
     }
 
-    .book-scene {
-        perspective: 1200px !important;
-        perspective-origin: 50% 50% !important;
+    /* Style the mobile steps cards */
+    .mobile-steps-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 24px !important;
         width: 100% !important;
-        margin: 4px auto 0 !important;
+        margin: 20px 0 40px 0 !important;
+        box-sizing: border-box !important;
     }
 
-    .book {
-        aspect-ratio: 1.6 / 1 !important;
-        width: 100% !important;
-        max-height: calc(100vh - 240px) !important;
-        min-height: 220px !important;
-        transform-style: preserve-3d !important;
-        position: relative !important;
+    .mobile-step-card {
         background: #ffffff !important;
-        border-radius: 8px !important;
-        display: block !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
-    }
-
-    .book-spine {
-        display: block !important;
-        left: 50% !important;
-        width: 14px !important;
-    }
-
-    .book-page-static {
-        position: absolute !important;
-        top: 0 !important;
-        width: 50% !important;
-        height: 100% !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 20px !important;
+        padding: 24px !important;
         display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04) !important;
+        box-sizing: border-box !important;
+        text-align: left !important;
     }
 
-    .book-page-static.page-left {
-        left: 0 !important;
-        border-radius: 8px 0 0 8px !important;
-    }
-
-    .book-page-static.page-right {
-        left: 50% !important;
-        border-radius: 0 8px 8px 0 !important;
-    }
-
-    .book-turn {
-        position: absolute !important;
-        top: 0 !important;
-        left: 50% !important;
-        width: 50% !important;
-        height: 100% !important;
-        transform-origin: left center !important;
-        transform-style: preserve-3d !important;
-        border-radius: 0 8px 8px 0 !important;
-    }
-
-    .turn-face {
-        position: absolute !important;
-        inset: 0 !important;
-        backface-visibility: hidden !important;
-        -webkit-backface-visibility: hidden !important;
+    .mobile-step-header {
         display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
     }
 
-    .turn-front {
-        border-radius: 0 8px 8px 0 !important;
+    .mobile-step-label {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        font-size: 0.72rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.12em !important;
+        color: #94a3b8 !important;
+        font-weight: 700 !important;
     }
 
-    .turn-back {
-        transform: rotateY(180deg) !important;
-        border-radius: 8px 0 0 8px !important;
+    .mobile-step-num {
+        font-family: 'Space Mono', monospace !important;
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        color: var(--accent-gold) !important;
     }
 
-    .page-inner {
-        padding: 10px 6px !important;
-        gap: 2px !important;
+    .mobile-step-heading {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        margin: 0 !important;
+        text-align: left !important;
     }
 
-    .page-inner-right {
-        padding: 12px 8px !important;
-        gap: 4px !important;
+    .mobile-step-text {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        font-size: 0.88rem !important;
+        color: #64748b !important;
+        line-height: 1.55 !important;
+        margin: 0 !important;
+        text-align: left !important;
     }
 
-    .page-watermark-num {
-        font-size: 1.4rem !important;
-        top: 4px !important;
-        left: 4px !important;
+    .mobile-step-img-wrap {
+        width: 100% !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        border: 1px solid #f1f5f9 !important;
+        background: #fafafc !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 12px !important;
+        box-sizing: border-box !important;
     }
 
-    .page-left-title {
-        font-size: clamp(0.65rem, 2.4vw, 0.82rem) !important;
-        line-height: 1.15 !important;
-    }
-
-    .page-step-img {
-        max-height: 115px !important;
-        border-radius: 6px !important;
-        transform: scale(1.02) !important;
-    }
-
-    .page-desc-label {
-        font-size: 0.52rem !important;
-        letter-spacing: 0.1em !important;
-    }
-
-    .page-desc-heading {
-        font-size: clamp(0.72rem, 2.6vw, 0.92rem) !important;
-        line-height: 1.2 !important;
-    }
-
-    .page-desc-text {
-        font-size: clamp(0.6rem, 2.1vw, 0.72rem) !important;
-        line-height: 1.4 !important;
-    }
-
-    .page-accent-line {
-        width: 22px !important;
-        height: 2px !important;
+    .mobile-step-img {
+        width: auto !important;
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: 200px !important;
+        object-fit: contain !important;
     }
 
     .book-actions {
-        margin-top: 6px !important;
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: center !important;
-        gap: 6px !important;
+        margin-top: 10px !important;
+        margin-bottom: 40px !important;
         width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
     }
 
-    .book-actions .glass-action-btn {
-        padding: 6px 14px !important;
-        font-size: 0.72rem !important;
-        white-space: nowrap !important;
+    /* Style the Visualizer Teaser video container */
+    .mobile-visualizer-teaser {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+        margin-top: 20px !important;
+        padding: 36px 20px !important;
+        background: #0f172a !important;
+        border-radius: 28px !important;
+        border: 1px solid #1e293b !important;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2) !important;
+        box-sizing: border-box !important;
+        color: #ffffff !important;
+    }
+
+    .teaser-title {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        font-size: 1.45rem !important;
+        font-weight: 800 !important;
+        color: #ffffff !important;
+        margin: 0 0 8px 0 !important;
+        letter-spacing: -0.02em !important;
+    }
+
+    .teaser-title span {
+        color: var(--accent-gold) !important;
+        font-weight: 700 !important;
+    }
+
+    .teaser-sub {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        font-size: 0.88rem !important;
+        color: #94a3b8 !important;
+        line-height: 1.5 !important;
+        margin: 0 0 28px 0 !important;
+        text-align: center !important;
+    }
+
+    .teaser-video-wrap {
+        width: 100% !important;
+        max-width: 250px !important; /* Elegant mobile aspect ratio */
+        aspect-ratio: 9 / 16 !important;
+        border-radius: 20px !important;
+        overflow: hidden !important;
+        border: 2px solid #334155 !important;
+        background: #000000 !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .teaser-video {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
     }
 
     .viz-modal {
