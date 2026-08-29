@@ -824,6 +824,65 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // === AI VISUALIZER BUTTON CLICK (COMING SOON ANIMATION) ===
+    const aiVisualizerBtn = document.getElementById('ai-visualizer-btn');
+    if (aiVisualizerBtn) {
+        aiVisualizerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Create or reuse glassmorphic coming soon toast
+            let toast = document.getElementById('coming-soon-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'coming-soon-toast';
+                toast.className = 'coming-soon-toast';
+                toast.innerHTML = `
+                    <div class="toast-content">
+                        <span class="toast-sparkle">✨</span>
+                        <div class="toast-text-wrap">
+                            <span class="toast-title">3D AI Visualizer Coming Soon</span>
+                            <span class="toast-sub">Watch the video preview below to see it in action!</span>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+            }
+
+            // Animate toast in using GSAP
+            gsap.killTweensOf(toast);
+            gsap.set(toast, { display: 'block', opacity: 0, y: 30, scale: 0.9 });
+            gsap.to(toast, {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.5,
+                ease: 'back.out(1.7)'
+            });
+
+            // Smooth scroll down to the visualizer video showcase section
+            const videoSection = document.getElementById('visualizer-video-section');
+            if (videoSection) {
+                if (typeof lenis !== 'undefined' && lenis) {
+                    lenis.scrollTo(videoSection, { offset: -20, duration: 1.5 });
+                } else {
+                    videoSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+            // Auto-hide toast after 3.5 seconds
+            gsap.to(toast, {
+                opacity: 0,
+                y: -20,
+                duration: 0.6,
+                delay: 3.5,
+                ease: 'power2.in',
+                onComplete: () => {
+                    toast.style.display = 'none';
+                }
+            });
+        });
+    }
+
     // Refresh ScrollTrigger after DOM load to ensure clean height calculation
     setTimeout(() => {
         if (typeof ScrollTrigger !== 'undefined') {

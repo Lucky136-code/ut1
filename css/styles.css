@@ -5709,6 +5709,62 @@ button.viz-segment-btn {
     box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.25), 0 16px 40px rgba(225, 29, 72, 0.28), inset 0 2px 6px rgba(255, 255, 255, 1) !important;
 }
 
+/* ---- Steps Video Container ---- */
+.steps-video-container {
+    width: 100%;
+    max-width: 480px;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 20;
+}
+
+.steps-video-label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.steps-video-label .pulse-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 8px #ef4444;
+    animation: labelPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes labelPulse {
+    0%, 100% { transform: scale(0.85); opacity: 0.5; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+
+.steps-video-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1.5px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    background: #000;
+}
+
+.steps-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 900px) {
     .book-section {
@@ -6461,6 +6517,29 @@ button.viz-segment-btn {
    ABOUT US SECTIONS (2 Distinct Full Pages)
    ============================================= */
 
+/* ---- Visualizer Video Section (Before About Us) ---- */
+.visualizer-video-section {
+    position: relative;
+    width: 100%;
+    background: #ffffff !important;
+    padding: 60px 20px 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    z-index: 10;
+    border-top: 1px solid #e2e8f0;
+}
+
+.visualizer-video-section .visualizer-video-container {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
 /* PAGE 1: About Us & Our Story */
 .about-page-1 {
     position: relative;
@@ -6792,9 +6871,20 @@ button.viz-segment-btn {
         border-bottom: none;
     }
     .about-team-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-        max-width: 400px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        max-width: 800px;
+    }
+    .team-card {
+        height: 380px !important;
+    }
+    .team-card-overlay {
+        padding: 16px !important;
+    }
+    .team-card-overlay .team-bio {
+        font-size: 0.8rem !important;
+        line-height: 1.4 !important;
+        margin-bottom: 12px !important;
     }
 }
 
@@ -7461,36 +7551,46 @@ body {
     }
 
     .book-sticky {
-        padding: 70px 10px 16px !important;
+        padding: 70px 14px 20px !important;
         gap: 8px !important;
+        height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
     }
 
     .book-section-title {
-        font-size: clamp(1.35rem, 4.5vw, 1.8rem) !important;
+        font-size: clamp(1.4rem, 5.2vw, 1.9rem) !important;
     }
 
     .book-section-subtitle {
-        font-size: clamp(0.72rem, 2.8vw, 0.88rem) !important;
+        font-size: clamp(0.75rem, 3.2vw, 0.95rem) !important;
     }
 
     .book-scene {
         perspective: 1200px !important;
         perspective-origin: 50% 50% !important;
         width: 100% !important;
-        margin: 4px auto 0 !important;
+        margin: 8px auto !important;
+        flex: 1 1 auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     .book {
-        aspect-ratio: 1.6 / 1 !important;
+        aspect-ratio: 1.45 / 1 !important;
         width: 100% !important;
         max-height: calc(100vh - 240px) !important;
-        min-height: 220px !important;
+        min-height: 270px !important;
         transform-style: preserve-3d !important;
         position: relative !important;
         background: #ffffff !important;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
         display: block !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1) !important;
     }
 
     .book-spine {
@@ -7509,12 +7609,12 @@ body {
 
     .book-page-static.page-left {
         left: 0 !important;
-        border-radius: 8px 0 0 8px !important;
+        border-radius: 10px 0 0 10px !important;
     }
 
     .book-page-static.page-right {
         left: 50% !important;
-        border-radius: 0 8px 8px 0 !important;
+        border-radius: 0 10px 10px 0 !important;
     }
 
     .book-turn {
@@ -7525,7 +7625,7 @@ body {
         height: 100% !important;
         transform-origin: left center !important;
         transform-style: preserve-3d !important;
-        border-radius: 0 8px 8px 0 !important;
+        border-radius: 0 10px 10px 0 !important;
     }
 
     .turn-face {
@@ -7537,74 +7637,231 @@ body {
     }
 
     .turn-front {
-        border-radius: 0 8px 8px 0 !important;
+        border-radius: 0 10px 10px 0 !important;
     }
 
     .turn-back {
         transform: rotateY(180deg) !important;
-        border-radius: 8px 0 0 8px !important;
+        border-radius: 10px 0 0 10px !important;
     }
 
     .page-inner {
-        padding: 10px 6px !important;
-        gap: 2px !important;
+        padding: 10px 8px !important;
+        gap: 4px !important;
+        width: 100% !important;
+        height: 100% !important;
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
     }
 
     .page-inner-right {
-        padding: 12px 8px !important;
-        gap: 4px !important;
+        padding: 14px 10px !important;
+        gap: 6px !important;
     }
 
     .page-watermark-num {
-        font-size: 1.4rem !important;
-        top: 4px !important;
-        left: 4px !important;
+        font-size: 1.6rem !important;
+        font-weight: 800 !important;
+        top: 6px !important;
+        left: 8px !important;
+        z-index: 0 !important;
+        color: rgba(0, 0, 0, 0.08) !important;
+        text-shadow: none !important;
     }
 
     .page-left-title {
-        font-size: clamp(0.65rem, 2.4vw, 0.82rem) !important;
-        line-height: 1.15 !important;
+        display: none !important;
+    }
+
+    .page-img-wrap {
+        width: 100% !important;
+        height: 100% !important;
+        flex: 1 !important;
+        max-width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 1 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     .page-step-img {
-        max-height: 115px !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 185px !important;
+        object-fit: contain !important;
         border-radius: 6px !important;
-        transform: scale(1.02) !important;
+        transform: scale(1.04) !important;
+        filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.1)) !important;
     }
 
     .page-desc-label {
-        font-size: 0.52rem !important;
+        font-size: 0.55rem !important;
         letter-spacing: 0.1em !important;
     }
 
     .page-desc-heading {
-        font-size: clamp(0.72rem, 2.6vw, 0.92rem) !important;
-        line-height: 1.2 !important;
+        font-size: clamp(0.78rem, 2.8vw, 0.98rem) !important;
+        line-height: 1.25 !important;
     }
 
     .page-desc-text {
-        font-size: clamp(0.6rem, 2.1vw, 0.72rem) !important;
-        line-height: 1.4 !important;
+        font-size: clamp(0.65rem, 2.3vw, 0.78rem) !important;
+        line-height: 1.45 !important;
     }
 
     .page-accent-line {
-        width: 22px !important;
+        width: 24px !important;
         height: 2px !important;
     }
 
     .book-actions {
-        margin-top: 6px !important;
+        margin-top: -8px !important;
+        margin-bottom: 8px !important;
         display: flex !important;
         flex-direction: row !important;
         justify-content: center !important;
-        gap: 6px !important;
+        gap: 10px !important;
         width: 100% !important;
+        z-index: 30 !important;
     }
 
     .book-actions .glass-action-btn {
-        padding: 6px 14px !important;
-        font-size: 0.72rem !important;
+        padding: 10px 22px !important;
+        font-size: 0.86rem !important;
+        font-weight: 700 !important;
         white-space: nowrap !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    /* Visualizer Video Section Phone Overrides */
+    .visualizer-video-section {
+        padding: 40px 16px 20px !important;
+        background: #ffffff !important;
+    }
+
+    .visualizer-video-section .steps-video-wrap {
+        width: 100% !important;
+        max-width: 100% !important;
+        aspect-ratio: 16 / 9 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
+    }
+
+    .steps-video {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    /* Meet Our Team Phone Overrides */
+    .about-page-2 {
+        padding: 40px 14px 60px !important;
+        min-height: auto !important;
+    }
+
+    .about-team-title {
+        font-size: clamp(1.8rem, 5.5vw, 2.4rem) !important;
+        margin-bottom: 24px !important;
+    }
+
+    .about-team-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px !important;
+        align-items: start !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    .team-card {
+        height: auto !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .team-card-image {
+        width: 100% !important;
+        height: 185px !important;
+        object-fit: cover !important;
+        object-position: center !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12) !important;
+        filter: none !important;
+        transform: none !important;
+    }
+
+    .team-card:hover .team-card-image {
+        transform: none !important;
+        filter: none !important;
+    }
+
+    .team-card-overlay {
+        position: static !important;
+        opacity: 1 !important;
+        transform: none !important;
+        pointer-events: auto !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        padding: 12px 2px 0 !important;
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .team-card-overlay .team-name {
+        color: #0f172a !important;
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 2px !important;
+    }
+
+    .team-card-overlay .team-role {
+        color: var(--accent-gold, #c5a880) !important;
+        font-size: 0.72rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.12em !important;
+        text-transform: uppercase !important;
+        margin-bottom: 8px !important;
+    }
+
+    .team-card-overlay .team-bio {
+        display: block !important;
+        color: #475569 !important;
+        font-size: 0.76rem !important;
+        line-height: 1.5 !important;
+        margin-bottom: 12px !important;
+    }
+
+    .team-linkedin-link {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important;
+        background: #0077b5 !important;
+        border: none !important;
+        box-shadow: 0 4px 14px rgba(0, 119, 181, 0.35) !important;
+        margin-top: 4px !important;
+    }
+
+    .team-linkedin-icon {
+        width: 18px !important;
+        height: 18px !important;
+        fill: #ffffff !important;
     }
 
     .viz-modal {
@@ -7635,6 +7892,63 @@ body {
         width: 38px !important;
         height: 38px !important;
     }
+}
+
+/* ---- Glassmorphic Coming Soon Toast ---- */
+.coming-soon-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999999;
+    display: none;
+    pointer-events: none;
+    width: 90%;
+    max-width: 420px;
+}
+
+.coming-soon-toast .toast-content {
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+    padding: 12px 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3), 0 0 25px rgba(59, 130, 246, 0.25);
+}
+
+.coming-soon-toast .toast-sparkle {
+    font-size: 1.3rem;
+    animation: sparkleSpin 2s infinite ease-in-out;
+}
+
+@keyframes sparkleSpin {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.2) rotate(15deg); }
+}
+
+.coming-soon-toast .toast-text-wrap {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.coming-soon-toast .toast-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+}
+
+.coming-soon-toast .toast-sub {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.72rem;
+    color: #94a3b8;
 }
 
 
