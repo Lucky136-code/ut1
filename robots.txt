@@ -1,8 +1,5 @@
 User-agent: *
 Allow: /
-Allow: /index.html
-Allow: /visualizer.html
-Allow: /pricing.html
 Disallow: /api/
 
-Sitemap: https://umatraderss.com/sitemap.xml
+Sitemap: https://www.umatraderss.com/sitemap.xml
