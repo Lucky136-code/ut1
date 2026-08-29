@@ -1030,6 +1030,21 @@ if os.path.exists("visualizer.html"):
     async def serve_visualizer():
         return FileResponse("visualizer.html")
 
+if os.path.exists("pricing.html"):
+    @app.get("/pricing.html")
+    async def serve_pricing():
+        return FileResponse("pricing.html")
+
+if os.path.exists("sitemap.xml"):
+    @app.get("/sitemap.xml")
+    async def serve_sitemap():
+        return FileResponse("sitemap.xml", media_type="application/xml")
+
+if os.path.exists("robots.txt"):
+    @app.get("/robots.txt")
+    async def serve_robots():
+        return FileResponse("robots.txt", media_type="text/plain")
+
 if os.path.isdir("css"):
     app.mount("/css", StaticFiles(directory="css"), name="css")
 if os.path.isdir("js"):
