@@ -6621,66 +6621,89 @@ button.viz-segment-btn {
 }
 
 .team-card {
-    background: #ffffff;
+    position: relative;
+    background: #0f172a;
     border: 1px solid #e2e8f0;
     border-radius: 24px;
-    padding: 50px 36px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+    overflow: hidden;
+    height: 500px;
+    width: 100%;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
     box-shadow: 0 12px 36px rgba(15, 23, 42, 0.05);
 }
 
 .team-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.10);
+    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.15);
     border-color: #cbd5e1;
 }
 
-.team-avatar-wrap {
-    margin-bottom: 24px;
-}
-
-.team-avatar-img {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
+.team-card-image {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     object-position: center;
-    border: 3.5px solid #e2e8f0;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
-    transition: transform 0.35s ease, border-color 0.35s ease;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
 }
 
-.team-card:hover .team-avatar-img {
-    transform: scale(1.04);
-    border-color: #cbd5e1;
+.team-card .uma-img-shield {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
 }
 
-.team-avatar-placeholder {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
+.team-card:hover .team-card-image {
+    transform: scale(1.06);
+    filter: blur(4px);
+}
+
+.team-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
-    font-size: 2.6rem !important;
-    font-weight: 800 !important;
-    color: #ffffff;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    align-items: center;
+    padding: 30px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+    transform: translateY(20px);
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: center;
 }
 
-.avatar-prateek {
-    background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
-    border: 3.5px solid #e2e8f0;
+.team-card:hover .team-card-overlay {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
-.avatar-lucky {
-    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-    border: 3.5px solid #e0f2fe;
+.team-card-overlay .team-name {
+    color: #ffffff !important;
+    margin-bottom: 8px !important;
+}
+
+.team-card-overlay .team-role {
+    color: var(--accent-gold) !important;
+    margin-bottom: 16px !important;
+}
+
+.team-card-overlay .team-bio {
+    color: #e2e8f0 !important;
+    font-size: 0.92rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 24px !important;
+}
+
+.team-card-overlay .team-read-more {
+    color: var(--accent-gold) !important;
 }
 
 .team-name {
@@ -6713,33 +6736,39 @@ button.viz-segment-btn {
     text-transform: none !important;
 }
 
-.team-link {
+.team-linkedin-link {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff !important;
+    transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
     text-decoration: none;
-    transition: transform 0.3s ease, color 0.3s ease;
+    margin-top: 10px;
+    pointer-events: auto !important;
+    z-index: 11;
 }
 
-.team-read-more {
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
-    font-size: 0.94rem !important;
-    font-weight: 600 !important;
-    color: #f59e0b !important;
-    letter-spacing: 0.02em;
+.team-linkedin-link:hover {
+    background: #0077b5; /* Premium LinkedIn Blue */
+    border-color: #0077b5;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(0, 119, 181, 0.4);
 }
 
 .team-linkedin-icon {
-    color: #0077b5;
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
     transition: transform 0.3s ease;
 }
 
-.team-link:hover .team-read-more {
-    color: #d97706 !important;
-}
-
-.team-link:hover .team-linkedin-icon {
-    transform: scale(1.18);
+.team-linkedin-link:hover .team-linkedin-icon {
+    transform: scale(1.05);
 }
 
 /* Responsive */
@@ -6925,7 +6954,8 @@ footer, .footer, .mini-footer, #contact {
 .mini-footer {
     position: relative;
     width: 100% !important;
-    background: #141414 !important;
+    background: linear-gradient(rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.9)), url('../assets/entrance1.png') no-repeat center center !important;
+    background-size: cover !important;
     color: #ffffff;
     padding: 55px 0 40px;
     box-sizing: border-box;
