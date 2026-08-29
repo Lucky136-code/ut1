@@ -52,6 +52,13 @@
             <a href="#faq" class="glass-nav-item" data-section="faq">FAQs</a>
             <a href="#contact" class="glass-nav-item" data-section="contact">Contact</a>
         </nav>
+        <button id="floating-mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle Menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6" class="hamburger-line top"></line>
+                <line x1="3" y1="12" x2="21" y2="12" class="hamburger-line mid"></line>
+                <line x1="3" y1="18" x2="21" y2="18" class="hamburger-line bot"></line>
+            </svg>
+        </button>
     </header>
 
     <!-- Top Editorial Header Bar -->
@@ -74,8 +81,36 @@
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
             </button>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle Menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="6" x2="21" y2="6" class="hamburger-line top"></line>
+                    <line x1="3" y1="12" x2="21" y2="12" class="hamburger-line mid"></line>
+                    <line x1="3" y1="18" x2="21" y2="18" class="hamburger-line bot"></line>
+                </svg>
+            </button>
         </nav>
     </header>
+
+    <!-- Mobile Navigation Drawer Overlay -->
+    <div id="mobile-nav-drawer" class="mobile-nav-drawer" aria-hidden="true">
+        <div class="mobile-drawer-content">
+            <nav class="mobile-drawer-links">
+                <a href="#hero-container" class="mobile-drawer-item">Home</a>
+                <a href="#ai-feature-showcase" class="mobile-drawer-item">AI Visualizer</a>
+                <a href="#redesign-steps" class="mobile-drawer-item">How It Works</a>
+                <a href="#about" class="mobile-drawer-item">About Us</a>
+                <a href="#team" class="mobile-drawer-item">Our Team</a>
+                <a href="#faq" class="mobile-drawer-item">FAQs</a>
+                <a href="pricing.html" class="mobile-drawer-item mobile-drawer-highlight">Pricing</a>
+                <a href="#contact" class="mobile-drawer-item">Contact</a>
+            </nav>
+            <div class="mobile-drawer-footer">
+                <a href="https://wa.me/917852040620?text=Hello%20Uma%20Traderss%2C%20I%20would%20like%20to%20consult%20a%20stone%20specialist." target="_blank" class="mobile-drawer-cta">
+                    💬 Consult a Specialist
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- 3D Scroll-Driven Hero Section -->
     <section id="hero-container" class="hero-container">

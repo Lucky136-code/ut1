@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     gsap.registerPlugin(ScrollTrigger);
 
     // === LENIS SMOOTH SCROLL ===
-    const lenis = new Lenis({ duration: 1.2, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)), direction: 'vertical', gestureDirection: 'vertical', smooth: true, mouseMultiplier: 1, smoothTouch: false, touchMultiplier: 2, infinite: false });
+    const lenis = new Lenis({ duration: 1.2, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)), direction: 'vertical', gestureDirection: 'vertical', smooth: true, mouseMultiplier: 1, smoothTouch: true, touchMultiplier: 2, infinite: false });
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(time => lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0, 0);
@@ -98,7 +98,21 @@ document.addEventListener("DOMContentLoaded", () => {
     gsap.ticker.add(() => { if (isHeroVisible) renderer.render(scene, camera); });
 
     // === HERO SCROLL ANIMATION ===
-    slabGroup.position.set(0, -2.5, -5);
+    const isMobileHero = window.innerWidth <= 768;
+    const initialY = isMobileHero ? 1.5 : -2.5;
+    const initialZ = isMobileHero ? -3 : -5;
+    const targetX1 = isMobileHero ? 0 : -2.5;
+    const targetY1 = isMobileHero ? 1.8 : 0;
+    const targetX2 = isMobileHero ? 0 : -2.8;
+    const targetY2 = isMobileHero ? 1.8 : 0;
+    const targetX3 = isMobileHero ? 0 : -3.0;
+    const targetY3 = isMobileHero ? 1.8 : 0;
+
+    if (isMobileHero) {
+        slabGroup.scale.setScalar(0.72);
+    }
+
+    slabGroup.position.set(0, initialY, initialZ);
     slabGroup.rotation.set(0.15, 0.4, 0.05);
     gsap.set('.hero-text-overlay', { transform: 'none' });
     gsap.set('.sequence-1, .sequence-1-bg', { opacity: 1, scale: 1, filter: "blur(0px)" });
@@ -114,12 +128,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     setActiveSequence(1);
 
+    const heroEndDist = isMobileHero ? "+=150%" : "+=200%";
+
     const tl = gsap.timeline({
         scrollTrigger: {
             trigger: ".hero-container",
             start: "top top",
-            end: "bottom bottom",
+            end: heroEndDist,
             scrub: 0.1,
+            pin: ".hero-sticky",
+            pinSpacing: true,
             onUpdate: (self) => {
                 const p = self.progress;
                 if (p < 0.3) {
@@ -132,17 +150,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     });
-    tl.to(slabGroup.position, { y: 0, x: -2.5, z: 2, ease: "power1.inOut", duration: 0.3 }, 0)
+    tl.to(slabGroup.position, { y: targetY1, x: targetX1, z: 2, ease: "power1.inOut", duration: 0.3 }, 0)
         .to(slabGroup.rotation, { x: 0, y: Math.PI * 1.2, z: 0.1, ease: "none", duration: 0.3 }, 0)
         .to(".scroll-indicator", { opacity: 0, duration: 0.05 }, 0.05)
         .fromTo(".sequence-1, .sequence-1-bg", { opacity: 1, scale: 1, filter: "blur(0px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", ease: "none", duration: 0.1 }, 0)
         .to(".sequence-1, .sequence-1-bg", { opacity: 0, scale: 1.1, filter: "blur(10px)", ease: "power2.in", duration: 0.1 }, 0.2)
-        .to(slabGroup.position, { z: 5, x: -2.8, y: 0, ease: "power1.inOut", duration: 0.3 }, 0.35)
+        .to(slabGroup.position, { z: 5, x: targetX2, y: targetY2, ease: "power1.inOut", duration: 0.3 }, 0.35)
         .to(slabGroup.rotation, { y: Math.PI * 3.5, x: -0.2, z: -0.1, ease: "none", duration: 0.3 }, 0.35)
         .to(mat2, { opacity: 1, ease: "none", duration: 0.15 }, 0.425)
         .fromTo(".sequence-2, .sequence-2-bg", { opacity: 0, scale: 0.9, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", ease: "power2.out", duration: 0.1 }, 0.4)
         .to(".sequence-2, .sequence-2-bg", { opacity: 0, scale: 1.1, filter: "blur(10px)", ease: "power2.in", duration: 0.1 }, 0.55)
-        .to(slabGroup.position, { z: 5, x: -3.0, y: 0, ease: "power1.inOut", duration: 0.3 }, 0.7)
+        .to(slabGroup.position, { z: 5, x: targetX3, y: targetY3, ease: "power1.inOut", duration: 0.3 }, 0.7)
         .to(slabGroup.rotation, { y: Math.PI * 3.5, x: 0, z: 0, ease: "none", duration: 0.3 }, 0.7)
         .to(mat3, { opacity: 1, ease: "none", duration: 0.15 }, 0.775)
         .fromTo(".sequence-3, .sequence-3-bg", { opacity: 0, scale: 0.9, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", ease: "power2.out", duration: 0.25 }, 0.75);
@@ -234,12 +252,16 @@ document.addEventListener("DOMContentLoaded", () => {
         // Initialize book state
         updateBook(0);
 
+        const bookEndDist = isMobileHero ? "+=150%" : "+=200%";
+
         // ScrollTrigger for scroll-driven page turning
         ScrollTrigger.create({
             trigger: bookSection,
             start: "top top",
-            end: "bottom bottom",
+            end: bookEndDist,
             scrub: 0.3,
+            pin: ".book-sticky",
+            pinSpacing: true,
             onUpdate: (self) => {
                 updateBook(self.progress);
             }
@@ -765,6 +787,42 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
+
+    // === MOBILE MENU DRAWER TOGGLE ===
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const floatingMobileMenuToggle = document.getElementById('floating-mobile-menu-toggle');
+    const mobileNavDrawer = document.getElementById('mobile-nav-drawer');
+    const mobileDrawerItems = document.querySelectorAll('.mobile-drawer-item');
+
+    function toggleMobileMenu() {
+        if (!mobileNavDrawer) return;
+        const isOpen = mobileNavDrawer.classList.contains('active');
+        if (isOpen) {
+            mobileNavDrawer.classList.remove('active');
+            if (mobileMenuToggle) mobileMenuToggle.classList.remove('active');
+            if (floatingMobileMenuToggle) floatingMobileMenuToggle.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            mobileNavDrawer.classList.add('active');
+            if (mobileMenuToggle) mobileMenuToggle.classList.add('active');
+            if (floatingMobileMenuToggle) floatingMobileMenuToggle.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    if (mobileMenuToggle) mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+    if (floatingMobileMenuToggle) floatingMobileMenuToggle.addEventListener('click', toggleMobileMenu);
+
+    if (mobileNavDrawer) {
+        mobileDrawerItems.forEach(item => {
+            item.addEventListener('click', () => {
+                mobileNavDrawer.classList.remove('active');
+                if (mobileMenuToggle) mobileMenuToggle.classList.remove('active');
+                if (floatingMobileMenuToggle) floatingMobileMenuToggle.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+    }
 
     // Refresh ScrollTrigger after DOM load to ensure clean height calculation
     setTimeout(() => {
