@@ -213,7 +213,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 const rotation = turnProgress * -180;
-                page.style.transform = `rotateY(${rotation}deg)`;
+
+                // --- CSS var: --curl peaks at 1 when page is perpendicular (90deg) ---
+                const curlAmount = Math.sin(Math.abs(rotation) * Math.PI / 180);
+                // --- CSS var: --land is how settled the flipped page is (0→1 after crossing 90) ---
+                const landAmount = turnProgress > 0.5 ? (turnProgress - 0.5) * 2 : 0;
+
+                page.style.setProperty('--curl', curlAmount.toFixed(3));
+                page.style.setProperty('--land', landAmount.toFixed(3));
+
+                // Realistic perspective skew: slight skewY at the midpoint to simulate paper arc
+                const skewAngle = curlAmount * 1.8; // max 1.8deg at perpendicular
+                page.style.transform = `rotateY(${rotation}deg) skewY(${skewAngle}deg)`;
 
                 // Z-index management: swap when page crosses midpoint
                 if (rotation < -90) {

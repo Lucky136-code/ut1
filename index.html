@@ -293,7 +293,50 @@
 
             <div class="book-scene">
                 <div class="book" id="book-main">
-                    <div class="book-spine"></div>
+                    <!-- Spiral Notebook Coil Spine -->
+                    <div class="spiral-spine" aria-hidden="true">
+                        <svg class="spiral-svg" viewBox="0 0 40 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- 11 rings evenly spaced -->
+                            <defs>
+                                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%"   stop-color="#8a9ab0"/>
+                                    <stop offset="30%"  stop-color="#d4dce8"/>
+                                    <stop offset="50%"  stop-color="#f0f4f8"/>
+                                    <stop offset="70%"  stop-color="#d4dce8"/>
+                                    <stop offset="100%" stop-color="#8a9ab0"/>
+                                </linearGradient>
+                                <linearGradient id="ringShade" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%"   stop-color="rgba(0,0,0,0.18)"/>
+                                    <stop offset="40%"  stop-color="rgba(0,0,0,0)"/>
+                                    <stop offset="60%"  stop-color="rgba(255,255,255,0.12)"/>
+                                    <stop offset="100%" stop-color="rgba(0,0,0,0.18)"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- rings at y = 9%, 18%, 27%, 36%, 45%, 54.5%, 63.5%, 72.5%, 81.5%, 90.5% -->
+                            <g class="spiral-rings">
+                                <ellipse cx="20" cy="54"  rx="16" ry="7" fill="url(#ringGrad)" opacity="0.92"/>
+                                <ellipse cx="20" cy="54"  rx="16" ry="7" fill="url(#ringShade)" opacity="0.5"/>
+                                <ellipse cx="20" cy="108" rx="16" ry="7" fill="url(#ringGrad)" opacity="0.92"/>
+                                <ellipse cx="20" cy="108" rx="16" ry="7" fill="url(#ringShade)" opacity="0.5"/>
+                                <ellipse cx="20" cy="162" rx="16" ry="7" fill="url(#ringGrad)" opacity="0.92"/>
+                                <ellipse cx="20" cy="162" rx="16" ry="7" fill="url(#ringShade)" opacity="0.5"/>
+                                <ellipse cx="20" cy="216" rx="16" ry="7" fill="url(#ringGrad)" opacity="0.92"/>
+                                <ellipse cx="20" cy="216" rx="16" ry="7" fill="url(#ringShade)" opacity="0.5"/>
+                                <ellipse cx="20" cy="270" rx="16" ry="7" fill="url(#ringGrad)" opacity="0.92"/>
+                                <ellipse cx="20" cy="270" rx="16" ry="7" fill="url(#ringShade)" opacity="0.5"/>
+                                <ellipse cx="20" cy="327" rx="16" ry="7" fill="url(#ringGrad)" opacity="0.92"/>
+                                <ellipse cx="20" cy="327" rx="16" ry="7" fill="url(#ringShade)" opacity="0.5"/>
+                                <ellipse cx="20" cy="381" rx="16" ry="7" fill="url(#ringGrad)" opacity="0.92"/>
+                                <ellipse cx="20" cy="381" rx="16" ry="7" fill="url(#ringShade)" opacity="0.5"/>
+                                <ellipse cx="20" cy="435" rx="16" ry="7" fill="url(#ringGrad)" opacity="0.92"/>
+                                <ellipse cx="20" cy="435" rx="16" ry="7" fill="url(#ringShade)" opacity="0.5"/>
+                                <ellipse cx="20" cy="489" rx="16" ry="7" fill="url(#ringGrad)" opacity="0.92"/>
+                                <ellipse cx="20" cy="489" rx="16" ry="7" fill="url(#ringShade)" opacity="0.5"/>
+                                <ellipse cx="20" cy="543" rx="16" ry="7" fill="url(#ringGrad)" opacity="0.92"/>
+                                <ellipse cx="20" cy="543" rx="16" ry="7" fill="url(#ringShade)" opacity="0.5"/>
+                            </g>
+                        </svg>
+                    </div>
 
                     <!-- Static base: Step 1 left (visible before any turn) -->
                     <div class="book-page-static page-left" data-static-page="1">

@@ -5372,27 +5372,26 @@ button.viz-segment-btn {
         inset 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
 
-/* ---- Spine Shadow ---- */
-.book-spine {
+/* ---- Spiral Spine Coil ---- */
+.spiral-spine {
     position: absolute;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 40px;
+    width: 44px;
     height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(0, 0, 0, 0.04) 20%,
-        rgba(0, 0, 0, 0.08) 40%,
-        rgba(0, 0, 0, 0.10) 50%,
-        rgba(0, 0, 0, 0.08) 60%,
-        rgba(0, 0, 0, 0.04) 80%,
-        transparent 100%
-    );
     z-index: 50;
     pointer-events: none;
-    border-radius: 0;
+    display: flex;
+    align-items: stretch;
+}
+
+.spiral-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    /* Cast a subtle drop shadow on the rings */
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));
 }
 
 /* ---- Static Base Pages ---- */
@@ -5588,13 +5587,70 @@ button.viz-segment-btn {
     background: #ffffff !important;
     border-radius: 0 8px 8px 0;
     border-left: 1px solid rgba(0, 0, 0, 0.07);
+    /* Curl lift gradient — driven by --curl CSS var set in JS */
+    position: relative;
+}
+
+/* Realistic curl highlight on the right edge as page lifts */
+.turn-front::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30%;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(0, 0, 0, calc(var(--curl, 0) * 0.06)) 60%,
+        rgba(255,255,255, calc(var(--curl, 0) * 0.35)) 85%,
+        rgba(200,210,220, calc(var(--curl, 0) * 0.2)) 100%
+    );
+    border-radius: 0 8px 8px 0;
+    z-index: 3;
+    mix-blend-mode: multiply;
+}
+
+/* Left-edge curl shadow on front face as it curves away */
+.turn-front::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 22%;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(
+        to right,
+        rgba(0,0,0, calc(var(--curl, 0) * 0.12)) 0%,
+        transparent 100%
+    );
+    z-index: 3;
 }
 
 .turn-back {
     transform: rotateY(180deg);
-    background: #ffffff !important;
+    background: #f7f8fa !important;
     border-radius: 8px 0 0 8px;
     border-right: 1px solid rgba(0, 0, 0, 0.07);
+    position: relative;
+}
+
+/* Landing shadow on back face — fades in as the page settles */
+.turn-back::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        to right,
+        rgba(0,0,0, calc(var(--land, 0) * 0.07)) 0%,
+        rgba(0,0,0, calc(var(--land, 0) * 0.02)) 40%,
+        transparent 100%
+    );
+    border-radius: 8px 0 0 8px;
+    z-index: 3;
 }
 
 /* Dynamic Shadow on Turn Page */
@@ -5607,11 +5663,15 @@ button.viz-segment-btn {
     pointer-events: none;
     z-index: 10;
     opacity: 0;
+    /* Multi-stop realistic page curl shadow */
     background: linear-gradient(
         to right,
-        rgba(0, 0, 0, 0.15) 0%,
-        rgba(0, 0, 0, 0.05) 15%,
-        transparent 50%
+        rgba(0, 0, 0, 0.22) 0%,
+        rgba(0, 0, 0, 0.10) 12%,
+        rgba(0, 0, 0, 0.03) 30%,
+        transparent 55%,
+        rgba(255,255,255, 0.08) 75%,
+        transparent 100%
     );
     border-radius: 0 8px 8px 0;
     backface-visibility: hidden;
