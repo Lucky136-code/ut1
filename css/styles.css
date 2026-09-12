@@ -5504,8 +5504,8 @@ button.viz-segment-btn {
 .page-step-img {
     width: auto;
     height: auto;
-    max-width: clamp(40%, 48%, 55%);
-    max-height: clamp(40%, 50%, 58%);
+    max-width: clamp(55%, 68%, 80%);
+    max-height: clamp(55%, 68%, 80%);
     object-fit: contain;
     border-radius: clamp(6px, 1vw, 14px);
     filter: drop-shadow(0 clamp(4px, 1vh, 14px) clamp(10px, 2vh, 32px) rgba(0, 0, 0, 0.12));
@@ -5801,8 +5801,8 @@ button.viz-segment-btn {
         font-size: clamp(0.75rem, 1.2vw, 1.1rem);
     }
     .page-step-img {
-        max-width: clamp(38%, 45%, 52%);
-        max-height: clamp(38%, 48%, 55%);
+        max-width: clamp(50%, 62%, 72%);
+        max-height: clamp(50%, 62%, 72%);
     }
     .page-desc-heading {
         font-size: clamp(0.85rem, 1.4vw, 1.2rem);
@@ -5842,8 +5842,8 @@ button.viz-segment-btn {
         gap: clamp(4px, 0.6vh, 8px);
     }
     .page-step-img {
-        max-width: clamp(36%, 42%, 50%);
-        max-height: clamp(36%, 44%, 52%);
+        max-width: clamp(55%, 66%, 74%);
+        max-height: clamp(55%, 66%, 74%);
         border-radius: clamp(4px, 0.8vw, 8px);
     }
     .page-watermark-num {
@@ -7738,12 +7738,13 @@ body {
     }
 
     .page-step-img {
-        width: 100% !important;
+        width: auto !important;
         height: auto !important;
-        max-height: 185px !important;
+        max-width: 68% !important;
+        max-height: 70% !important;
         object-fit: contain !important;
         border-radius: 6px !important;
-        transform: scale(1.04) !important;
+        transform: scale(1.0) !important;
         filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.1)) !important;
     }
 
