@@ -165,118 +165,50 @@ document.addEventListener("DOMContentLoaded", () => {
         .to(mat3, { opacity: 1, ease: "none", duration: 0.15 }, 0.775)
         .fromTo(".sequence-3, .sequence-3-bg", { opacity: 0, scale: 0.9, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", ease: "power2.out", duration: 0.25 }, 0.75);
 
-    // === BOOK PAGE-TURNING ANIMATION ===
-    const bookSection = document.getElementById('redesign-steps');
-    if (bookSection) {
-        const turnPages = bookSection.querySelectorAll('.book-turn');
-        const stepDots = bookSection.querySelectorAll('.step-dot');
+    // === STPAGEFLIP BOOK ===
+    const pfBookEl = document.getElementById('pf-book');
+    if (pfBookEl && window.St && window.St.PageFlip) {
+        const pfScene = pfBookEl.closest('.book-scene');
+        const sceneW = pfScene ? pfScene.offsetWidth : window.innerWidth * 0.9;
+        const sceneH = pfScene ? pfScene.offsetHeight : window.innerHeight * 0.7;
 
-        // Turn page timing: 3 turns distributed across scroll progress
-        // Each turn takes ~25% of progress, with rest gaps between
-        const turnSegments = [
-            { start: 0.06, end: 0.30 },   // Turn 1: Step 1 → Step 2
-            { start: 0.37, end: 0.62 },   // Turn 2: Step 2 → Step 3
-            { start: 0.69, end: 0.94 }    // Turn 3: Step 3 → Step 4
-        ];
-
-        // Map data-turn to turn page elements
-        const turnMap = {};
-        turnPages.forEach(page => {
-            turnMap[page.dataset.turn] = page;
+        const pageFlip = new window.St.PageFlip(pfBookEl, {
+            width: Math.floor(sceneW / 2),
+            height: Math.floor(sceneH),
+            size: 'stretch',
+            minWidth: 140,
+            maxWidth: 700,
+            minHeight: 200,
+            maxHeight: 900,
+            drawShadow: true,
+            flippingTime: 700,
+            usePortrait: false,
+            startZIndex: 1,
+            autoSize: true,
+            showCover: false,
+            mobileScrollSupport: true,
+            clickEventForward: true,
+            useMouseEvents: true,
+            swipeDistance: 30,
         });
 
-        // Original z-indices (right side stacking: turn-1 on top)
-        const originalZ = { '1': 3, '2': 2, '3': 1 };
-        // Z-indices after flipping (left side stacking: most recently turned on top)
-        const flippedZ = { '1': 10, '2': 11, '3': 12 };
+        pageFlip.loadFromHTML(document.querySelectorAll('.pf-page'));
 
-        function updateBook(progress) {
-            // Process each turn page
-            for (let i = 0; i < 3; i++) {
-                const turnNum = String(i + 1);
-                const page = turnMap[turnNum];
-                if (!page) continue;
+        // Navigation buttons
+        const prevBtn = document.getElementById('pf-prev');
+        const nextBtn = document.getElementById('pf-next');
+        const counter = document.getElementById('pf-page-counter');
 
-                const seg = turnSegments[i];
-                const shadow = page.querySelector('.turn-shadow');
-
-                let turnProgress = 0;
-                if (progress >= seg.end) {
-                    turnProgress = 1;
-                } else if (progress > seg.start) {
-                    // Smooth easing for the turn
-                    const raw = (progress - seg.start) / (seg.end - seg.start);
-                    // Apply ease-in-out cubic for smoother flip feel
-                    turnProgress = raw < 0.5
-                        ? 4 * raw * raw * raw
-                        : 1 - Math.pow(-2 * raw + 2, 3) / 2;
-                }
-
-                const rotation = turnProgress * -180;
-
-                // --- CSS var: --curl peaks at 1 when page is perpendicular (90deg) ---
-                const curlAmount = Math.sin(Math.abs(rotation) * Math.PI / 180);
-                // --- CSS var: --land is how settled the flipped page is (0→1 after crossing 90) ---
-                const landAmount = turnProgress > 0.5 ? (turnProgress - 0.5) * 2 : 0;
-
-                page.style.setProperty('--curl', curlAmount.toFixed(3));
-                page.style.setProperty('--land', landAmount.toFixed(3));
-
-                // Realistic perspective skew: slight skewY at the midpoint to simulate paper arc
-                const skewAngle = curlAmount * 1.8; // max 1.8deg at perpendicular
-                page.style.transform = `rotateY(${rotation}deg) skewY(${skewAngle}deg)`;
-
-                // Z-index management: swap when page crosses midpoint
-                if (rotation < -90) {
-                    page.style.zIndex = flippedZ[turnNum];
-                } else {
-                    page.style.zIndex = originalZ[turnNum];
-                }
-
-                // Shadow intensity: strongest at -90deg (perpendicular)
-                if (shadow) {
-                    const shadowIntensity = Math.sin(Math.abs(rotation) * Math.PI / 180);
-                    shadow.style.opacity = shadowIntensity * 0.8;
-                }
-            }
-
-            // Update step indicator dots
-            let currentStep = 1;
-            if (progress >= 0.82) {
-                currentStep = 4;
-            } else if (progress >= 0.50) {
-                currentStep = 3;
-            } else if (progress >= 0.18) {
-                currentStep = 2;
-            }
-
-            stepDots.forEach(dot => {
-                const dotNum = parseInt(dot.dataset.dot, 10);
-                if (dotNum === currentStep) {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.remove('active');
-                }
-            });
+        function updateCounter() {
+            const page = pageFlip.getCurrentPageIndex();
+            const step = Math.floor(page / 2) + 1;
+            if (counter) counter.textContent = 'Step ' + Math.min(step, 4) + ' of 4';
         }
 
-        // Initialize book state
-        updateBook(0);
-
-        const bookEndDist = isMobileHero ? "+=150%" : "+=200%";
-
-        // ScrollTrigger for scroll-driven page turning
-        ScrollTrigger.create({
-            trigger: bookSection,
-            start: "top top",
-            end: bookEndDist,
-            scrub: 0.3,
-            pin: ".book-sticky",
-            pinSpacing: true,
-            onUpdate: (self) => {
-                updateBook(self.progress);
-            }
-        });
+        if (prevBtn) prevBtn.addEventListener('click', () => { pageFlip.flipPrev(); });
+        if (nextBtn) nextBtn.addEventListener('click', () => { pageFlip.flipNext(); });
+        pageFlip.on('flip', updateCounter);
+        updateCounter();
     }
 
     // === SPLIT TEXT REVEAL & SCROLL ANIMATIONS ===
