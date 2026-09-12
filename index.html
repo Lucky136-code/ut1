@@ -56,7 +56,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&family=Space+Mono:wght@400;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=18">
+    <link rel="stylesheet" href="css/styles.css?v=17">
 
 
     <!-- Libraries for Million Dollar Experience -->
@@ -64,7 +64,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
 </head>
 
 <body>
@@ -293,73 +292,108 @@
             <p class="book-section-subtitle">Transform your space in 4 simple steps</p>
 
             <div class="book-scene">
-                <!-- StPageFlip container -->
-                <div id="pf-book">
-                    <!-- Page 1 (Left): Step 1 Image -->
-                    <div class="pf-page pf-page-left">
-                        <span class="page-watermark-num">01</span>
-                        <div class="page-img-wrap">
-                            <img src="assets/step1.png?v=3" alt="Step 1: Upload Your Room Photo" class="page-step-img">
-                        </div>
-                    </div>
-                    <!-- Page 2 (Right): Step 1 Description -->
-                    <div class="pf-page pf-page-right">
-                        <span class="page-desc-label">Step One</span>
-                        <h4 class="page-desc-heading">Upload Your Room Photo</h4>
-                        <p class="page-desc-text">Upload a photo of your room — whether it's a hall, kitchen, or bathroom. Visualize new decor styles in stunning detail using your own space or choose from ready-made rooms.</p>
-                        <div class="page-accent-line"></div>
-                    </div>
-                    <!-- Page 3 (Left): Step 2 Image -->
-                    <div class="pf-page pf-page-left">
-                        <span class="page-watermark-num">02</span>
-                        <div class="page-img-wrap">
-                            <img src="assets/step2.png?v=3" alt="Step 2: Pick What to Transform" class="page-step-img">
-                        </div>
-                    </div>
-                    <!-- Page 4 (Right): Step 2 Description -->
-                    <div class="pf-page pf-page-right">
-                        <span class="page-desc-label">Step Two</span>
-                        <h4 class="page-desc-heading">Pick What to Transform</h4>
-                        <p class="page-desc-text">Select any part of your space — floor, walls, countertops, or pillars — and explore endless design possibilities instantly with zero waste.</p>
-                        <div class="page-accent-line"></div>
-                    </div>
-                    <!-- Page 5 (Left): Step 3 Image -->
-                    <div class="pf-page pf-page-left">
-                        <span class="page-watermark-num">03</span>
-                        <div class="page-img-wrap">
-                            <img src="assets/step3.png?v=3" alt="Step 3: Choose Material and Design" class="page-step-img">
-                        </div>
-                    </div>
-                    <!-- Page 6 (Right): Step 3 Description -->
-                    <div class="pf-page pf-page-right">
-                        <span class="page-desc-label">Step Three</span>
-                        <h4 class="page-desc-heading">Choose Material &amp; Design</h4>
-                        <p class="page-desc-text">Browse our curated collection of premium Italian marbles, exotic granites, and natural stones. Filter by color, origin, pattern, and finish to find your perfect match.</p>
-                        <div class="page-accent-line"></div>
-                    </div>
-                    <!-- Page 7 (Left): Step 4 Image -->
-                    <div class="pf-page pf-page-left">
-                        <span class="page-watermark-num">04</span>
-                        <div class="page-img-wrap">
-                            <img src="assets/step4.png?v=3" alt="Step 4: See Your Space Transformed" class="page-step-img">
-                        </div>
-                    </div>
-                    <!-- Page 8 (Right): Step 4 Description -->
-                    <div class="pf-page pf-page-right">
-                        <span class="page-desc-label">Step Four</span>
-                        <h4 class="page-desc-heading">See Your Space Transformed</h4>
-                        <p class="page-desc-text">Watch your room update in real-time as our AI engine renders your chosen stone with photorealistic 3D accuracy, automated slab quantity calculations, and instant cost estimates.</p>
-                        <div class="page-accent-line"></div>
-                    </div>
-                </div>
+                <div class="book" id="book-main">
+                    <div class="book-spine"></div>
 
-                <!-- Navigation arrows -->
-                <div class="pf-nav">
-                    <button id="pf-prev" class="pf-nav-btn" aria-label="Previous page">&#8592;</button>
-                    <span id="pf-page-counter" class="pf-page-counter">Step 1 of 4</span>
-                    <button id="pf-next" class="pf-nav-btn" aria-label="Next page">&#8594;</button>
+                    <!-- Static base: Step 1 left (visible before any turn) -->
+                    <div class="book-page-static page-left" data-static-page="1">
+                        <div class="page-inner">
+                            <span class="page-watermark-num">01</span>
+                            <h3 class="page-left-title"></h3>
+                            <div class="page-img-wrap">
+                                <img src="assets/step1.png?v=3" alt="Step 1: Upload Your Room Photo"
+                                    class="page-step-img">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Static base: Step 4 right (visible after all turns) -->
+                    <div class="book-page-static page-right" data-static-page="4">
+                        <div class="page-inner page-inner-right">
+                            <span class="page-desc-label">Step Four</span>
+                            <h4 class="page-desc-heading">See Your Space Transformed</h4>
+                            <p class="page-desc-text">Watch your room update in real-time as our AI engine renders your
+                                chosen stone with photorealistic 3D accuracy, automated slab quantity calculations, and
+                                instant cost estimates.</p>
+                            <div class="page-accent-line"></div>
+                        </div>
+                    </div>
+
+                    <!-- Turn 3: front=Step3 Right, back=Step4 Left -->
+                    <div class="book-turn" data-turn="3">
+                        <div class="turn-face turn-front">
+                            <div class="page-inner page-inner-right">
+                                <span class="page-desc-label">Step Three</span>
+                                <h4 class="page-desc-heading">Choose Material &amp; Design</h4>
+                                <p class="page-desc-text">Browse our curated collection of premium Italian marbles,
+                                    exotic granites, and natural stones. Filter by color, origin, pattern, and finish to
+                                    find your perfect match.</p>
+                                <div class="page-accent-line"></div>
+                            </div>
+                        </div>
+                        <div class="turn-face turn-back">
+                            <div class="page-inner">
+                                <span class="page-watermark-num">04</span>
+                                <h3 class="page-left-title"></h3>
+                                <div class="page-img-wrap">
+                                    <img src="assets/step4.png?v=3" alt="Step 4: See Your Space Transformed"
+                                        class="page-step-img">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="turn-shadow"></div>
+                    </div>
+
+                    <!-- Turn 2: front=Step2 Right, back=Step3 Left -->
+                    <div class="book-turn" data-turn="2">
+                        <div class="turn-face turn-front">
+                            <div class="page-inner page-inner-right">
+                                <span class="page-desc-label">Step Two</span>
+                                <h4 class="page-desc-heading">Pick What to Transform</h4>
+                                <p class="page-desc-text">Select any part of your space — floor, walls, countertops, or
+                                    pillars — and explore endless design possibilities instantly with zero waste.</p>
+                                <div class="page-accent-line"></div>
+                            </div>
+                        </div>
+                        <div class="turn-face turn-back">
+                            <div class="page-inner">
+                                <span class="page-watermark-num">03</span>
+                                <h3 class="page-left-title"> </h3>
+                                <div class="page-img-wrap">
+                                    <img src="assets/step3.png?v=3" alt="Step 3: Choose Material and Design"
+                                        class="page-step-img">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="turn-shadow"></div>
+                    </div>
+
+                    <!-- Turn 1: front=Step1 Right, back=Step2 Left -->
+                    <div class="book-turn" data-turn="1">
+                        <div class="turn-face turn-front">
+                            <div class="page-inner page-inner-right">
+                                <span class="page-desc-label">Step One</span>
+                                <h4 class="page-desc-heading">Upload Your Room Photo</h4>
+                                <p class="page-desc-text">Upload a photo of your room — whether it's a hall, kitchen, or
+                                    bathroom. Visualize new decor styles in stunning detail using your own space or
+                                    choose from ready-made rooms.</p>
+                                <div class="page-accent-line"></div>
+                            </div>
+                        </div>
+                        <div class="turn-face turn-back">
+                            <div class="page-inner">
+                                <span class="page-watermark-num">02</span>
+                                <h3 class="page-left-title"></h3>
+                                <div class="page-img-wrap">
+                                    <img src="assets/step2.png?v=3" alt="Step 2: Pick What to Transform"
+                                        class="page-step-img">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="turn-shadow"></div>
+                    </div>
                 </div>
             </div>
+
 
         </div>
     </section>
@@ -751,7 +785,7 @@
         </div>
     </footer>
 
-    <script src="js/script.js?v=5"></script>
+    <script src="js/script.js?v=4"></script>
     <script src="js/shield.js?v=1"></script>
 </body>
 
